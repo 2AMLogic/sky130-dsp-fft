@@ -47,7 +47,7 @@ parameters".
 - **Memory**: v1 uses register/flop storage. Compiled SRAM macros are a
   later spec change, not a v1 dependency.
 
-## Target specification (DRAFT — engineering to ratify, see issue #1)
+## Target specification (DRAFT — full proposed spec in [`spec/spec.md`](spec/spec.md), awaiting ratification)
 
 | Parameter | Target | Fallback | Stretch |
 |---|---|---|---|

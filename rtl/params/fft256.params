@@ -1,0 +1,2 @@
+# fftgen flags for the 256-point target (decisions/0001, 0002). Not yet run.
+-f 256 -n 16 -1 -p 0
