@@ -25,7 +25,7 @@ make synth    # Yosys smoke -> ../measurements/synth-placeholder.json
 | `check-tools` | fails unless installed versions equal the pins in `toolchain.json` |
 | `lint` | `verilator --lint-only -Wall` on `rtl/placeholder/`; any warning fails |
 | `sim` | cocotb test: 2000 random vectors with random valid/ready stalls, checked against the Python model |
-| `negctl` | runs the same test on `mutants/placeholder_add_mutant.sv` (carry dropped); succeeds only if the test **fails** |
+| `negctl` | runs the same test on `mutants/placeholder_add_mutant.sv` (carry dropped); succeeds only if the test **fails with** `DUT output differs from Python model` (`NEGCTL_EXPECT`), so a compile error or crash does not count |
 | `synth` | Yosys maps to `sky130_fd_sc_hd` at the `tt_025C_1v80` liberty corner and writes the cell count with tool versions and PDK revision |
 
 `synth` is manual (not in CI). The record in `measurements/` is evidence of the
