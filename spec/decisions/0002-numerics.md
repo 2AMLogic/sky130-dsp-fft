@@ -19,9 +19,14 @@ Restate the README draft and bind it to what the generator exposes (0001):
   2^5 / 256 = 1/8. The output reduction (a rounding stage in the wrapper
   versus a `-m` width cap) is the numerics-critical choice and is fixed by
   the reference model study in `sim/`, not here.
-- **Rounding**: convergent rounding (`convround.v`) at the final reduction;
-  truncation only if the study shows convergent rounding is the timing
-  limiter, in which case this record is superseded, not edited.
+- **Rounding**: convergent. Between stages the generator rounds
+  convergently (`convround.v`) and this is not selectable at the pinned
+  commit (0001: `fftgen` hard-codes `RND_CONVERGENT`, no flag). The final
+  reduction from the 21-bit core output to the 16-bit spec output is
+  outside the generator — a wrapper, or a `-m` cap that also rounds
+  convergently — so a truncation fallback can exist only in that wrapper,
+  and only if the study shows convergent rounding is the timing limiter,
+  in which case this record is superseded, not edited.
 - **Overflow**: none in the generator (README). The spec requires the
   input vector set to stay within the no-overflow range and the testbench to
   assert it; saturation is out of scope for v1.

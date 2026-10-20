@@ -15,8 +15,8 @@ always a *simulated* figure.
 | Output order | natural (bit-reversal stage in) | bit-reversed (`-s`) | natural | index check in testbench |
 | Size selection | fixed at generation | fixed | runtime-selectable | not runtime in v1; stretch needs a new decision |
 | Input / output width | 16-bit I + 16-bit Q | 12-bit | 18-bit | width asserted in the testbench; model bit-exact |
-| Internal growth and scaling | width grows 1 bit per 2 stages, final reduction to output width (0002) | same | same | model bit-exact; overflow assertion on the vector set |
-| Rounding | convergent (0002) | truncation | convergent | model bit-exact |
+| Internal growth and scaling | generator default: +1 bit at the first stage, then 1 bit per 2 stages (21-bit core output for the target), final reduction to output width in a wrapper (0002) | same | same | model bit-exact; overflow assertion on the vector set |
+| Rounding | convergent (0002; the generator's inter-stage rounding is convergent and not selectable) | truncation at the wrapper's final reduction only (0002) | convergent | model bit-exact |
 | Overflow | none; vector set must not overflow | same | saturation (new record) | testbench asserts the no-overflow range |
 | SQNR vs. double precision | ≥ 60 dB | ≥ 50 dB | ≥ 70 dB | simulated, model vs. double-precision FFT, vector set below |
 | FIR taps | 32 | 16 | 64 or decimating | FIR source undecided (see open items); coefficient-by-coefficient model |
