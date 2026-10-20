@@ -56,3 +56,20 @@ None. No Monte Carlo or process-variation row exists in v1.
 - **Timing closure**: whether the shift-add multiplier mapping closes 50 MHz
   at the binding corner is unknown until synthesis.
 - **Flop vs. SRAM crossover**: estimate only (0003); SRAM stays out of scope.
+- **Vector set 2 overflows the proposed core**: with the pinned generator at
+  its default growth (`-f 256 -n 16 -1 -p 0`), uniform random I/Q at 90 % of
+  full scale overflowed internally in 25 of 100 frames (Icarus, 2026-10-20,
+  PR #6 review); at 70 % no frame overflowed. The overflow row and set 2
+  cannot both hold as written; the amplitude or the growth policy is a spec
+  change for the operator, not a result to be fitted.
+- **Fallback SQNR vs. fallback width**: the same run gave ≈ 42 dB on set 1
+  after a 12-bit output reduction, below the ≥ 50 dB fallback; the two
+  fallback cells are not mutually consistent as written.
+- **Corner set**: "all corners" is 16 corners including `ss_n40C_1v28`
+  (0003), about 7.5× slower than typical, versus the three signoff corners
+  open_pdks configures. Which set the clock row means is undecided.
+- **PDK pin**: the corner list and every timing figure depend on the
+  open_pdks revision; `verification/toolchain.json` (on `main`) is the pin
+  this spec should cite once merged.
+- **Power**: no row exists. Decide whether v1 reports power (which tool,
+  which activity, which corner) or states that it does not.
