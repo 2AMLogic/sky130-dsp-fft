@@ -1,0 +1,9 @@
+# Yosys smoke synthesis of the placeholder to sky130_fd_sc_hd.
+# ${LIBERTY} and ${STAT_JSON} are substituted by flow_tools.py (typical corner tt_025C_1v80).
+read_verilog -sv ../rtl/placeholder/placeholder_add.sv
+hierarchy -check -top placeholder_add
+synth -top placeholder_add -flatten
+dfflibmap -liberty ${LIBERTY}
+abc -liberty ${LIBERTY}
+opt_clean -purge
+tee -q -o ${STAT_JSON} stat -liberty ${LIBERTY} -json

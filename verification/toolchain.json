@@ -1,0 +1,17 @@
+{
+  "icarus_verilog": "13.0",
+  "verilator": "5.050",
+  "yosys": "0.67",
+  "cocotb": "2.1.0",
+  "python": "3.13",
+  "pdk": {
+    "name": "sky130",
+    "variant": "sky130A",
+    "manager": "ciel",
+    "revision": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7",
+    "library": "sky130_fd_sc_hd",
+    "liberty_corner": "tt_025C_1v80",
+    "liberty_file": "sky130_fd_sc_hd__tt_025C_1v80.lib",
+    "liberty_relpath": "sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib"
+  }
+}
