@@ -10,10 +10,15 @@ Restate the README draft and bind it to what the generator exposes (0001):
 - Input 16-bit I + 16-bit Q two's complement; output 16-bit I + Q.
   Fallback 12-bit, stretch 18-bit (README, unchanged).
 - **Scaling**: the generator has no per-stage schedule, so internal width
-  grows (default 1 bit per two stages: 256-point is 8 stages, +4 bits) and
-  the final stage reduces to the output width. The output reduction
-  (rounding stage versus `-m` truncation) is the numerics-critical choice
-  and is fixed by the reference model study in `sim/`, not here.
+  grows and the final stage reduces to the output width. The default growth
+  is one bit at the first stage, then one bit per two stages
+  (`sw/fftgen.cpp`, the `nbitsout` block, at the pinned commit): for
+  256-point, 8 stages, a 16-bit input gives a **21-bit** output (+5 bits,
+  not +4; `fftgen -f 256 -n 16 -1 -p 0` prints "Output samples will be 21
+  bits wide"). The core's gain relative to the unscaled DFT is therefore
+  2^5 / 256 = 1/8. The output reduction (a rounding stage in the wrapper
+  versus a `-m` width cap) is the numerics-critical choice and is fixed by
+  the reference model study in `sim/`, not here.
 - **Rounding**: convergent rounding (`convround.v`) at the final reduction;
   truncation only if the study shows convergent rounding is the timing
   limiter, in which case this record is superseded, not edited.
