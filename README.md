@@ -10,6 +10,10 @@ synthesis, OpenROAD for place-and-route.
 
 **Status: just opened, specification phase.** Nothing is designed yet.
 
+**T1 status.** Graded by `klt signoff`, not restated here: see the verdict of
+record [`manifests/sky130-dsp-fft.signoff.json`](manifests/sky130-dsp-fft.signoff.json)
+and [`manifests/README.md`](manifests/README.md) for how it is regenerated.
+
 **Built agent-native.** Every specification, decision record, testbench, and
 line of documentation here is produced by AI agents working from a ratified
 spec and an append-only evidence trail — not human-authored work that agents

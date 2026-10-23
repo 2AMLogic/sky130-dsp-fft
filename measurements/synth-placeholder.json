@@ -1,0 +1,28 @@
+{
+  "module": "placeholder_add",
+  "note": "flow smoke on a placeholder module; not a design result",
+  "liberty_corner": "tt_025C_1v80",
+  "liberty_file": "sky130_fd_sc_hd__tt_025C_1v80.lib",
+  "pdk_revision": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7",
+  "tool_versions": {
+    "icarus_verilog": "13.0",
+    "verilator": "5.050",
+    "yosys": "0.67",
+    "cocotb": "2.1.0"
+  },
+  "cell_count": 55,
+  "cells_by_type": {
+    "sky130_fd_sc_hd__a21oi_1": 1,
+    "sky130_fd_sc_hd__dfrtp_1": 10,
+    "sky130_fd_sc_hd__maj3_1": 5,
+    "sky130_fd_sc_hd__mux2_1": 1,
+    "sky130_fd_sc_hd__nand2_1": 11,
+    "sky130_fd_sc_hd__nand2b_1": 2,
+    "sky130_fd_sc_hd__nor2_1": 1,
+    "sky130_fd_sc_hd__o21ai_0": 8,
+    "sky130_fd_sc_hd__o31ai_1": 1,
+    "sky130_fd_sc_hd__xnor2_1": 10,
+    "sky130_fd_sc_hd__xor2_1": 5
+  },
+  "area_um2": 553.0304
+}
