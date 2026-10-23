@@ -54,9 +54,9 @@ parameters".
 | FFT size | 256-point complex | 64-point | 1024-point, or runtime-selectable size |
 | Architecture | streaming pipeline, 1 sample/clock | — | — |
 | Input / output | 16-bit I + 16-bit Q fixed point | 12-bit | 18-bit |
-| Accuracy | SQNR ≥ 60 dB vs. double-precision reference | ≥ 50 dB | ≥ 70 dB |
+| Accuracy | SQNR ≥ 60 dB vs. double-precision reference | ≥ 40 dB | ≥ 70 dB |
 | FIR | 32-tap, 16-bit programmable coefficients | 16-tap | 64-tap or decimating |
-| Clock (all sky130_fd_sc_hd corners) | 50 MHz | 25 MHz | 100 MHz |
+| Clock (signoff corners `ss_100C_1v60`, `tt_025C_1v80`, `ff_n40C_1v95`; all 16 reported) | 50 MHz | 25 MHz | 100 MHz |
 | Signoff | DRC + LVS clean | — | — |
 
 SQNR is computed in simulation on a stated vector set (random and tone

@@ -37,6 +37,38 @@ Survey limits: three candidates, found by a name search of the places the
 project could plausibly look. Generators not found this way were not
 evaluated; the open list below is the place to add them.
 
+## Alternative evaluated: milovanovic/sdf-fft (operator ruling 2026-10-20)
+
+Source-level read only, no build or run. Cloned at default-branch head
+`d1978a9b284ee1bd4e09ab3fa58e223cd15a5ae9` (committed 2023-07-05, as cloned
+2026-10-23). Not built: it needs sbt, Verilator and a chipyard-era
+submodule set (`scripts/init_submodules_and_build_sbt.sh` pins `dsptools`,
+`rocket-dsp-utils`, `cde`, `rocket-chip`, `firesim`), which is not installed
+here.
+
+| Criterion | milovanovic/sdf-fft |
+|---|---|
+| Generator licence | `LICENSE`: Apache-2.0; `src/main/scala/SDFFFTParams.scala` carries `SPDX-License-Identifier: Apache-2.0` |
+| Output licence | Not checked. The emitted Verilog comes from Chisel/FIRRTL elaboration of Apache-2.0 sources; whether the emitter or its dependencies add any notice to the output was not checked |
+| Architectures | Single-path delay feedback, radix-2 and radix-2²; DIT or DIF; streaming valid/ready (`Decoupled`) with `lastIn`/`lastOut`; optional bit-reverse ping-pong module (`useBitReverse`); optional run-time size (`runTime`, `runTimeR22`) and direction (`fftDirReg`) |
+| Fixed-point controls | Per-stage data types (`protoIQstages`), per-stage growth (`expandLogic`), `keepMSBorLSB`, `trimType` (eleven trim/rounding types per doc), twiddle type, 3- or 4-multiplier complex multiply, `numAddPipes`/`numMulPipes`, optional `overflowReg` status. Finer numerics control than dblclockfft |
+| Storage | Delay lines above `minSRAMdepth` are emitted as SRAM (`fft_mem.conf` lists the blocks), and `useBitReverse` adds SRAM. v1 is flop-only (CLAUDE.md): this would need `minSRAMdepth` set so no memory is inferred, and the bit-reverse buffer checked. Not checked |
+| Plain Verilog for Yosys/Icarus | Not checked (generator not run) |
+| Bit-accurate model | Test suite includes `Radix22SQNRSpec`/`Radix2SQNRSpec` against a `DspReal` golden model; whether any model is bit-accurate to the RTL: not checked |
+| Reproducible from commit + parameters | Parameters are a Scala `FFTParams` case class plus `make gen_all_*`; the toolchain pins are submodule commits in a script, not a lockfile. Byte-for-byte determinism: not checked |
+| Maintenance | Last commit on the default branch read is 2023-07-05; chipyard 1.9.1 era |
+
+What this changes: it removes the licence question if its output is
+unencumbered, and offers per-stage scaling that dblclockfft lacks (0002's
+"no per-stage schedule"). Its cost is a Scala/Chisel/sbt toolchain with a
+multi-repo pin set (against "reproducible from a pinned generator commit and
+a committed parameter file"), the SRAM default, and no evidence yet that its
+Verilog runs in Icarus/Yosys. It is not chosen; the Choice above stands as
+proposed. A smoke run (generate 256-point, Icarus, Yosys, determinism) on a
+machine with the toolchain is the next step, in parallel with the counsel
+questions on the `dblclockfft` output. Ratification waits on one of the two
+clearing.
+
 ## Open licence question (needs a human ruling)
 
 The generator is GPLv3, which does not reach its output. The output carries

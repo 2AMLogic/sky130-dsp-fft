@@ -29,9 +29,24 @@ Restate the README draft and bind it to what the generator exposes (0001):
   in which case this record is superseded, not edited.
 - **Overflow**: none in the generator (README). The spec requires the
   input vector set to stay within the no-overflow range and the testbench to
-  assert it; saturation is out of scope for v1.
+  assert it; saturation is out of scope for v1. Operator ruling 2026-10-20
+  (PR #6): vector set 2 is uniform random I/Q at **70 %** of full scale, not
+  90 %, because at 90 % the pinned core at default growth overflowed
+  internally in 25 of 100 frames (review run, Icarus) and `-x 2` did not cure
+  it; 70 % did not overflow. The `sim/` model must report the measured
+  no-overflow amplitude range.
 - **Reference**: double-precision FFT. RTL must match the bit-accurate model
   in `sim/` exactly; SQNR is the model's, simulated, never "measured".
+
+## SQNR targets by width
+
+Simulated (generated RTL vs. double precision, convergent reduction of the
+21-bit core output, set 1, per-set minimum over 100 frames; PR #6 review
+run, not a `sim/` model result): 16-bit ≈ 65.6 dB, 12-bit ≈ 41.5 dB. The
+spec's cells follow: target ≥ 60 dB at 16-bit, **fallback ≥ 40 dB at 12-bit**
+(was ≥ 50 dB, which the 12-bit figure contradicted; operator ruling
+2026-10-20), stretch ≥ 70 dB at 18-bit. These are targets until the `sim/`
+model reports them.
 
 ## Consequences
 
