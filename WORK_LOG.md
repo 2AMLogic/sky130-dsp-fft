@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-10-27
 
+- **PR #23**: feat(sim): add seeded SQNR vector sets and double-precision reference
+- **Issue #16** (closed): T1 item 9 (testbenches shipped), part 1: seeded SQNR vector set and double-precision reference
 - **PR #22**: feat: attest T1 item 10 with klt 0.8.0 and document reproduction
 - **Issue #14** (closed): T1 item 10 (repo hygiene): README reproduction section and klt signoff --attest 10 envelope
 
