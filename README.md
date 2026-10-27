@@ -83,6 +83,23 @@ layout/        GDS + DRC/LVS reports (klayout-tools driven)
 measurements/  silicon characterization (empty until tape-out)
 ```
 
+## Reproduce
+
+Every committed result, the command that reproduces it, and what it needs.
+Run from the repository root. Toolchain pins and the full cold start are in
+[`verification/README.md`](verification/README.md); they are not repeated here.
+
+| Result | Command | Prerequisites |
+|---|---|---|
+| RTL lint, simulation and negative control (placeholder module) | `make -C verification all` | `python3 -m venv .venv && .venv/bin/pip install -r verification/requirements.txt`; Icarus Verilog, Verilator and Yosys at the versions in `verification/toolchain.json` (`all` runs `check-tools` first) |
+| `measurements/synth-placeholder.json` (Yosys smoke synthesis) | `make -C verification synth` | as above, plus the sky130 PDK at the pinned `ciel` revision under `PDK_ROOT` (default `~/.ciel`); local only, not run in CI |
+| Tier verdict of record `manifests/sky130-dsp-fft.signoff.json` | the `klt signoff --manifest` command in [`manifests/README.md`](manifests/README.md#regenerate) | `uvx` and `klayout-tools==0.8.0` |
+| Item 10 attestation `manifests/item10-attestation.json` | the `klt signoff --attest 10` command in [`manifests/README.md`](manifests/README.md#regenerate) | as above; the `local_only` checks need the verification toolchain |
+
+CI re-checks the signoff record and the item 10 attestation
+(`.github/workflows/signoff.yml`) and runs lint, simulation and the negative
+control (`.github/workflows/rtl-ci.yml`).
+
 ## License
 
 Apache License 2.0 — see [LICENSE](LICENSE). Generated RTL is committed
