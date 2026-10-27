@@ -56,6 +56,13 @@ def test_default_frame_count_and_boundary_seeds():
     assert min(seeds) == 1 and max(seeds) == 20 and len(set(seeds)) == 20
 
 
+def test_frames_in_a_set_are_distinct():
+    for name in vectors.VECTOR_SETS:
+        frames = vectors.generate_frames(name)
+        flat = np.stack([frames.real, frames.imag], axis=-1).reshape(len(frames), -1)
+        assert len(np.unique(flat, axis=0)) == len(frames), f"{name}: repeated frames in set"
+
+
 def test_reference_matches_numpy():
     rng = np.random.default_rng(0)
     x = rng.standard_normal(256) + 1j * rng.standard_normal(256)

@@ -47,9 +47,8 @@ def generate_frames(
     out = np.empty((frames, n), dtype=np.complex128)
     if spec["kind"] == "random":
         seeds = list(spec["seeds"])
+        rngs = {s: np.random.default_rng(s) for s in seeds}
         for i in range(frames):
-            if i % len(seeds) == 0:
-                rngs = {s: np.random.default_rng(s) for s in seeds}
             rng = rngs[seeds[i % len(seeds)]]
             re = rng.uniform(-amp, amp, n)
             im = rng.uniform(-amp, amp, n)
