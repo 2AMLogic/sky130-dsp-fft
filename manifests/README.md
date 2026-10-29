@@ -24,10 +24,23 @@ rather than read by hand.
 ## Regenerate
 
 ```console
-uvx --from "klayout-tools==0.7.0" klt signoff \
+uvx --from "klayout-tools==0.8.0" klt signoff \
     --manifest manifests/sky130-dsp-fft.json \
     --tiers-doc manifests/design-evidence-tiers.md \
     --format json > manifests/sky130-dsp-fft.signoff.json
+```
+
+Item 10 is cited from an attestation envelope generated from
+`item10-inventory.json` (generate, then re-grade; run `--check` last, since any
+edit to the inventory or an inventoried file changes the recorded hashes):
+
+```console
+uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
+    --inventory manifests/item10-inventory.json \
+    -o manifests/item10-attestation.json
+uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
+    --inventory manifests/item10-inventory.json \
+    --check manifests/item10-attestation.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a

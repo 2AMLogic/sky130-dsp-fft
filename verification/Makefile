@@ -1,15 +1,17 @@
 # Flow for the placeholder module (see README.md). Run from verification/.
-# Targets: check-tools lint sim negctl synth all clean
+# Targets: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl synth all clean
 PYTHON    ?= ../.venv/bin/python
 VERILATOR ?= verilator
 YOSYS     ?= yosys
 PDK_ROOT  ?= $(HOME)/.ciel
 # Assertion text the mutant run must fail on (see test_placeholder.py).
 NEGCTL_EXPECT ?= DUT output differs from Python model
+# Assertion text the wrong-reference run must fail on (see ../sim/test_reference.py).
+SQNR_NEGCTL_EXPECT ?= Reference FFT differs from numpy.fft.fft
 
-.PHONY: all check-tools lint sim negctl synth clean
+.PHONY: all check-tools lint sim negctl sqnr-ref sqnr-ref-negctl synth clean
 
-all: check-tools lint sim negctl
+all: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl
 
 check-tools:
 	$(PYTHON) flow_tools.py check
@@ -30,6 +32,19 @@ negctl:
 	elif ! grep -qF "$(NEGCTL_EXPECT)" sim_build/negctl.out; then \
 	  echo "NEGATIVE CONTROL FAILED: mutant failed without the expected text '$(NEGCTL_EXPECT)' (see sim_build/negctl.out)"; exit 1; \
 	else echo "negative control OK: mutant caught by the test"; fi
+
+# Vector sets and double-precision SQNR reference (pure Python + numpy).
+sqnr-ref:
+	$(PYTHON) ../sim/test_reference.py
+
+# Same tests with a wrong reference (I/Q swapped); must fail on the intended text.
+sqnr-ref-negctl:
+	@mkdir -p sim_build
+	@if REF_MUTANT=swap_iq $(PYTHON) ../sim/test_reference.py > sim_build/sqnr_negctl.out 2>&1; then \
+	  echo "NEGATIVE CONTROL FAILED: wrong reference passed the tests"; exit 1; \
+	elif ! grep -qF "$(SQNR_NEGCTL_EXPECT)" sim_build/sqnr_negctl.out; then \
+	  echo "NEGATIVE CONTROL FAILED: wrong reference failed without the expected text '$(SQNR_NEGCTL_EXPECT)' (see sim_build/sqnr_negctl.out)"; exit 1; \
+	else echo "negative control OK: wrong reference caught by the tests"; fi
 
 synth:
 	PDK_ROOT=$(PDK_ROOT) YOSYS=$(YOSYS) $(PYTHON) flow_tools.py synth
