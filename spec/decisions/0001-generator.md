@@ -1,20 +1,42 @@
 # 0001 — FFT generator
 
-- **Status**: Proposed. Not ratified: the licence question below needs a
-  human ruling (see "Open licence question"). Agents do not ratify it.
+- **Status**: Proposed. Not ratified: agents do not ratify it. The generator
+  choice follows the operator ruling of 2026-10-29 (see "Decision"); the
+  licence question that blocked the earlier proposal no longer arises.
 - **Date**: 2026-10-17
 - **Scope**: the FFT datapath generator. The FIR source is a separate open
   item (see `spec/spec.md`, FIR row; no surveyed candidate generates a FIR).
 
-## Method
+## Decision (operator ruling 2026-10-29)
+
+**The block uses its own Apache-2.0 FFT generator**, written in this project.
+It does not use ZipCPU/dblclockfft and does not use milovanovic/sdf-fft. The
+ruling (rjwalters, attended `fleet:decide` round 20261029-r2-holds, question
+h14) asks that the generator take advantage of recent FFT improvements. The
+work is issue #27: a survey of recent pipelined-FFT work first, then the
+generator, a bit-accurate model and smoke evidence. The generator's
+architecture, its pinned location and its parameter file are recorded by the
+architecture record that #27 produces; this record does not fix them.
+
+This supersedes the 2026-10-20 ruling's two paths (counsel on the LGPLv3
+output of dblclockfft, or an sdf-fft evaluation). Because the generator and
+its output are written here under Apache-2.0, no output-licence question
+remains. This is not ratification: the spec still needs the EE and market
+key reviews and then the operator.
+
+The survey, the dblclockfft reading and the sdf-fft evaluation below are
+kept as history. They are the evidence behind the ruling, not the current
+choice.
+
+## Method (survey history)
 
 Each candidate was cloned at its default-branch head on 2026-10-17 and
 read locally. Every cell below is taken from a file in that clone; anything
 not read is marked "not checked".
 
-## Candidates
+## Candidates (history)
 
-| Criterion | ZipCPU/dblclockfft | ucb-bar/dsptools | ucb-bar/sdf-fft |
+| Criterion | ZipCPU/dblclockfft (not chosen: LGPLv3 output) | ucb-bar/dsptools | ucb-bar/sdf-fft |
 |---|---|---|---|
 | Commit read | `3378b77d83a98b06184656a5cb9b54e50dfe4485` (2024-04-18) | `fb3b3c6523c3d807316effa1531b7f623d8d9316` (2024-04-29) | `10874b3f1507dc11ebba2567dee65b40bb329dad` (2024-03-13) |
 | Generator licence | `sw/fftgen.cpp` header: GNU GPL v3 or later | `LICENSE`: Apache-2.0; README: "Released under the Apache-2.0 license" | `LICENSE`: Apache-2.0 |
@@ -25,19 +47,23 @@ not read is marked "not checked".
 | Bit-accurate model | `bench/cpp/*_tb.cpp` are Verilator testbenches with C++ helpers (`twoc.cpp`). README: the FFT testbench "doesn't yet have a threshold" for pass/fail. Whether any model is bit-accurate to the RTL: **not checked** | not applicable | not applicable |
 | Reproducible from commit + parameters | `fftgen` is a standalone C++ program driven by command-line flags (README: "completely portable C++"), so a flag list is the parameter file. Byte-for-byte determinism: **not checked** until `rtl/regen.sh` runs it twice | not applicable | not applicable |
 
-## Choice (proposed)
+## Earlier proposal: ZipCPU/dblclockfft (not chosen: LGPLv3 output)
 
-**ZipCPU/dblclockfft at `3378b77d83a98b06184656a5cb9b54e50dfe4485`.** It is the
-only surveyed candidate that generates an FFT at all, and it covers the
-target: 256-point, one sample per clock (`-1`), 16-bit input (`-n 16`),
-forward, bit-reversed or natural output, multipliers as shift-add
-(`-p 0`, which suits a library with no hard multipliers).
+The earlier proposal of this record was `ZipCPU/dblclockfft` at
+`3378b77d83a98b06184656a5cb9b54e50dfe4485`: the only surveyed candidate that
+generates an FFT at all, covering 256-point, one sample per clock (`-1`),
+16-bit input (`-n 16`), forward, with shift-add multipliers (`-p 0`). It is
+**not chosen**, because its generated files carry an LGPLv3 header and this
+repo requires output compatible with Apache-2.0. The numbers measured from it
+(21-bit core output, convergent rounding, overflow behaviour) remain useful
+as a reference point for #27's survey and are cited where 0002 and 0003 use
+them.
 
 Survey limits: three candidates, found by a name search of the places the
 project could plausibly look. Generators not found this way were not
-evaluated; the open list below is the place to add them.
+evaluated.
 
-## Alternative evaluated: milovanovic/sdf-fft (operator ruling 2026-10-20)
+## Alternative evaluated: milovanovic/sdf-fft (not chosen; operator ruling 2026-10-20)
 
 Source-level read only, no build or run. Cloned at default-branch head
 `d1978a9b284ee1bd4e09ab3fa58e223cd15a5ae9` (committed 2023-07-05, as cloned
@@ -58,44 +84,31 @@ here.
 | Reproducible from commit + parameters | Parameters are a Scala `FFTParams` case class plus `make gen_all_*`; the toolchain pins are submodule commits in a script, not a lockfile. Byte-for-byte determinism: not checked |
 | Maintenance | Last commit on the default branch read is 2023-07-05; chipyard 1.9.1 era |
 
-What this changes: it removes the licence question if its output is
-unencumbered, and offers per-stage scaling that dblclockfft lacks (0002's
-"no per-stage schedule"). Its cost is a Scala/Chisel/sbt toolchain with a
-multi-repo pin set (against "reproducible from a pinned generator commit and
-a committed parameter file"), the SRAM default, and no evidence yet that its
-Verilog runs in Icarus/Yosys. It is not chosen; the Choice above stands as
-proposed. A smoke run (generate 256-point, Icarus, Yosys, determinism) on a
-machine with the toolchain is the next step, in parallel with the counsel
-questions on the `dblclockfft` output. Ratification waits on one of the two
-clearing.
+What this showed: per-stage scaling that dblclockfft lacks, against a
+Scala/Chisel/sbt toolchain with a multi-repo pin set, an SRAM default, and no
+evidence that its Verilog runs in Icarus/Yosys. It was not built or run, and
+its output licence was never checked. The 2026-10-29 ruling does not choose
+it; its per-stage numerics controls are input to #27's survey.
 
-## Open licence question (needs a human ruling)
+## Licence question (closed by the 2026-10-29 ruling)
 
-The generator is GPLv3, which does not reach its output. The output carries
-an LGPLv3 header chosen by the author. This repo is Apache-2.0 and
-CLAUDE.md requires the output licence to be compatible. LGPLv3 files can sit
-in an Apache-2.0 tree as separately licensed files, but whether that is
-"compatible" for a chip design that ships as GDS is a legal judgement
-this record does not make. Per the edge case in the issue, the output licence
-is recorded as **unclear**, not accepted. Options, for the operator:
+The earlier version of this record left open whether LGPLv3 output from
+dblclockfft is compatible with this Apache-2.0 repo. The ruling above closes
+it by not using that output: the generator and everything it emits are
+written here under Apache-2.0. No counsel question, alternative-licence
+purchase or LGPL exception is needed.
 
-1. Accept LGPLv3 for the generated RTL files only, keep their headers
-   intact, and state it in `rtl/README.md` and the root README.
-2. Buy the alternative licence the README offers.
-3. Reject dblclockfft and widen the survey.
+## What this choice leaves open
 
-## What this choice rules out
+The generator does not exist yet, so nothing is ruled in or out by it.
+Carried to #27 and its architecture record:
 
-- A per-stage scaling schedule from the generator (none found). Scaling is
-  therefore a width policy (`-n`, `-x`, `-m`); see 0002.
-- A hardware real-FFT mode (placeholder only).
-- A FIR from the same tool. The FIR source is undecided.
-
-## Open questions carried to the spec
-
-1. Does the shift-add multiplier mapping close timing at the target corner?
-   Answered only by Yosys/OpenROAD per corner; recorded as a risk.
-2. Is any model shipped with the generator bit-accurate to its RTL? Unknown;
-   `sim/` gets an independent model regardless (CLAUDE.md).
-3. Verify with a first `fftgen` run that `-m` truncation behaviour matches
-   0002 before any width is frozen.
+1. Which pipelined-FFT architecture, rounding and per-stage scaling policy
+   the survey supports; 0002 and 0003 state targets, not generator behaviour.
+2. Whether the multiplier mapping closes timing at the target corner
+   (answered only by Yosys/OpenROAD per corner; recorded as a risk).
+3. The bit-accurate model in `sim/` is independent of the generator
+   regardless (CLAUDE.md), and RTL must match it bit-exactly.
+4. The FIR source is a separate open item (see `spec/spec.md`).
+5. Reproducibility: every committed RTL file must come from a pinned commit
+   of the generator and a committed parameter file (CLAUDE.md).

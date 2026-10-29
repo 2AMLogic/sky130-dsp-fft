@@ -37,14 +37,16 @@
 
 ## Flop estimate (arithmetic, not a measurement)
 
-256-point, 16-bit input growing to a 21-bit output (0002), ~19-bit mean
-internal width, I+Q: delay lines hold about N−1 = 255 complex words
+Reference point from the superseded dblclockfft candidate (0001), not the
+chosen generator; #27's architecture record replaces it with its own
+estimate. 256-point, 16-bit input growing to a 21-bit output (0002), ~19-bit
+mean internal width, I+Q: delay lines hold about N−1 = 255 complex words
 ≈ 255 × 2 × 19 ≈ 9.7k flops; the bit-reversal buffer (`bitreverse.v`,
 `brmem` of 2^(LGSIZE+1) words) holds 2N = 512 complex words at 21 bits
 ≈ 21.5k flops. Storage estimate ≈ 31k flops. This counts storage only: the
 butterfly and shift-add multiplier pipelines add registers the estimate
 does not include, and a first generic Yosys synthesis of the generated
-core (`fftgen -f 256 -n 16 -1 -p 0` at the pinned commit, 2026-10-20) found
+core (`fftgen -f 256 -n 16 -1 -p 0` at dblclockfft `3378b77d`, 2026-10-20) found
 ≈ 62k flops in ≈ 207k generic cells — roughly double the storage-only
 figure. 1024-point is about 4× that. Where flops stop being reasonable is
 decided from synthesized area, not from this estimate.

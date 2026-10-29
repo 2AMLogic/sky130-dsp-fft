@@ -15,5 +15,6 @@ supersedes the old one.
 rtl/regen.sh
 ```
 
-Prints the pinned generator commit and parameter file. It exits non-zero with
-"no RTL yet" until the first generation lands.
+Prints the parameter file and names the generator (the project's own,
+issue #27). It exits non-zero with "no RTL yet" until the first generation
+lands.
