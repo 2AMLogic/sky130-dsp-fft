@@ -17,7 +17,7 @@
         "role": "hygiene",
         "path": ".github/workflows/rtl-ci.yml",
         "passed": true,
-        "content_hash": "sha256:9f328fbf90046bebaa8a122ce75d09d04300ff552a53a637da21d4a6e770761f"
+        "content_hash": "sha256:b0cf42f6836dfb25168c70cbf733228fed5d3bf42cfe8774f5f7967a2ef56b57"
       },
       {
         "check": "present",
@@ -52,7 +52,7 @@
         "role": "hygiene",
         "path": "verification/README.md",
         "passed": true,
-        "content_hash": "sha256:d8622a05d43b6ce8da77d8c59da098c1ec1a38ee02bc9c24832b33aeac552da5"
+        "content_hash": "sha256:1d91e329ef129ceaf2bc9aeccaff6bee225076118fae179d0c2f7270fe3363a8"
       },
       {
         "check": "command",

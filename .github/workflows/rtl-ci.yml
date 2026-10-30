@@ -36,3 +36,7 @@ jobs:
         run: make -C verification sqnr-ref
       - name: SQNR reference negative control
         run: make -C verification sqnr-ref-negctl
+      - name: Fixed-point model
+        run: make -C verification fxp-model
+      - name: Fixed-point model negative control
+        run: make -C verification fxp-model-negctl

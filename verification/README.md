@@ -16,7 +16,7 @@ pinned `ciel` revision (`ciel enable --pdk sky130 f6eeac7d...`, installed under
 python3 -m venv .venv
 .venv/bin/pip install -r verification/requirements.txt
 cd verification
-make all      # check-tools, lint, sim, negctl, sqnr-ref, sqnr-ref-negctl
+make all      # check-tools, lint, sim, negctl, sqnr-ref, sqnr-ref-negctl, fxp-model, fxp-model-negctl
 make synth    # Yosys smoke -> ../measurements/synth-placeholder.json
 ```
 
@@ -27,6 +27,8 @@ make synth    # Yosys smoke -> ../measurements/synth-placeholder.json
 | `sim` | cocotb test: 2000 random vectors with random valid/ready stalls, checked against the Python model |
 | `negctl` | runs the same test on `mutants/placeholder_add_mutant.sv` (carry dropped); succeeds only if the test **fails with** `DUT output differs from Python model` (`NEGCTL_EXPECT`), so a compile error or crash does not count |
 | `sqnr-ref` | `sim/test_reference.py`: seeded SQNR vector sets, double-precision reference FFT and SQNR function (pure Python + numpy; needs no simulator) |
+| `fxp-model` | `sim/test_fixedpoint_model.py`: bit-accurate fixed-point FFT model (impulse, DC, tone, convergent ties, overflow reporting, determinism; pure Python + numpy) |
+| `fxp-model-negctl` | same tests with a flooring rounder; succeeds only if they **fail with** `convergent tie rounding wrong` (`FXP_NEGCTL_EXPECT`) |
 | `sqnr-ref-negctl` | same tests with a wrong reference (I/Q swapped); succeeds only if they **fail with** `Reference FFT differs from numpy.fft.fft` (`SQNR_NEGCTL_EXPECT`) |
 | `synth` | Yosys maps to `sky130_fd_sc_hd` at the `tt_025C_1v80` liberty corner and writes the cell count with tool versions and PDK revision |
 
@@ -36,7 +38,7 @@ new record.
 
 ## CI
 
-`.github/workflows/rtl-ci.yml` runs `lint`, `sim`, `negctl`, `sqnr-ref` and `sqnr-ref-negctl` on every push
+`.github/workflows/rtl-ci.yml` runs `lint`, `sim`, `negctl`, `sqnr-ref`, `sqnr-ref-negctl`, `fxp-model` and `fxp-model-negctl` on every push
 and pull request. CI installs the runner's packaged Icarus and Verilator, which
 may differ from the pinned versions, so it skips `check-tools`; the version pin
 is enforced by `make all` and `make synth` locally.
