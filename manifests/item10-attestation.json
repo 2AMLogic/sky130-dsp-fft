@@ -52,7 +52,7 @@
         "role": "hygiene",
         "path": "verification/README.md",
         "passed": true,
-        "content_hash": "sha256:1d91e329ef129ceaf2bc9aeccaff6bee225076118fae179d0c2f7270fe3363a8"
+        "content_hash": "sha256:13ab7d5ba669a34685df451dab3ba6548a85045e982542ecd11254aa6ba1a646"
       },
       {
         "check": "command",
