@@ -29,7 +29,7 @@ TEMPLATE = {
     "size": "256", "architecture": "r22sdf", "direction": "forward",
     "output_order": "natural", "input_width": "16", "output_width": "16",
     "stage_widths": "17,18,19,20,21,22,23,24", "twiddle_width": "16",
-    "complex_mult": "4mult", "rounding": "convergent", "overflow": "none",
+    "complex_mult": "4mult", "rounding": "convergent", "pipeline": "1", "stall": "1",
 }
 # Exact-ish small configs: widths grow 1 bit/stage, output keeps every bit.
 SMALL = dict(TEMPLATE, size="16", input_width="8", output_width="12",
@@ -146,6 +146,7 @@ def test_params_validation_names_the_key():
         (dict(TEMPLATE, direction="inverse"), "direction"),
         (dict(TEMPLATE, twiddle_width="x"), "twiddle_width"),
         (dict(TEMPLATE, input_width="40"), "input_width"),
+        (dict(TEMPLATE, stall="2"), "stall"),
     ]
     for cfg, key in bad:
         try:
@@ -195,6 +196,24 @@ def test_cli_labels_simulated_and_prints_config():
     assert "SIMULATED" in out and "sha256=" in out and fm.MODEL_ID in out
     for name in vectors.VECTOR_SETS:
         assert name in out, f"{name} missing from the report"
+
+
+def test_loads_committed_generator_params():
+    # AC1 of #31: the model takes the generator's own parameter file.
+    path = Path(__file__).resolve().parent.parent / "rtl" / "params" / "fft256.params"
+    p = fm.load_params(path)
+    assert (p.size, p.complex_mult, p.pipeline, p.stall) == (256, p.complex_mult, "1", "1")
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        assert fm.main([str(path)]) == 0
+    assert p.sha256 in buf.getvalue()
+
+
+def test_wide_widths_accepted():
+    # The generator allows 32-bit input/output widths; the loader must too.
+    cfg = dict(TEMPLATE, size="4", input_width="32", output_width="32",
+               stage_widths="32,32")
+    assert model(cfg).p.input_width == 32
 
 
 def main() -> int:

@@ -4,11 +4,14 @@ Integer arithmetic only: samples are int64 numpy arrays, so results are
 deterministic and exact. Every SQNR figure printed by the CLI is *simulated*
 (this model against the double-precision reference), never *measured*.
 
-Parameter file (assumed format until the generator, #29, lands its own; the
-loader is `load_params` and nothing else reads the file): `key=value` lines,
-`#` comments, list values comma-separated. Keys are the 0004 names:
-size, architecture, direction, output_order, input_width, output_width,
-stage_widths, twiddle_width, complex_mult, rounding, overflow.
+Parameter file: the generator's own (schema in rtl/README.md, #29); the loader
+is `load_params` and nothing else reads the file. `key=value` lines, `#`
+comments, list values comma-separated. Keys: size, architecture, direction,
+output_order, input_width, output_width, stage_widths, twiddle_width,
+complex_mult, rounding, pipeline, stall. `pipeline` and `stall` are structural
+(registers and enable gating) and are validated but do not change the
+arithmetic. There is no overflow key: the model never saturates, it counts and
+wraps (see `Stats.overflow`).
 
 Arithmetic contract (the RTL must match it bit for bit):
 
@@ -62,7 +65,7 @@ MODEL_ID = "fixedpoint_model r22sdf v1"
 KEYS = (
     "size", "architecture", "direction", "output_order", "input_width",
     "output_width", "stage_widths", "twiddle_width", "complex_mult",
-    "rounding", "overflow",
+    "rounding", "pipeline", "stall",
 )
 _CHOICES = {
     "architecture": ("r22sdf",),
@@ -70,9 +73,12 @@ _CHOICES = {
     "output_order": ("natural", "bitrev"),
     "complex_mult": ("3mult", "4mult"),
     "rounding": ("convergent", "truncate"),
-    "overflow": ("none",),
+    "pipeline": ("0", "1"),
+    "stall": ("0", "1"),
 }
 _INT_KEYS = ("size", "input_width", "output_width", "twiddle_width")
+# Supersets of the generator's ranges (rtl/README.md); int64 holds 32 x 24 bits.
+_WIDTH_MAX = {"input_width": 32, "output_width": 32, "stage_widths": 32, "twiddle_width": 24}
 
 
 @dataclass(frozen=True)
@@ -87,7 +93,8 @@ class Params:
     twiddle_width: int
     complex_mult: str
     rounding: str
-    overflow: str
+    pipeline: str
+    stall: str
     sha256: str = ""
 
 
@@ -133,11 +140,10 @@ def load_params(path) -> Params:
     stages = n.bit_length() - 1
     if len(vals["stage_widths"]) != stages:
         raise ValueError(f"key 'stage_widths': need {stages} entries for size {n}")
-    top = {"twiddle_width": 24}
-    for key in ("input_width", "output_width", "twiddle_width", "stage_widths"):
+    for key, top in _WIDTH_MAX.items():
         for w in (vals[key] if key == "stage_widths" else (vals[key],)):
-            if not 2 <= w <= top.get(key, 30):
-                raise ValueError(f"key {key!r}: width {w} outside 2..{top.get(key, 30)}")
+            if not 2 <= w <= top:
+                raise ValueError(f"key {key!r}: width {w} outside 2..{top}")
     return Params(sha256=hashlib.sha256(data).hexdigest(), **vals)
 
 
