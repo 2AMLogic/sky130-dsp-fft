@@ -1,5 +1,5 @@
 # Flow for the placeholder module (see README.md). Run from verification/.
-# Targets: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth all clean
+# Targets: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth smoke-fft256 smoke-fft256-negctl all clean
 PYTHON    ?= ../.venv/bin/python
 VERILATOR ?= verilator
 YOSYS     ?= yosys
@@ -10,8 +10,10 @@ NEGCTL_EXPECT ?= DUT output differs from Python model
 SQNR_NEGCTL_EXPECT ?= Reference FFT differs from numpy.fft.fft
 # Assertion text the floor-ties mutant run must fail on (see ../sim/test_fixedpoint_model.py).
 FXP_NEGCTL_EXPECT ?= convergent tie rounding wrong
+# Assertion text the perturbed-DUT smoke run must fail on (see test_fft256_smoke.py).
+SMOKE_NEGCTL_EXPECT ?= RTL output differs from bit-accurate model
 
-.PHONY: all check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth clean
+.PHONY: all check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth smoke-fft256 smoke-fft256-negctl clean
 
 all: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl
 
@@ -63,6 +65,21 @@ fxp-model-negctl:
 
 synth:
 	PDK_ROOT=$(PDK_ROOT) YOSYS=$(YOSYS) $(PYTHON) flow_tools.py synth
+
+# End-to-end smoke of the generated 256-point FFT: regen, Icarus vs the model,
+# Yosys at tt_025C_1v80; appends a record to ../measurements/fft256-smoke.json.
+# Tool-version drift is recorded, not fatal (run `make check-tools` for the pins).
+smoke-fft256:
+	PDK_ROOT=$(PDK_ROOT) YOSYS=$(YOSYS) $(PYTHON) test_fft256_smoke.py
+
+# One DUT output bit flipped; must fail on the mismatch text and write no record.
+smoke-fft256-negctl:
+	@mkdir -p sim_build
+	@if PERTURB=1000 PDK_ROOT=$(PDK_ROOT) YOSYS=$(YOSYS) $(PYTHON) test_fft256_smoke.py > sim_build/smoke_negctl.out 2>&1; then \
+	  echo "NEGATIVE CONTROL FAILED: perturbed DUT passed the smoke"; exit 1; \
+	elif ! grep -qF "$(SMOKE_NEGCTL_EXPECT)" sim_build/smoke_negctl.out; then \
+	  echo "NEGATIVE CONTROL FAILED: perturbed DUT failed without the expected text '$(SMOKE_NEGCTL_EXPECT)' (see sim_build/smoke_negctl.out)"; exit 1; \
+	else echo "negative control OK: perturbed DUT caught by the smoke"; fi
 
 clean:
 	rm -rf sim_build results.xml
