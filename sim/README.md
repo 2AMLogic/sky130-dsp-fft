@@ -15,13 +15,16 @@ Bit-accurate reference models and the SQNR reference.
 
 - `fixedpoint_model.py`: bit-accurate integer model of the radix-2^2 SDF FFT
   chosen in `spec/decisions/0004`. `load_params` reads the generator's
-  `key=value` parameter file (0004 key names; the arithmetic contract the RTL
+  `key=value` parameter file through the generator's own parser
+  (`rtl/gen/params.py`), so there is one validator (0004 key names; the arithmetic contract the RTL
   must match is in the module docstring). Reports per-stage overflow counts
   and peak values rather than wrapping silently. CLI, from the repo root:
   `python3 -m sim.fixedpoint_model <params-file>` prints the config, the
   parameter file's sha256, the model identity and the **simulated** SQNR of
-  each vector set. The format is assumed until the generator (#29) commits its
-  own `rtl/params/*.params`; reconcile there, do not fork it.
+  each vector set. Widths outside the generator's ranges
+  are an explicit opt-in: build a `Params` directly and pass it to
+  `FixedPointFFT`; only the model's own invariants (power-of-4 size, one width
+  per stage, int64 headroom) are then checked.
 - `test_fixedpoint_model.py`: tests; `FXP_MUTANT=floor_ties` runs them against
   a flooring rounder for the negative control.
 
