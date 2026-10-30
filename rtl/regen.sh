@@ -1,10 +1,12 @@
-#!/bin/sh
-# Regenerate RTL from the pinned generator and a committed parameter file.
-# Stub: no RTL yet. The generator is the project's own Apache-2.0 FFT
-# generator (spec/decisions/0001-generator.md), added by issue #27, which
-# also adds its pinned commit here.
-PARAMS="${1:-$(dirname "$0")/params/fft256.params}"
-echo "generator: project FFT generator (issue #27), not yet added"
-echo "params:    $PARAMS"
-echo "regen.sh: no RTL yet" >&2
-exit 1
+#!/usr/bin/env bash
+# SPDX-License-Identifier: Apache-2.0
+# Regenerate the committed RTL from a parameter file. Never hand-edit rtl/generated/.
+# usage: rtl/regen.sh [PARAMS_FILE]   (default rtl/params/fft256.params)
+set -euo pipefail
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+params="${1:-$root/rtl/params/fft256.params}"
+out="$root/rtl/generated"
+rm -rf "$out"
+cd "$root"
+python3 -m rtl.gen "$params" "$out" >/dev/null
+echo "regenerated $(ls "$out" | wc -l) files in rtl/generated from $(basename "$params")"

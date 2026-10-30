@@ -15,6 +15,6 @@ supersedes the old one.
 rtl/regen.sh
 ```
 
-Prints the parameter file and names the generator (the project's own,
-issue #27). It exits non-zero with "no RTL yet" until the first generation
-lands.
+Regenerates `rtl/generated/` from `rtl/params/fft256.params` (or the
+parameter file given as the first argument) using the project's own
+generator (`python3 -m rtl.gen`). Never hand-edit `rtl/generated/`.

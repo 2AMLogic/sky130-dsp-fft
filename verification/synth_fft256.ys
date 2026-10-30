@@ -1,0 +1,9 @@
+# Yosys smoke synthesis of the generated 256-point FFT to sky130_fd_sc_hd.
+# ${LIBERTY} and ${STAT_JSON} are substituted by flow_tools.py (typical corner tt_025C_1v80).
+read_verilog ../rtl/generated/fft256.v ../rtl/generated/fft_cmul.v ../rtl/generated/fft_reorder.v ../rtl/generated/fft_rnd.v ../rtl/generated/fft_sdf_stage.v ../rtl/generated/fft_twrom.v
+hierarchy -check -top fft256
+synth -top fft256 -flatten
+dfflibmap -liberty ${LIBERTY}
+abc -liberty ${LIBERTY}
+opt_clean -purge
+tee -q -o ${STAT_JSON} stat -liberty ${LIBERTY} -json

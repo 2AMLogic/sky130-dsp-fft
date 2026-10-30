@@ -44,8 +44,12 @@ def check():
     print("toolchain matches verification/toolchain.json")
 
 
-def synth():
-    check()
+def run_yosys(script_name):
+    """Run a Yosys script at the pinned liberty corner; return Yosys's `design` stat dict.
+
+    `${LIBERTY}` and `${STAT_JSON}` in the script are substituted. Does not check
+    tool versions: callers decide whether drift is fatal (`synth`) or recorded.
+    """
     pdk = PINS["pdk"]
     root = Path(os.environ.get("PDK_ROOT", Path.home() / ".ciel"))
     liberty = root / "ciel" / pdk["name"] / "versions" / pdk["revision"] / pdk["liberty_relpath"]
@@ -53,15 +57,22 @@ def synth():
         sys.exit(f"liberty not found: {liberty} (pdk revision {pdk['revision']})")
     build = HERE / "sim_build"
     build.mkdir(exist_ok=True)
-    stat = build / "synth_stat.json"
-    script = (HERE / "synth.ys").read_text()
+    stem = Path(script_name).stem
+    stat = build / f"{stem}_stat.json"
+    script = (HERE / script_name).read_text()
     script = script.replace("${LIBERTY}", str(liberty)).replace("${STAT_JSON}", str(stat))
-    resolved = build / "synth.resolved.ys"
+    resolved = build / f"{stem}.resolved.ys"
     resolved.write_text(script)
-    run = subprocess.run([YOSYS, "-q", "-l", str(build / "synth.log"), "-s", str(resolved)], cwd=HERE)
+    run = subprocess.run([YOSYS, "-q", "-l", str(build / f"{stem}.log"), "-s", str(resolved)], cwd=HERE)
     if run.returncode:
-        sys.exit("yosys failed; see verification/sim_build/synth.log")
-    design = json.loads(stat.read_text())["design"]
+        sys.exit(f"yosys failed; see verification/sim_build/{stem}.log")
+    return json.loads(stat.read_text())["design"]
+
+
+def synth():
+    check()
+    pdk = PINS["pdk"]
+    design = run_yosys("synth.ys")
     record = {
         "module": "placeholder_add",
         "note": "flow smoke on a placeholder module; not a design result",
