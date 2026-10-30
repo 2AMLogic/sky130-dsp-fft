@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-10-30
 
+- **PR #35**: feat(rtl): add radix-2^2 SDF FFT generator, params and committed RTL
+- **Issue #29** (closed): Own Apache-2.0 FFT generator emitting Verilog (part of #27)
 - **PR #32**: docs(spec): add 0004 FFT architecture survey choosing radix-2^2 SDF
 - **Issue #28** (closed): Survey: recent pipelined-FFT work and architecture decision record (part of #27)
 
