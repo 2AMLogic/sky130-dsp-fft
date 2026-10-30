@@ -5,6 +5,9 @@ Maintained by the Guide triage role.
 
 ### 2026-10-30
 
+- **Issue #27** (closed): Apache-2.0 FFT generator of our own: survey recent pipelined-FFT work, then generator + bit-accurate model
+- **PR #38**: feat(verification): smoke generated fft256 vs model and map in Yosys
+- **Issue #30** (closed): Smoke evidence: 256-point FFT through Icarus and Yosys sky130_fd_sc_hd (part of #27)
 - **PR #34**: feat(sim): bit-accurate fixed-point radix-2^2 SDF FFT model
 - **Issue #31** (closed): Bit-accurate fixed-point FFT model from generator parameters (part of #27)
 - **PR #35**: feat(rtl): add radix-2^2 SDF FFT generator, params and committed RTL
