@@ -3,6 +3,11 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-10-30
+
+- **PR #32**: docs(spec): add 0004 FFT architecture survey choosing radix-2^2 SDF
+- **Issue #28** (closed): Survey: recent pipelined-FFT work and architecture decision record (part of #27)
+
 ### 2026-10-27
 
 - **PR #23**: feat(sim): add seeded SQNR vector sets and double-precision reference
