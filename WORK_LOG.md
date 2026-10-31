@@ -3,8 +3,15 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-10-31
+
+- **PR #41**: fix(package): wire check/test/lint npm scripts to verification Makefile
+- **Issue #36** (closed): package.json check/test/lint scripts are always-green stubs; wire to verification Makefile
+
 ### 2026-10-30
 
+- **PR #43**: refactor(sim): reuse the generator's parameter parser in the fixed-point model
+- **Issue #39** (closed): Consolidate duplicate parameter-file parsers: sim/fixedpoint_model.py vs rtl/gen/params.py
 - **Issue #27** (closed): Apache-2.0 FFT generator of our own: survey recent pipelined-FFT work, then generator + bit-accurate model
 - **PR #38**: feat(verification): smoke generated fft256 vs model and map in Yosys
 - **Issue #30** (closed): Smoke evidence: 256-point FFT through Icarus and Yosys sky130_fd_sc_hd (part of #27)
