@@ -4,8 +4,10 @@ Integer arithmetic only: samples are int64 numpy arrays, so results are
 deterministic and exact. Every SQNR figure printed by the CLI is *simulated*
 (this model against the double-precision reference), never *measured*.
 
-Parameter file: the generator's own (schema in rtl/README.md, #29); the loader
-is `load_params` and nothing else reads the file. `key=value` lines, `#`
+Parameter file: the generator's own (schema in rtl/README.md); `load_params`
+delegates to the generator's parser (rtl/gen/params.py), so there is one
+validator. Widths beyond the generator's ranges are an explicit opt-in: build a
+`Params` directly and pass it to `FixedPointFFT`. `key=value` lines, `#`
 comments, list values comma-separated. Keys: size, architecture, direction,
 output_order, input_width, output_width, stage_widths, twiddle_width,
 complex_mult, rounding, pipeline, stall. `pipeline` and `stall` are structural
@@ -47,7 +49,6 @@ Arithmetic contract (the RTL must match it bit for bit):
 so it does not change the model's output.
 """
 
-import hashlib
 import math
 import sys
 from dataclasses import dataclass, field
@@ -56,28 +57,15 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import reference  # noqa: E402
 import vectors  # noqa: E402
+from rtl.gen import params as generator_params  # noqa: E402
 
 MODEL_ID = "fixedpoint_model r22sdf v1"
 
-KEYS = (
-    "size", "architecture", "direction", "output_order", "input_width",
-    "output_width", "stage_widths", "twiddle_width", "complex_mult",
-    "rounding", "pipeline", "stall",
-)
-_CHOICES = {
-    "architecture": ("r22sdf",),
-    "direction": ("forward",),
-    "output_order": ("natural", "bitrev"),
-    "complex_mult": ("3mult", "4mult"),
-    "rounding": ("convergent", "truncate"),
-    "pipeline": ("0", "1"),
-    "stall": ("0", "1"),
-}
-_INT_KEYS = ("size", "input_width", "output_width", "twiddle_width")
-# Supersets of the generator's ranges (rtl/README.md); int64 holds 32 x 24 bits.
+# int64 holds a 32-bit component times a 24-bit twiddle.
 _WIDTH_MAX = {"input_width": 32, "output_width": 32, "stage_widths": 32, "twiddle_width": 24}
 
 
@@ -93,58 +81,42 @@ class Params:
     twiddle_width: int
     complex_mult: str
     rounding: str
-    pipeline: str
-    stall: str
+    pipeline: int
+    stall: int
     sha256: str = ""
 
 
 def load_params(path) -> Params:
-    """Parse and validate a parameter file; ValueError names the bad key."""
-    data = Path(path).read_bytes()
-    raw = {}
-    for lineno, line in enumerate(data.decode().splitlines(), 1):
-        line = line.split("#", 1)[0].strip()
-        if not line:
-            continue
-        if "=" not in line:
-            raise ValueError(f"{path}:{lineno}: expected key=value, got {line!r}")
-        key, value = (s.strip() for s in line.split("=", 1))
-        if key not in KEYS:
-            raise ValueError(f"unknown key {key!r}")
-        if key in raw:
-            raise ValueError(f"duplicate key {key!r}")
-        raw[key] = value
-    missing = [k for k in KEYS if k not in raw]
-    if missing:
-        raise ValueError(f"missing key {missing[0]!r}")
-    vals = {}
-    for key in KEYS:
-        v = raw[key]
-        try:
-            if key in _INT_KEYS:
-                vals[key] = int(v)
-            elif key == "stage_widths":
-                vals[key] = tuple(int(s) for s in v.split(","))
-            else:
-                vals[key] = v
-        except ValueError:
-            raise ValueError(f"key {key!r}: not an integer value: {v!r}") from None
-        if key in _CHOICES and vals[key] not in _CHOICES[key]:
-            raise ValueError(f"key {key!r}: {v!r} not one of {_CHOICES[key]}")
-    n = vals["size"]
-    p4 = 1
-    while p4 < n:
-        p4 *= 4
-    if n < 4 or p4 != n:
+    """Read a parameter file with the generator's own parser (rtl/gen/params.py).
+
+    The generator's validation applies unchanged, so the model cannot be asked
+    about a configuration no RTL can exist for. ParamError (a ValueError)
+    names the bad key. Exploratory widths outside the generator's ranges are
+    an explicit opt-in: build a `Params` directly and pass it to `FixedPointFFT`.
+    """
+    d = generator_params.load_params(path)
+    sha = d.pop("_sha256")
+    d["stage_widths"] = tuple(d["stage_widths"])
+    return Params(sha256=sha, **d)
+
+
+def check_params(p: Params) -> None:
+    """Model-only invariants, applied to every `Params` including exploratory ones.
+
+    The algorithm needs a power-of-4 size and one width per radix-2 stage; int64
+    holds a 32-bit component times a 24-bit twiddle, so wider stages would wrap
+    inside the model and not like the RTL.
+    """
+    n = p.size
+    if n < 4 or 4 ** (n.bit_length() // 2) != n:
         raise ValueError(f"key 'size': {n} is not a power of 4")
     stages = n.bit_length() - 1
-    if len(vals["stage_widths"]) != stages:
+    if len(p.stage_widths) != stages:
         raise ValueError(f"key 'stage_widths': need {stages} entries for size {n}")
     for key, top in _WIDTH_MAX.items():
-        for w in (vals[key] if key == "stage_widths" else (vals[key],)):
+        for w in (getattr(p, key) if key == "stage_widths" else (getattr(p, key),)):
             if not 2 <= w <= top:
-                raise ValueError(f"key {key!r}: width {w} outside 2..{top}")
-    return Params(sha256=hashlib.sha256(data).hexdigest(), **vals)
+                raise ValueError(f"key {key!r}: width {w} outside 2..{top} the model can hold")
 
 
 def round_shift(x: np.ndarray, s: int, mode: str = "convergent") -> np.ndarray:
@@ -226,6 +198,7 @@ def _check(x_re, x_im, width, stage, stats, strict):
 
 class FixedPointFFT:
     def __init__(self, params: Params, strict: bool = False):
+        check_params(params)
         self.p = params
         self.strict = strict
         self.stats = Stats(len(params.stage_widths))

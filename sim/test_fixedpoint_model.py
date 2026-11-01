@@ -141,6 +141,7 @@ def test_twiddle_table_symmetry():
 def test_params_validation_names_the_key():
     bad = [
         (dict(TEMPLATE, size="128"), "size"),
+        (dict(TEMPLATE, input_width="3"), "input_width"),
         (dict(TEMPLATE, stage_widths="17,18"), "stage_widths"),
         (dict(TEMPLATE, rounding="floor"), "rounding"),
         (dict(TEMPLATE, direction="inverse"), "direction"),
@@ -152,7 +153,7 @@ def test_params_validation_names_the_key():
         try:
             model(cfg)
         except ValueError as e:
-            assert repr(key) in str(e), f"error for {key} does not name it: {e}"
+            assert key in str(e), f"error for {key} does not name it: {e}"
         else:
             raise AssertionError(f"invalid {key} accepted")
     with tempfile.TemporaryDirectory() as d:
@@ -161,7 +162,7 @@ def test_params_validation_names_the_key():
         try:
             fm.load_params(p)
         except ValueError as e:
-            assert "'bogus'" in str(e)
+            assert "bogus" in str(e)
         else:
             raise AssertionError("unknown key accepted")
 
@@ -202,7 +203,7 @@ def test_loads_committed_generator_params():
     # AC1 of #31: the model takes the generator's own parameter file.
     path = Path(__file__).resolve().parent.parent / "rtl" / "params" / "fft256.params"
     p = fm.load_params(path)
-    assert (p.size, p.complex_mult, p.pipeline, p.stall) == (256, p.complex_mult, "1", "1")
+    assert (p.size, p.complex_mult, p.pipeline, p.stall) == (256, p.complex_mult, 1, 1)
     buf = io.StringIO()
     with contextlib.redirect_stdout(buf):
         assert fm.main([str(path)]) == 0
@@ -214,6 +215,28 @@ def test_wide_widths_accepted():
     cfg = dict(TEMPLATE, size="4", input_width="32", output_width="32",
                stage_widths="32,32")
     assert model(cfg).p.input_width == 32
+
+
+def test_exploratory_widths_are_opt_in():
+    # A width the generator rejects is refused from a file, and reachable only
+    # by building Params directly; the model's own invariants still apply.
+    cfg = dict(TEMPLATE, size="4", input_width="3", output_width="3", stage_widths="3,3")
+    try:
+        model(cfg)
+    except ValueError as e:
+        assert "input_width" in str(e)
+    else:
+        raise AssertionError("generator-invalid width accepted from a file")
+    p = fm.Params(size=4, architecture="r22sdf", direction="forward", output_order="natural",
+                  input_width=3, output_width=3, stage_widths=(3, 3), twiddle_width=8,
+                  complex_mult="4mult", rounding="convergent", pipeline=0, stall=0)
+    assert fm.FixedPointFFT(p).p.input_width == 3
+    for bad in (dict(stage_widths=(3, 40)), dict(size=8), dict(stage_widths=(3,))):
+        try:
+            fm.FixedPointFFT(fm.Params(**dict(p.__dict__, **bad)))
+        except ValueError:
+            continue
+        raise AssertionError(f"model invariant not enforced for {bad}")
 
 
 def main() -> int:
