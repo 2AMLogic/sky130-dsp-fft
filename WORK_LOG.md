@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-11-04
 
+- **PR #49**: feat: add streaming wrapper, sky130 gate-level netlist and item 1 attestation for fft256
+- **Issue #15** (closed): T1 item 1 (design sources): generated FFT RTL, wrappers and a sky130_fd_sc_hd gate-level netlist once the generator is ruled
 - **PR #6**: docs(spec): propose target spec and generator, numerics, timing decision records
 - **Issue #2** (closed): Draft and ratify the target spec
 
