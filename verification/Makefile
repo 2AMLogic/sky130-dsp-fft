@@ -1,5 +1,5 @@
 # Flow for the placeholder module (see README.md). Run from verification/.
-# Targets: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth smoke-fft256 smoke-fft256-negctl all clean
+# Targets: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth smoke-fft256 smoke-fft256-negctl lint-wrapper sim-wrapper sim-wrapper-negctl all clean
 PYTHON    ?= ../.venv/bin/python
 VERILATOR ?= verilator
 YOSYS     ?= yosys
@@ -13,7 +13,7 @@ FXP_NEGCTL_EXPECT ?= convergent tie rounding wrong
 # Assertion text the perturbed-DUT smoke run must fail on (see test_fft256_smoke.py).
 SMOKE_NEGCTL_EXPECT ?= RTL output differs from bit-accurate model
 
-.PHONY: all check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth smoke-fft256 smoke-fft256-negctl clean
+.PHONY: all check-tools lint lint-wrapper sim-wrapper sim-wrapper-negctl sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth smoke-fft256 smoke-fft256-negctl clean
 
 all: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl
 
@@ -80,6 +80,27 @@ smoke-fft256-negctl:
 	elif ! grep -qF "$(SMOKE_NEGCTL_EXPECT)" sim_build/smoke_negctl.out; then \
 	  echo "NEGATIVE CONTROL FAILED: perturbed DUT failed without the expected text '$(SMOKE_NEGCTL_EXPECT)' (see sim_build/smoke_negctl.out)"; exit 1; \
 	else echo "negative control OK: perturbed DUT caught by the smoke"; fi
+
+# Hand-written streaming wrapper (rtl/wrapper): lint it against a port-only stub
+# of the generated core, then smoke it in Icarus against the real core.
+lint-wrapper:
+	$(VERILATOR) --lint-only -Wall -Wno-DECLFILENAME --top-module fft256_stream ../rtl/wrapper/fft256_stream.sv stubs/fft256_stub.sv
+
+sim-wrapper:
+	@mkdir -p sim_build
+	iverilog -g2012 -o sim_build/stream.vvp tb_fft256_stream.sv ../rtl/wrapper/fft256_stream.sv ../rtl/generated/*.v
+	vvp sim_build/stream.vvp | tee sim_build/stream.out
+	@grep -q "^PASS fft256_stream smoke" sim_build/stream.out
+
+# One output bit flipped at step 600; must fail on the data mismatch.
+sim-wrapper-negctl:
+	@mkdir -p sim_build
+	iverilog -g2012 -DNEGCTL -o sim_build/stream_negctl.vvp tb_fft256_stream.sv ../rtl/wrapper/fft256_stream.sv ../rtl/generated/*.v
+	@if vvp sim_build/stream_negctl.vvp > sim_build/stream_negctl.out 2>&1 && grep -q "^PASS" sim_build/stream_negctl.out; then \
+	  echo "NEGATIVE CONTROL FAILED: perturbed wrapper output passed"; exit 1; \
+	elif ! grep -qF "MISMATCH data" sim_build/stream_negctl.out; then \
+	  echo "NEGATIVE CONTROL FAILED: no data mismatch reported (see sim_build/stream_negctl.out)"; exit 1; \
+	else echo "negative control OK: perturbed wrapper output caught"; fi
 
 clean:
 	rm -rf sim_build results.xml

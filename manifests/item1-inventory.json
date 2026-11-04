@@ -1,0 +1,106 @@
+{
+  "schema_version": 1,
+  "kind": "t1-attestation-inventory",
+  "t1_item": 1,
+  "description": "Design sources for T1 item 1: the generator, its pinned parameter file, the generated RTL, the hand-written streaming wrapper, and the gate-level netlist derived from them. Generator identity: this repository's own rtl/gen at the commit that adds this file (no external generator is pinned); generated output is reproduced by rtl/regen.sh from rtl/params/fft256.params, whose sha256 is in the first lines of each rtl/generated file. The netlist is mapped to sky130_fd_sc_hd at the tt_025C_1v80 liberty corner; the freshness check re-hashes the RTL sources, parameters and netlist against synth/fft256.synth.report.json (cheap mode, no PDK needed, --skip-deck). The full re-run (klt synthesize ... --check ... --rerun) needs Yosys and the PDK and is run locally.",
+  "sources": [
+    "rtl/gen/__init__.py",
+    "rtl/gen/__main__.py",
+    "rtl/gen/emit.py",
+    "rtl/gen/params.py",
+    "rtl/regen.sh",
+    "rtl/params/fft256.params",
+    "rtl/wrapper/fft256_stream.sv",
+    "synth/fft256.synth.json"
+  ],
+  "derived": [
+    {
+      "path": "rtl/generated/fft256.v",
+      "generator": "rtl/regen.sh rtl/params/fft256.params",
+      "check": {
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ]
+      }
+    },
+    {
+      "path": "rtl/generated/fft_cmul.v",
+      "generator": "rtl/regen.sh rtl/params/fft256.params",
+      "check": {
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ]
+      }
+    },
+    {
+      "path": "rtl/generated/fft_reorder.v",
+      "generator": "rtl/regen.sh rtl/params/fft256.params",
+      "check": {
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ]
+      }
+    },
+    {
+      "path": "rtl/generated/fft_rnd.v",
+      "generator": "rtl/regen.sh rtl/params/fft256.params",
+      "check": {
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ]
+      }
+    },
+    {
+      "path": "rtl/generated/fft_sdf_stage.v",
+      "generator": "rtl/regen.sh rtl/params/fft256.params",
+      "check": {
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ]
+      }
+    },
+    {
+      "path": "rtl/generated/fft_twrom.v",
+      "generator": "rtl/regen.sh rtl/params/fft256.params",
+      "check": {
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ]
+      }
+    },
+    {
+      "path": "netlist/fft256_stream.sky130_fd_sc_hd.v",
+      "generator": "klt synthesize synth/fft256.synth.json --format json > synth/fft256.synth.report.json",
+      "check": {
+        "argv": [
+          "klt",
+          "synthesize",
+          "synth/fft256.synth.json",
+          "--check",
+          "synth/fft256.synth.report.json",
+          "--netlist",
+          "netlist/fft256_stream.sky130_fd_sc_hd.v",
+          "--skip-deck"
+        ]
+      }
+    }
+  ]
+}

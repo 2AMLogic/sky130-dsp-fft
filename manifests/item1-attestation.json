@@ -1,0 +1,354 @@
+{
+  "schema_version": 1,
+  "kind": "generic",
+  "status": "pass",
+  "t1_item": 1,
+  "summary": "T1 item 1 (Design sources): 22/22 attestation checks passed (klt signoff --attest)",
+  "source": "manifests/item1-inventory.json",
+  "attestation": {
+    "producer": "klt signoff --attest",
+    "inventory_schema_version": 1,
+    "hash_algorithm": "sha256-raw-bytes",
+    "check_count": 22,
+    "passed_count": 22,
+    "checks": [
+      {
+        "check": "present",
+        "role": "source",
+        "path": "rtl/gen/__init__.py",
+        "passed": true,
+        "content_hash": "sha256:0dfa5ff2c72bdcac8b5c5da7376371fc31522ceabc0744bfffb40f88ea05a7c2"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "rtl/gen/__main__.py",
+        "passed": true,
+        "content_hash": "sha256:e04f4675fd8538de6c590ce8577218fdd70d15a8048b4d298a4c8056809c1591"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "rtl/gen/emit.py",
+        "passed": true,
+        "content_hash": "sha256:aab550f11751bbe0eb32c86dfa1163ff1d1da90e3d9eb6fc472e52e18f5eb6ca"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "rtl/gen/params.py",
+        "passed": true,
+        "content_hash": "sha256:dcdc2300515515d2c1e348b34dfd29524e7918e4d5616cecb5e6b7ef415248ff"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "rtl/params/fft256.params",
+        "passed": true,
+        "content_hash": "sha256:0016f2bd85c2a7910db3af813e48efba2f082d7d1880d53242d96fc65f1273d8"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "rtl/regen.sh",
+        "passed": true,
+        "content_hash": "sha256:ccd8083a681ab25a24fa93d8ed5bfcb14009580b783d3766d685afb3222e1502"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "rtl/wrapper/fft256_stream.sv",
+        "passed": true,
+        "content_hash": "sha256:075276799e14260788b76b84916cb7a8ffae7649db59067bdeb0a667d1c01d73"
+      },
+      {
+        "check": "present",
+        "role": "source",
+        "path": "synth/fft256.synth.json",
+        "passed": true,
+        "content_hash": "sha256:b847eb7fe4033658444de420a0db7f383d55d414572b7090f65a69fe40d9fb71"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "netlist/fft256_stream.sky130_fd_sc_hd.v",
+        "passed": true,
+        "content_hash": "sha256:5a441dc7fa126fbde406230b6f2e489f38d1a288bf9db2a2c649d577dac32185"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "rtl/generated/fft256.v",
+        "passed": true,
+        "content_hash": "sha256:ceb12ee74760cb9b50920b283a2893e7df0e2ef21d60460c85b4b6e8de5f02de"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "rtl/generated/fft_cmul.v",
+        "passed": true,
+        "content_hash": "sha256:bf233b3591039dcef3a1c62d2de3496f87fd086274b8f2355498ebede7dda072"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "rtl/generated/fft_reorder.v",
+        "passed": true,
+        "content_hash": "sha256:c2e2896864756ce3676b646725c820581a3b70e39962faf2cc58c229e75f7584"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "rtl/generated/fft_rnd.v",
+        "passed": true,
+        "content_hash": "sha256:cbc4b314cc5d6ba8b9201afa9baa950f694e4c092f8b0d0baa119aa6e7b66577"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "rtl/generated/fft_sdf_stage.v",
+        "passed": true,
+        "content_hash": "sha256:df43399c960a383aa621bbca1720a398ff9dc0f2c2fa498209198be01ba1402e"
+      },
+      {
+        "check": "present",
+        "role": "derived",
+        "path": "rtl/generated/fft_twrom.v",
+        "passed": true,
+        "content_hash": "sha256:f3ff9bfdd1f9d4c97de35716ba99274290de0494a58303e48938c6a024bcb814"
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "netlist/fft256_stream.sky130_fd_sc_hd.v",
+        "generator": "klt synthesize synth/fft256.synth.json --format json > synth/fft256.synth.report.json",
+        "argv": [
+          "klt",
+          "synthesize",
+          "synth/fft256.synth.json",
+          "--check",
+          "synth/fft256.synth.report.json",
+          "--netlist",
+          "netlist/fft256_stream.sky130_fd_sc_hd.v",
+          "--skip-deck"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "rtl/generated/fft256.v",
+        "generator": "rtl/regen.sh rtl/params/fft256.params",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "rtl/generated/fft_cmul.v",
+        "generator": "rtl/regen.sh rtl/params/fft256.params",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "rtl/generated/fft_reorder.v",
+        "generator": "rtl/regen.sh rtl/params/fft256.params",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "rtl/generated/fft_rnd.v",
+        "generator": "rtl/regen.sh rtl/params/fft256.params",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "rtl/generated/fft_sdf_stage.v",
+        "generator": "rtl/regen.sh rtl/params/fft256.params",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      },
+      {
+        "check": "command",
+        "role": "freshness",
+        "target": "rtl/generated/fft_twrom.v",
+        "generator": "rtl/regen.sh rtl/params/fft256.params",
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "rtl.gen.tests.test_gen"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      }
+    ]
+  },
+  "provenance": {
+    "klt_version": "0.8.1.dev1315+g90cea94010c4",
+    "klayout_version": null,
+    "pdk": null,
+    "deck": null,
+    "input": {
+      "paths": [
+        {
+          "path": {
+            "path": "manifests/item1-inventory.json",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:c4da2ee3bc1bee5179842164872618a816bb786e7989c14b025a13b3690a56a9"
+        },
+        {
+          "path": {
+            "path": "netlist/fft256_stream.sky130_fd_sc_hd.v",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:5a441dc7fa126fbde406230b6f2e489f38d1a288bf9db2a2c649d577dac32185"
+        },
+        {
+          "path": {
+            "path": "rtl/gen/__init__.py",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:0dfa5ff2c72bdcac8b5c5da7376371fc31522ceabc0744bfffb40f88ea05a7c2"
+        },
+        {
+          "path": {
+            "path": "rtl/gen/__main__.py",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:e04f4675fd8538de6c590ce8577218fdd70d15a8048b4d298a4c8056809c1591"
+        },
+        {
+          "path": {
+            "path": "rtl/gen/emit.py",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:aab550f11751bbe0eb32c86dfa1163ff1d1da90e3d9eb6fc472e52e18f5eb6ca"
+        },
+        {
+          "path": {
+            "path": "rtl/gen/params.py",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:dcdc2300515515d2c1e348b34dfd29524e7918e4d5616cecb5e6b7ef415248ff"
+        },
+        {
+          "path": {
+            "path": "rtl/generated/fft256.v",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:ceb12ee74760cb9b50920b283a2893e7df0e2ef21d60460c85b4b6e8de5f02de"
+        },
+        {
+          "path": {
+            "path": "rtl/generated/fft_cmul.v",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:bf233b3591039dcef3a1c62d2de3496f87fd086274b8f2355498ebede7dda072"
+        },
+        {
+          "path": {
+            "path": "rtl/generated/fft_reorder.v",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:c2e2896864756ce3676b646725c820581a3b70e39962faf2cc58c229e75f7584"
+        },
+        {
+          "path": {
+            "path": "rtl/generated/fft_rnd.v",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:cbc4b314cc5d6ba8b9201afa9baa950f694e4c092f8b0d0baa119aa6e7b66577"
+        },
+        {
+          "path": {
+            "path": "rtl/generated/fft_sdf_stage.v",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:df43399c960a383aa621bbca1720a398ff9dc0f2c2fa498209198be01ba1402e"
+        },
+        {
+          "path": {
+            "path": "rtl/generated/fft_twrom.v",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:f3ff9bfdd1f9d4c97de35716ba99274290de0494a58303e48938c6a024bcb814"
+        },
+        {
+          "path": {
+            "path": "rtl/params/fft256.params",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:0016f2bd85c2a7910db3af813e48efba2f082d7d1880d53242d96fc65f1273d8"
+        },
+        {
+          "path": {
+            "path": "rtl/regen.sh",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:ccd8083a681ab25a24fa93d8ed5bfcb14009580b783d3766d685afb3222e1502"
+        },
+        {
+          "path": {
+            "path": "rtl/wrapper/fft256_stream.sv",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:075276799e14260788b76b84916cb7a8ffae7649db59067bdeb0a667d1c01d73"
+        },
+        {
+          "path": {
+            "path": "synth/fft256.synth.json",
+            "scope": "repo"
+          },
+          "content_hash": "sha256:b847eb7fe4033658444de420a0db7f383d55d414572b7090f65a69fe40d9fb71"
+        }
+      ],
+      "content_hash": "sha256:0bf227ae7b332ad6dfe456ecc55c835d9580a1238b18152cf7333b698c3f4f1a"
+    }
+  }
+}
