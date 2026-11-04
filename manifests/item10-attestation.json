@@ -17,7 +17,7 @@
         "role": "hygiene",
         "path": ".github/workflows/rtl-ci.yml",
         "passed": true,
-        "content_hash": "sha256:b0cf42f6836dfb25168c70cbf733228fed5d3bf42cfe8774f5f7967a2ef56b57"
+        "content_hash": "sha256:f7f351106c692b0a129507a3b9ceff3206d03c97fcac47439c3399858c4e9aba"
       },
       {
         "check": "present",
@@ -52,7 +52,7 @@
         "role": "hygiene",
         "path": "verification/README.md",
         "passed": true,
-        "content_hash": "sha256:13ab7d5ba669a34685df451dab3ba6548a85045e982542ecd11254aa6ba1a646"
+        "content_hash": "sha256:4cbc8367a76ef59546dc87fe58c9bd905a84d57acb8aded0f40f90b7d7daea4a"
       },
       {
         "check": "command",
@@ -115,7 +115,7 @@
     ]
   },
   "provenance": {
-    "klt_version": "0.8.1.dev789+gbb2909afece8",
+    "klt_version": "0.8.0",
     "klayout_version": null,
     "pdk": null,
     "deck": null,
