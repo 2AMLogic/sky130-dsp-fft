@@ -46,3 +46,7 @@ jobs:
         run: make -C verification fxp-model
       - name: Fixed-point model negative control
         run: make -C verification fxp-model-negctl
+      - name: Streaming FFT cocotb bench
+        run: make -C verification fft-bench
+      - name: Streaming FFT cocotb bench negative control
+        run: make -C verification fft-bench-negctl

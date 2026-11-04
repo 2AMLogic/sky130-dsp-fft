@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "kind": "t1-attestation-inventory",
+  "t1_item": 9,
+  "description": "Testbenches shipped for T1 item 9. The cocotb stream bench (test_fft256_stream.py) drives the streaming wrapper over the generated core and checks it bit-exactly against the bit-accurate model, plus handshake, back-pressure, reset mid-frame and zero model overflow, with a negative control (fft-bench-negctl). The remaining listed benches are the existing item 9 evidence: the model and reference tests, the generated-core smoke, and the wrapper smoke. cold_start runs every bench and negative control from a venv built from verification/requirements.txt (see verification/README.md); it is local_only because it needs Icarus, so the signoff.yml runner skips it under --check and re-verifies the recorded hashes.",
+  "testbenches": [
+    "verification/test_fft256_stream.py",
+    "verification/test_fft256_smoke.py",
+    "verification/tb_fft256_smoke.v",
+    "verification/tb_fft256_stream.sv",
+    "verification/Makefile",
+    "sim/test_fixedpoint_model.py",
+    "sim/test_reference.py",
+    "sim/fixedpoint_model.py",
+    "sim/reference.py",
+    "sim/vectors.py",
+    "rtl/params/fft256.params"
+  ],
+  "cold_start": {
+    "argv": ["make", "-C", "verification", "fft-bench", "fft-bench-negctl", "sim-wrapper", "sim-wrapper-negctl", "fxp-model", "fxp-model-negctl", "sqnr-ref", "sqnr-ref-negctl"],
+    "local_only": true
+  },
+  "pins": {
+    "pdk": {"name": "sky130", "revision": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"},
+    "tools": {"cocotb": "2.1.0", "icarus_verilog": "13.0", "numpy": "2.3.4", "python": "3.13"}
+  }
+}

@@ -73,3 +73,19 @@ klt signoff --attest 1 --inventory manifests/item1-inventory.json \
 klt signoff --attest 1 --inventory manifests/item1-inventory.json \
     --check manifests/item1-attestation.json
 ```
+
+Item 9 is cited from `item9-attestation.json`, generated from
+`item9-inventory.json` (the cocotb streaming-FFT bench and its negative
+control, plus the model, reference and wrapper/core smoke benches). Its checks
+are `local_only` (they need Icarus and the cocotb venv, see
+`verification/README.md`), so `--check` in CI skips running them and only
+re-verifies the recorded hashes. Pinned `klayout-tools==0.8.0`:
+
+```console
+uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
+    --inventory manifests/item9-inventory.json \
+    -o manifests/item9-attestation.json
+uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
+    --inventory manifests/item9-inventory.json \
+    --check manifests/item9-attestation.json
+```
