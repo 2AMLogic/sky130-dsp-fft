@@ -32,6 +32,12 @@ jobs:
         run: make -C verification sim
       - name: Negative control
         run: make -C verification negctl
+      - name: Streaming wrapper lint
+        run: make -C verification lint-wrapper
+      - name: Streaming wrapper simulation
+        run: make -C verification sim-wrapper
+      - name: Streaming wrapper negative control
+        run: make -C verification sim-wrapper-negctl
       - name: SQNR reference
         run: make -C verification sqnr-ref
       - name: SQNR reference negative control

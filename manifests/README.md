@@ -60,3 +60,16 @@ change without a regenerated record fails the build.
 
 Not-T1: `tier` is `null` and all 11 T1 items are `unmet`, each with a stated
 reason in `sky130-dsp-fft.signoff.json`.
+
+Item 1 is cited from `item1-attestation.json`, generated from
+`item1-inventory.json` (RTL generator, parameter file, generated RTL, streaming
+wrapper, synthesis request, and the derived gate-level netlist with its
+freshness checks). Re-attest locally with a `klt` that supports
+`klt synthesize --check ... --skip-deck`; the 0.8.0 pin in CI does not:
+
+```console
+klt signoff --attest 1 --inventory manifests/item1-inventory.json \
+    -o manifests/item1-attestation.json
+klt signoff --attest 1 --inventory manifests/item1-inventory.json \
+    --check manifests/item1-attestation.json
+```

@@ -30,6 +30,9 @@ make synth    # Yosys smoke -> ../measurements/synth-placeholder.json
 | `fxp-model` | `sim/test_fixedpoint_model.py`: bit-accurate fixed-point FFT model (impulse, DC, tone, convergent ties, overflow reporting, determinism; pure Python + numpy) |
 | `fxp-model-negctl` | same tests with a flooring rounder; succeeds only if they **fail with** `convergent tie rounding wrong` (`FXP_NEGCTL_EXPECT`) |
 | `sqnr-ref-negctl` | same tests with a wrong reference (I/Q swapped); succeeds only if they **fail with** `Reference FFT differs from numpy.fft.fft` (`SQNR_NEGCTL_EXPECT`) |
+| `lint-wrapper` | `verilator --lint-only -Wall` on `rtl/wrapper/fft256_stream.sv` against a port-only stub of the generated core (`stubs/fft256_stub.sv`) |
+| `sim-wrapper` | Icarus smoke `tb_fft256_stream.sv`: wrapper with random in_valid/out_ready stalls (including a reset mid-frame and back-to-back frames) against a free-running reference core; checks handshake, per-step data and `out_first`/`out_last`. Structural only; the bit-exact bench is a separate item |
+| `sim-wrapper-negctl` | same bench with one output bit flipped at step 600; succeeds only if it **fails with** `MISMATCH data` |
 | `synth` | Yosys maps to `sky130_fd_sc_hd` at the `tt_025C_1v80` liberty corner and writes the cell count with tool versions and PDK revision |
 | `smoke-fft256` | regenerates `rtl/generated` (must equal the committed tree), runs Icarus on the generated top against `sim/fixedpoint_model.py` over the `sim/vectors.py` sets (any mismatch exits non-zero with count and first index), maps it in Yosys at `tt_025C_1v80` (fails on any non-`sky130_fd_sc_hd__` or SRAM cell), and **appends** a record to `../measurements/fft256-smoke.json`. Tool-version drift is recorded in the record, not fatal. SQNR in the record is simulated (model vs double precision) at the placeholder widths; no timing claim |
 | `smoke-fft256-negctl` | same run with one DUT output bit flipped (`PERTURB`); succeeds only if it **fails with** `RTL output differs from bit-accurate model` (`SMOKE_NEGCTL_EXPECT`) and writes no record |
@@ -40,7 +43,7 @@ new record.
 
 ## CI
 
-`.github/workflows/rtl-ci.yml` runs `lint`, `sim`, `negctl`, `sqnr-ref`, `sqnr-ref-negctl`, `fxp-model` and `fxp-model-negctl` on every push
+`.github/workflows/rtl-ci.yml` runs `lint`, `lint-wrapper`, `sim-wrapper`, `sim-wrapper-negctl`, `sim`, `negctl`, `sqnr-ref`, `sqnr-ref-negctl`, `fxp-model` and `fxp-model-negctl` on every push
 and pull request. CI installs the runner's packaged Icarus and Verilator, which
 may differ from the pinned versions, so it skips `check-tools`; the version pin
 is enforced by `make all` and `make synth` locally.

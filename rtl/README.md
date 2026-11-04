@@ -9,6 +9,7 @@ Generated FFT RTL plus the project's own Apache-2.0 generator.
   parameter, the generator, or a wrapper, then regenerate.
 - `regen.sh`: `rtl/regen.sh [PARAMS]` rebuilds `generated/` (default
   `params/fft256.params`).
+- `wrapper/fft256_stream.sv`: hand-written valid/ready streaming wrapper (not generated).
 - `placeholder/`: the smoke-flow placeholder module.
 
 ## Usage
@@ -53,8 +54,36 @@ undersized `stage_widths` wraps.
 
 `fft<size>(clk, rst, [en], in_re, in_im, out_re, out_im, out_valid)`. Synchronous
 active-high `rst`; frame 0 starts at the first enabled clock after reset
-(one sample per clock, no frame markers or ready; wrappers are #15).
+(one sample per clock, no frame markers or ready; `wrapper/fft256_stream.sv` adds them).
 `out_valid` goes high with the first output sample and stays high. The final
 reduction drops `stage_widths[-1] - output_width` LSBs, so output is scaled by
 2^-(that). Tests check structure, determinism and a loose double-precision DFT
 agreement in Icarus; bit-exact checking needs the model (#31).
+
+## Streaming wrapper and netlist
+
+`wrapper/fft256_stream.sv` (`fft256_stream`) drives the core's `en` stall port
+from a valid/ready handshake: `in_ready = out_ready | ~core_valid`,
+`en = in_valid & in_ready`, `out_valid = core_valid & in_valid`, with
+`out_first` / `out_last` marking samples 0 / 255 of each output frame. Input
+frames are delimited by sample count from reset; there is no flush, so the last
+frame leaves the pipeline only while more input is accepted. The register-bus
+wrapper is not here (tied to FIR coefficient load). Checks:
+`make -C verification lint-wrapper sim-wrapper sim-wrapper-negctl`.
+
+The committed gate-level netlist `netlist/fft256_stream.sky130_fd_sc_hd.v` is
+the output of `klt synthesize` on `synth/fft256.synth.json` (top
+`fft256_stream`, `sky130_fd_sc_hd`, liberty corner `tt_025C_1v80`, no clock
+target). Regenerate it, and the report that records its hashes, with:
+
+```sh
+klt synthesize synth/fft256.synth.json --format json > synth/fft256.synth.report.json
+cp synth/.klt/synthesize/<run_id>/fft256_stream_synth.v netlist/fft256_stream.sky130_fd_sc_hd.v
+# freshness: cheap (hashes only) or full re-run (Yosys + PDK, about 2 minutes)
+klt synthesize synth/fft256.synth.json --check synth/fft256.synth.report.json --netlist netlist/fft256_stream.sky130_fd_sc_hd.v --skip-deck
+klt synthesize synth/fft256.synth.json --check synth/fft256.synth.report.json --rerun --netlist netlist/fft256_stream.sky130_fd_sc_hd.v
+```
+
+Flops only, no SRAM macros. The netlist freshness check needs a `klt` whose
+`synthesize` has `--check` and `--skip-deck` (newer than the 0.8.0 pin used by
+`signoff.yml`), so item 1 is re-attested locally, not in CI.
