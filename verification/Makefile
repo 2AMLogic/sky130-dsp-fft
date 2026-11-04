@@ -1,5 +1,5 @@
 # Flow for the placeholder module (see README.md). Run from verification/.
-# Targets: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth smoke-fft256 smoke-fft256-negctl lint-wrapper sim-wrapper sim-wrapper-negctl all clean
+# Targets: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth smoke-fft256 smoke-fft256-negctl lint-wrapper sim-wrapper sim-wrapper-negctl fft-bench fft-bench-negctl all clean
 PYTHON    ?= ../.venv/bin/python
 VERILATOR ?= verilator
 YOSYS     ?= yosys
@@ -12,10 +12,12 @@ SQNR_NEGCTL_EXPECT ?= Reference FFT differs from numpy.fft.fft
 FXP_NEGCTL_EXPECT ?= convergent tie rounding wrong
 # Assertion text the perturbed-DUT smoke run must fail on (see test_fft256_smoke.py).
 SMOKE_NEGCTL_EXPECT ?= RTL output differs from bit-accurate model
+# Assertion text the perturbed-output cocotb stream bench must fail on (see test_fft256_stream.py).
+FFT_BENCH_NEGCTL_EXPECT ?= stream output differs from bit-accurate model
 
-.PHONY: all check-tools lint lint-wrapper sim-wrapper sim-wrapper-negctl sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth smoke-fft256 smoke-fft256-negctl clean
+.PHONY: all check-tools lint lint-wrapper sim-wrapper sim-wrapper-negctl sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl synth smoke-fft256 smoke-fft256-negctl fft-bench fft-bench-negctl clean
 
-all: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl
+all: check-tools lint sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl fft-bench fft-bench-negctl
 
 check-tools:
 	$(PYTHON) flow_tools.py check
@@ -101,6 +103,21 @@ sim-wrapper-negctl:
 	elif ! grep -qF "MISMATCH data" sim_build/stream_negctl.out; then \
 	  echo "NEGATIVE CONTROL FAILED: no data mismatch reported (see sim_build/stream_negctl.out)"; exit 1; \
 	else echo "negative control OK: perturbed wrapper output caught"; fi
+
+# cocotb bench of the streaming wrapper over the generated core: bit-exact vs
+# the model on the sim/vectors.py sets, handshake/back-pressure/reset tests.
+fft-bench:
+	$(PYTHON) test_fft256_stream.py
+
+# One captured output bit flipped (FFT_BENCH_PERTURB); must fail on the
+# mismatch text, not on a compile error or runner crash. Writes no record.
+fft-bench-negctl:
+	@mkdir -p sim_build
+	@if FFT_BENCH_PERTURB=1000 $(PYTHON) test_fft256_stream.py > sim_build/fft_bench_negctl.out 2>&1; then \
+	  echo "NEGATIVE CONTROL FAILED: perturbed output passed the bench"; exit 1; \
+	elif ! grep -qF "$(FFT_BENCH_NEGCTL_EXPECT)" sim_build/fft_bench_negctl.out; then \
+	  echo "NEGATIVE CONTROL FAILED: perturbed output failed without the expected text '$(FFT_BENCH_NEGCTL_EXPECT)' (see sim_build/fft_bench_negctl.out)"; exit 1; \
+	else echo "negative control OK: perturbed stream output caught by the bench"; fi
 
 clean:
 	rm -rf sim_build results.xml

@@ -6,9 +6,13 @@
       "file": "manifests/item1-attestation.json",
       "content_hash": "sha256:0bf227ae7b332ad6dfe456ecc55c835d9580a1238b18152cf7333b698c3f4f1a"
     },
+    "9": {
+      "file": "manifests/item9-attestation.json",
+      "content_hash": "sha256:332e5bc9aa97ebea1cf2e635b920e6adf01344bb1a76fd19711422e37bee991e"
+    },
     "10": {
       "file": "manifests/item10-attestation.json",
-      "content_hash": "sha256:1bad11a79a6de2b6584d9e1fe7e4c18bb71580fbf1825241c4186dafee05234e"
+      "content_hash": "sha256:ba3b317bd6399028f4e3cd09b0a0d639e4ee1b60ddcb5c1d56b74bef4dddb3d5"
     }
   }
 }

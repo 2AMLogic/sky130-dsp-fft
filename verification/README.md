@@ -16,7 +16,8 @@ pinned `ciel` revision (`ciel enable --pdk sky130 f6eeac7d...`, installed under
 python3 -m venv .venv
 .venv/bin/pip install -r verification/requirements.txt
 cd verification
-make all      # check-tools, lint, sim, negctl, sqnr-ref, sqnr-ref-negctl, fxp-model, fxp-model-negctl
+make all      # check-tools, lint, sim, negctl, sqnr-ref, sqnr-ref-negctl, fxp-model, fxp-model-negctl, fft-bench, fft-bench-negctl
+make fft-bench fft-bench-negctl   # the streaming FFT cocotb bench on its own (~30 s)
 make synth    # Yosys smoke -> ../measurements/synth-placeholder.json
 ```
 
@@ -31,8 +32,10 @@ make synth    # Yosys smoke -> ../measurements/synth-placeholder.json
 | `fxp-model-negctl` | same tests with a flooring rounder; succeeds only if they **fail with** `convergent tie rounding wrong` (`FXP_NEGCTL_EXPECT`) |
 | `sqnr-ref-negctl` | same tests with a wrong reference (I/Q swapped); succeeds only if they **fail with** `Reference FFT differs from numpy.fft.fft` (`SQNR_NEGCTL_EXPECT`) |
 | `lint-wrapper` | `verilator --lint-only -Wall` on `rtl/wrapper/fft256_stream.sv` against a port-only stub of the generated core (`stubs/fft256_stub.sv`) |
-| `sim-wrapper` | Icarus smoke `tb_fft256_stream.sv`: wrapper with random in_valid/out_ready stalls (including a reset mid-frame and back-to-back frames) against a free-running reference core; checks handshake, per-step data and `out_first`/`out_last`. Structural only; the bit-exact bench is a separate item |
+| `sim-wrapper` | Icarus smoke `tb_fft256_stream.sv`: wrapper with random in_valid/out_ready stalls (including a reset mid-frame and back-to-back frames) against a free-running reference core; checks handshake, per-step data and `out_first`/`out_last`. Structural only; the bit-exact bench is `fft-bench` |
 | `sim-wrapper-negctl` | same bench with one output bit flipped at step 600; succeeds only if it **fails with** `MISMATCH data` |
+| `fft-bench` | cocotb bench `test_fft256_stream.py` on `fft256_stream` (wrapper over the generated core, Icarus): every output component bit-exact against `sim/fixedpoint_model.py` loaded from `rtl/params/fft256.params`, on the `sim/vectors.py` sets (all 100 frames of each set back to back; `FFT_BENCH_FRAMES`, default 4, per set under stalls). Also: random and long-burst `in_valid`/`out_ready` stalls, reset during the fill and mid output frame, first output after exactly 523 accepted inputs, `out_first`/`out_last` positions, one input per output after the fill (no drop or duplicate), and zero model overflow on every set. A mismatch reports the count and first differing frame/bin |
+| `fft-bench-negctl` | same bench with one captured output bit flipped (`FFT_BENCH_PERTURB`, on the short `both_stalls_random` test only); succeeds only if it **fails with** `stream output differs from bit-accurate model` (`FFT_BENCH_NEGCTL_EXPECT`), writes no record |
 | `synth` | Yosys maps to `sky130_fd_sc_hd` at the `tt_025C_1v80` liberty corner and writes the cell count with tool versions and PDK revision |
 | `smoke-fft256` | regenerates `rtl/generated` (must equal the committed tree), runs Icarus on the generated top against `sim/fixedpoint_model.py` over the `sim/vectors.py` sets (any mismatch exits non-zero with count and first index), maps it in Yosys at `tt_025C_1v80` (fails on any non-`sky130_fd_sc_hd__` or SRAM cell), and **appends** a record to `../measurements/fft256-smoke.json`. Tool-version drift is recorded in the record, not fatal. SQNR in the record is simulated (model vs double precision) at the placeholder widths; no timing claim |
 | `smoke-fft256-negctl` | same run with one DUT output bit flipped (`PERTURB`); succeeds only if it **fails with** `RTL output differs from bit-accurate model` (`SMOKE_NEGCTL_EXPECT`) and writes no record |
@@ -43,7 +46,7 @@ new record.
 
 ## CI
 
-`.github/workflows/rtl-ci.yml` runs `lint`, `lint-wrapper`, `sim-wrapper`, `sim-wrapper-negctl`, `sim`, `negctl`, `sqnr-ref`, `sqnr-ref-negctl`, `fxp-model` and `fxp-model-negctl` on every push
+`.github/workflows/rtl-ci.yml` runs `fft-bench`, `fft-bench-negctl`, `lint`, `lint-wrapper`, `sim-wrapper`, `sim-wrapper-negctl`, `sim`, `negctl`, `sqnr-ref`, `sqnr-ref-negctl`, `fxp-model` and `fxp-model-negctl` on every push
 and pull request. CI installs the runner's packaged Icarus and Verilator, which
 may differ from the pinned versions, so it skips `check-tools`; the version pin
 is enforced by `make all` and `make synth` locally.
