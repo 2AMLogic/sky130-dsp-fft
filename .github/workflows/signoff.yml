@@ -67,5 +67,5 @@ jobs:
           # toolchain) are skipped here and carried with their committed
           # outcome; rtl-ci.yml runs lint, sim and negctl on this runner.
           klt signoff --attest 10 \
-              --inventory manifests/item10-inventory.json \
-              --check manifests/item10-attestation.json
+              --inventory manifests/item10-inventory-2.json \
+              --check manifests/item10-attestation-2.json
