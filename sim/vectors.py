@@ -35,15 +35,19 @@ def _quantise(x: np.ndarray, width: int) -> np.ndarray:
     return np.clip(np.rint(x), -fs, fs)
 
 
-def generate_frames(
-    name: str,
+def generate_swept_frames(
+    spec: dict,
+    fraction: float,
     n: int = N_DEFAULT,
     width: int = WIDTH_DEFAULT,
     frames: int = FRAMES_PER_SET,
 ) -> np.ndarray:
-    """Return a (frames, n) complex128 array of integer-valued I/Q samples."""
-    spec = VECTOR_SETS[name]
-    amp = spec["fraction"] * full_scale(width)
+    """Frames for a `VECTOR_SETS`-style spec at an explicit amplitude `fraction`.
+
+    `spec["fraction"]` is ignored; `generate_frames` calls this with it, so the
+    fixed sets and an amplitude sweep share one generator.
+    """
+    amp = fraction * full_scale(width)
     out = np.empty((frames, n), dtype=np.complex128)
     if spec["kind"] == "random":
         seeds = list(spec["seeds"])
@@ -64,3 +68,14 @@ def generate_frames(
     else:
         raise ValueError(f"unknown vector-set kind {spec['kind']!r}")
     return out
+
+
+def generate_frames(
+    name: str,
+    n: int = N_DEFAULT,
+    width: int = WIDTH_DEFAULT,
+    frames: int = FRAMES_PER_SET,
+) -> np.ndarray:
+    """Return a (frames, n) complex128 array of integer-valued I/Q samples."""
+    spec = VECTOR_SETS[name]
+    return generate_swept_frames(spec, spec["fraction"], n, width, frames)
