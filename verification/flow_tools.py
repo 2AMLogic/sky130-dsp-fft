@@ -1,8 +1,6 @@
-"""Toolchain pin check and Yosys smoke-synthesis record writer.
+"""Toolchain pin check and the shared Yosys runner.
 
   flow_tools.py check   fail unless installed tool versions match toolchain.json
-  flow_tools.py synth   run synth.ys at the pinned liberty corner and write
-                        ../measurements/synth-placeholder.json
 """
 
 import json
@@ -48,7 +46,7 @@ def run_yosys(script_name):
     """Run a Yosys script at the pinned liberty corner; return Yosys's `design` stat dict.
 
     `${LIBERTY}` and `${STAT_JSON}` in the script are substituted. Does not check
-    tool versions: callers decide whether drift is fatal (`synth`) or recorded.
+    tool versions: callers decide whether drift is fatal or recorded.
     """
     pdk = PINS["pdk"]
     root = Path(os.environ.get("PDK_ROOT", Path.home() / ".ciel"))
@@ -69,25 +67,5 @@ def run_yosys(script_name):
     return json.loads(stat.read_text())["design"]
 
 
-def synth():
-    check()
-    pdk = PINS["pdk"]
-    design = run_yosys("synth.ys")
-    record = {
-        "module": "placeholder_add",
-        "note": "flow smoke on a placeholder module; not a design result",
-        "liberty_corner": pdk["liberty_corner"],
-        "liberty_file": pdk["liberty_file"],
-        "pdk_revision": pdk["revision"],
-        "tool_versions": {k: PINS[k] for k in ("icarus_verilog", "verilator", "yosys", "cocotb")},
-        "cell_count": design["num_cells"],
-        "cells_by_type": design["num_cells_by_type"],
-        "area_um2": design.get("area"),
-    }
-    out = HERE.parent / "measurements" / "synth-placeholder.json"
-    out.write_text(json.dumps(record, indent=2) + "\n")
-    print(f"wrote {out.relative_to(HERE.parent)}: {record['cell_count']} cells")
-
-
 if __name__ == "__main__":
-    {"check": check, "synth": synth}[sys.argv[1]]()
+    {"check": check}[sys.argv[1]]()

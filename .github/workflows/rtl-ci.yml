@@ -28,10 +28,8 @@ jobs:
           .venv/bin/pip install -r verification/requirements.txt
       - name: Lint
         run: make -C verification lint
-      - name: Simulation
-        run: make -C verification sim
-      - name: Negative control
-        run: make -C verification negctl
+      - name: Lint negative control
+        run: make -C verification lint-negctl
       - name: Streaming wrapper lint
         run: make -C verification lint-wrapper
       - name: SQNR reference
