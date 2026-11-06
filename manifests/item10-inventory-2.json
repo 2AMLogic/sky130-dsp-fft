@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "kind": "t1-attestation-inventory",
+  "t1_item": 10,
+  "description": "Repo hygiene for T1 item 10. local_only checks need the verification toolchain (and, for synth, Yosys and the sky130 PDK); the signoff.yml runner skips them under --check. Supersedes manifests/item10-inventory.json and its attestation manifests/item10-attestation.json (recorded evidence, kept unchanged), whose hashes of .github/workflows/rtl-ci.yml and verification/README.md predate the removal of the Icarus wrapper smoke steps.",
+  "hygiene": [
+    "README.md",
+    "LICENSE",
+    ".github/workflows/rtl-ci.yml",
+    ".github/workflows/signoff.yml",
+    "verification/README.md",
+    "measurements/synth-placeholder.json"
+  ],
+  "checks": [
+    {"name": "lint", "argv": ["make", "-C", "verification", "lint"], "local_only": true},
+    {"name": "sim", "argv": ["make", "-C", "verification", "sim"], "local_only": true},
+    {"name": "negctl", "argv": ["make", "-C", "verification", "negctl"], "local_only": true},
+    {"name": "synth-record-json", "argv": ["python3", "-c", "import json; json.load(open('measurements/synth-placeholder.json'))"]}
+  ]
+}

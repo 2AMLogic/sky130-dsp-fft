@@ -30,17 +30,21 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from an attestation envelope generated from
-`item10-inventory.json` (generate, then re-grade; run `--check` last, since any
-edit to the inventory or an inventoried file changes the recorded hashes):
+Item 10 is cited from `item10-attestation-2.json`, generated from
+`item10-inventory-2.json` (generate, then re-grade; run `--check` last, since
+any edit to the inventory or an inventoried file changes the recorded hashes).
+It supersedes `item10-inventory.json` / `item10-attestation.json`, whose
+hashes of `.github/workflows/rtl-ci.yml` and `verification/README.md`
+predate the removal of the Icarus wrapper smoke steps; those two files are
+recorded evidence and stay unchanged:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory.json \
-    -o manifests/item10-attestation.json
+    --inventory manifests/item10-inventory-2.json \
+    -o manifests/item10-attestation-2.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory.json \
-    --check manifests/item10-attestation.json
+    --inventory manifests/item10-inventory-2.json \
+    --check manifests/item10-attestation-2.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a
@@ -74,18 +78,23 @@ klt signoff --attest 1 --inventory manifests/item1-inventory.json \
     --check manifests/item1-attestation.json
 ```
 
-Item 9 is cited from `item9-attestation.json`, generated from
-`item9-inventory.json` (the cocotb streaming-FFT bench and its negative
-control, plus the model, reference and wrapper/core smoke benches). Its checks
-are `local_only` (they need Icarus and the cocotb venv, see
-`verification/README.md`), so `--check` in CI skips running them and only
-re-verifies the recorded hashes. Pinned `klayout-tools==0.8.0`:
+Item 9 is cited from `item9-attestation-2.json`, generated from
+`item9-inventory-2.json` (the cocotb streaming-FFT bench and its negative
+control, plus the model, reference and generated-core smoke benches). It
+supersedes `item9-inventory.json` / `item9-attestation.json`, which cited the
+removed Icarus wrapper smoke bench (`tb_fft256_stream.sv`, `sim-wrapper*`).
+Those two files are recorded evidence and stay unchanged; their hashes still
+match the commit that produced them, but `--check` against the current tree
+no longer applies to them. Item 9's checks are `local_only` (they need Icarus
+and the cocotb venv, see `verification/README.md`), so `--check` in CI skips
+running them and only re-verifies the recorded hashes. Pinned
+`klayout-tools==0.8.0`:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory.json \
-    -o manifests/item9-attestation.json
+    --inventory manifests/item9-inventory-2.json \
+    -o manifests/item9-attestation-2.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory.json \
-    --check manifests/item9-attestation.json
+    --inventory manifests/item9-inventory-2.json \
+    --check manifests/item9-attestation-2.json
 ```
