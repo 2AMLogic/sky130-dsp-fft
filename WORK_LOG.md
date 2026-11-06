@@ -5,6 +5,10 @@ Maintained by the Guide triage role.
 
 ### 2026-11-06
 
+- **PR #58**: feat(sim): report the model's no-overflow amplitude range per vector kind
+- **Issue #56** (closed): Report the fixed-point model's measured no-overflow amplitude range per vector kind
+- **PR #57**: refactor(verification): retire placeholder flow, lint generated fft256
+- **Issue #44** (closed): Retire flow-bring-up placeholder now that generated FFT smoke exists
 - **PR #54**: test: assert wrapper handshake equations in cocotb bench, retire Icarus wrapper smoke
 - **Issue #52** (closed): Remove superseded Icarus wrapper smoke bench tb_fft256_stream.sv
 
