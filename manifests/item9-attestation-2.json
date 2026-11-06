@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "kind": "generic",
+  "status": "pass",
+  "t1_item": 9,
+  "summary": "T1 item 9 (Testbenches shipped): 13/13 attestation checks passed (klt signoff --attest)",
+  "source": "manifests/item9-inventory-2.json",
+  "attestation": {
+    "producer": "klt signoff --attest",
+    "inventory_schema_version": 1,
+    "hash_algorithm": "sha256-raw-bytes",
+    "check_count": 13,
+    "passed_count": 13,
+    "checks": [
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "rtl/params/fft256.params",
+        "passed": true,
+        "content_hash": "sha256:0016f2bd85c2a7910db3af813e48efba2f082d7d1880d53242d96fc65f1273d8"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/fixedpoint_model.py",
+        "passed": true,
+        "content_hash": "sha256:c4b7dabac85613853c3561dd09ffed13683d4e188ca411b0c2413fa11a403956"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/reference.py",
+        "passed": true,
+        "content_hash": "sha256:139087f70c370ed120dc90dc9dbe199e6bbf51a51cf1d888a3d87dd3677b1d5a"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_fixedpoint_model.py",
+        "passed": true,
+        "content_hash": "sha256:e4fcbdae9ddbeeac1b631e6e4de0b059b7d32bd98c81a021cbacb2f11dfbe6e7"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_reference.py",
+        "passed": true,
+        "content_hash": "sha256:b3f7f7d8945c3056df8b2addf86b23fe56de2c1035fc2033f0d5e2303fd42342"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/vectors.py",
+        "passed": true,
+        "content_hash": "sha256:56b0532b66e468108b19dc388534da280ae06d42403f417db8ea9d76688b07e5"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/Makefile",
+        "passed": true,
+        "content_hash": "sha256:29684fe334d778f9c4dacf18dba637b9b8eb689d841185e07fd034ff2ce00dd5"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/tb_fft256_smoke.v",
+        "passed": true,
+        "content_hash": "sha256:04179e249996ab6b1428b1fabbec57f0863f69ad9fd99031d5eba34954c5de12"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/test_fft256_smoke.py",
+        "passed": true,
+        "content_hash": "sha256:b862e834cfddb255ba1501d21f758203cb6c5a72bfa2acdfe634b9c9c5c56459"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/test_fft256_stream.py",
+        "passed": true,
+        "content_hash": "sha256:a41dcd25b1059f55aee602eb30b2429a7f3776d83ec806e5921fe710416b6829"
+      },
+      {
+        "check": "command",
+        "role": "cold_start",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "fft-bench",
+          "fft-bench-negctl",
+          "fxp-model",
+          "fxp-model-negctl",
+          "sqnr-ref",
+          "sqnr-ref-negctl"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "pin",
+        "role": "pdk",
+        "passed": true,
+        "value": {
+          "name": "sky130",
+          "revision": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+        }
+      },
+      {
+        "check": "pin",
+        "role": "tools",
+        "passed": true,
+        "value": {
+          "cocotb": "2.1.0",
+          "icarus_verilog": "13.0",
+          "numpy": "2.3.4",
+          "python": "3.13"
+        }
+      }
+    ]
+  },
+  "provenance": {
+    "klt_version": "0.8.0",
+    "klayout_version": null,
+    "pdk": null,
+    "deck": null,
+    "input": {
+      "path": {
+        "path": "manifests/item9-inventory-2.json",
+        "scope": "repo"
+      },
+      "content_hash": "sha256:8fc60d611a28d5bd0e1129293975966f57556764d39c5b2a72c39b89a4c9a011"
+    }
+  }
+}

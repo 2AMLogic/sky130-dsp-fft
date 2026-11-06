@@ -121,6 +121,10 @@ async def drive(dut, re, im, in_pat, out_pat, stop_out=None, stop_in=None, label
         in_fire, out_fire = iv & ir, ov & orr
         n = len(outs_re)
         where = f"{label} cycle {cycles}, accepted inputs {sent}, transferred outputs {n}"
+        # wrapper equations (rtl/wrapper/fft256_stream.sv header), against the core's valid
+        cv = int(dut.core_valid.value)
+        assert ir == (orr | (1 - cv)), f"in_ready != out_ready | ~core_valid ({where})"
+        assert ov == (cv & iv), f"out_valid != core_valid & in_valid ({where})"
         if ov:
             if not filled:
                 assert sent == LATENCY, f"first out_valid after {sent} accepted inputs, expected {LATENCY} ({where})"

@@ -69,7 +69,7 @@ from a valid/ready handshake: `in_ready = out_ready | ~core_valid`,
 frames are delimited by sample count from reset; there is no flush, so the last
 frame leaves the pipeline only while more input is accepted. The register-bus
 wrapper is not here (tied to FIR coefficient load). Checks:
-`make -C verification lint-wrapper sim-wrapper sim-wrapper-negctl`.
+`make -C verification lint-wrapper fft-bench fft-bench-negctl`.
 
 The committed gate-level netlist `netlist/fft256_stream.sky130_fd_sc_hd.v` is
 the output of `klt synthesize` on `synth/fft256.synth.json` (top
