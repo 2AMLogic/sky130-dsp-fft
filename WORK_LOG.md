@@ -3,6 +3,11 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-06
+
+- **PR #54**: test: assert wrapper handshake equations in cocotb bench, retire Icarus wrapper smoke
+- **Issue #52** (closed): Remove superseded Icarus wrapper smoke bench tb_fft256_stream.sv
+
 ### 2026-11-04
 
 - **PR #51**: test: cocotb bit-exact bench for the streaming FFT wrapper, attest T1 item 9
