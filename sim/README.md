@@ -27,6 +27,17 @@ Bit-accurate reference models and the SQNR reference.
   per stage, int64 headroom) are then checked.
 - `test_fixedpoint_model.py`: tests; `FXP_MUTANT=floor_ties` runs them against
   a flooring rounder for the negative control.
+- `overflow_range.py`: amplitude sweep (0.50 to 1.00, step 0.01, 100 frames/step)
+  for uniform random I/Q (seeds 1..20) and the non-coherent tone (N/8 + 0.3,
+  seed 1), reusing `vectors.generate_swept_frames` (the generator behind
+  `generate_frames`; `VECTOR_SETS` is unchanged). Reports, per kind, the largest
+  fraction below the first overflowing step and the first overflowing stage
+  (overflow need not be monotone in amplitude). From the repo root:
+  `python3 -m sim.overflow_range rtl/params/fft256.params [--record measurements/overflow-range.json]`.
+  Figures are **simulated** and on the **placeholder** schedule. Narrowing a
+  `stage_widths` entry does not lower the range (the model drops one more LSB,
+  same threshold); widening one raises it.
+- `test_overflow_range.py`: tests incl. the widened-stage control; run by `make -C verification fxp-model`.
 
 Run from a fresh clone (see `verification/README.md`):
 

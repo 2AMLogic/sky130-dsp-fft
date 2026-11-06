@@ -1,0 +1,68 @@
+{
+  "records": [
+    {
+      "date_utc": "2026-11-06T17:57:49Z",
+      "note": "SIMULATED (model, not silicon) and on the PLACEHOLDER schedule (spec, Internal growth row); no final-schedule or timing claim",
+      "model": "fixedpoint_model r22sdf v1",
+      "parameter_file": "rtl/params/fft256.params",
+      "parameter_file_sha256": "0016f2bd85c2a7910db3af813e48efba2f082d7d1880d53242d96fc65f1273d8",
+      "stage_widths": [
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24
+      ],
+      "sweep": {
+        "fraction_lo": 0.5,
+        "fraction_hi": 1.0,
+        "step": 0.01,
+        "frames_per_step": 100,
+        "rule": "largest fraction below the first overflowing step"
+      },
+      "kinds": {
+        "random": {
+          "max_no_overflow_fraction": 0.92,
+          "first_overflow_fraction": 0.93,
+          "first_overflow_stage": "stage 1",
+          "bound": "exact",
+          "seeds": [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12,
+            13,
+            14,
+            15,
+            16,
+            17,
+            18,
+            19,
+            20
+          ]
+        },
+        "tone": {
+          "max_no_overflow_fraction": 1.0,
+          "first_overflow_fraction": null,
+          "first_overflow_stage": null,
+          "bound": "at_least_sweep_end",
+          "seeds": [
+            1
+          ],
+          "bin_offset": 0.3
+        }
+      }
+    }
+  ]
+}
