@@ -1,0 +1,10 @@
+// Lint waivers for the generated FFT core (rtl/generated/, never hand-edited).
+// Scoped to rtl/generated only; `-Wall` stays on for everything else.
+`verilator_config
+// Reason: the generator emits width-extending operands (e.g. unsized literals
+// and narrower fields combined with wider ones) that are zero/sign-extended on
+// purpose; the bit-exact benches (fft-bench, smoke-fft256) check the values.
+lint_off -rule WIDTHEXPAND -file "*rtl/generated/*"
+// Reason: the generator declares full-width intermediate signals and uses only
+// some bits (e.g. discarded low bits after rounding); the unused bits are intended.
+lint_off -rule UNUSEDSIGNAL -file "*rtl/generated/*"

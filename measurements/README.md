@@ -2,7 +2,7 @@
 
 Recorded results, append-only evidence. Every record names its liberty corner.
 
-- `synth-placeholder.json`: flow smoke on the placeholder module (not a design result).
+- `synth-placeholder.json`: retained history (2026-11-06): flow smoke on the retired placeholder module (not a design result). Unchanged; no longer in the live item 10 inventory.
 - `fft256-smoke.json`: `{"records": [...]}`; each `make smoke-fft256` run appends one dated
   record (generator commit, parameter file and hash, model configuration, vector-set
   identity, RTL-vs-model result, simulated SQNR, Yosys cell count/area at `tt_025C_1v80`,

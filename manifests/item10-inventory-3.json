@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "kind": "t1-attestation-inventory",
+  "t1_item": 10,
+  "description": "Repo hygiene for T1 item 10. local_only checks need the verification toolchain; the signoff.yml runner skips them under --check. Supersedes manifests/item10-inventory-2.json and its attestation manifests/item10-attestation-2.json (recorded evidence, kept unchanged), whose checks (lint, sim, negctl) and hygiene entry measurements/synth-placeholder.json cover the retired placeholder flow. measurements/synth-placeholder.json is retained as history; the live synthesis record is measurements/fft256-smoke.json.",
+  "hygiene": [
+    "README.md",
+    "LICENSE",
+    ".github/workflows/rtl-ci.yml",
+    ".github/workflows/signoff.yml",
+    "verification/README.md",
+    "measurements/fft256-smoke.json"
+  ],
+  "checks": [
+    {
+      "name": "lint",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "lint"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "lint-negctl",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "lint-negctl"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "lint-wrapper",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "lint-wrapper"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "fft-bench",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "fft-bench"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "fft-bench-negctl",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "fft-bench-negctl"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "synth-record-json",
+      "argv": [
+        "python3",
+        "-c",
+        "import json; json.load(open('measurements/fft256-smoke.json'))"
+      ]
+    }
+  ]
+}

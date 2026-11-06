@@ -10,7 +10,6 @@ Generated FFT RTL plus the project's own Apache-2.0 generator.
 - `regen.sh`: `rtl/regen.sh [PARAMS]` rebuilds `generated/` (default
   `params/fft256.params`).
 - `wrapper/fft256_stream.sv`: hand-written valid/ready streaming wrapper (not generated).
-- `placeholder/`: the smoke-flow placeholder module.
 
 ## Usage
 

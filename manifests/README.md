@@ -30,21 +30,24 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-2.json`, generated from
-`item10-inventory-2.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-3.json`, generated from
+`item10-inventory-3.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
-It supersedes `item10-inventory.json` / `item10-attestation.json`, whose
-hashes of `.github/workflows/rtl-ci.yml` and `verification/README.md`
-predate the removal of the Icarus wrapper smoke steps; those two files are
-recorded evidence and stay unchanged:
+It supersedes `item10-inventory-2.json` / `item10-attestation-2.json`, whose
+checks (`lint`, `sim`, `negctl`) and hygiene entry
+`measurements/synth-placeholder.json` covered the retired placeholder flow.
+`-3` checks the generated core's `lint` and `lint-negctl`, `lint-wrapper`,
+`fft-bench` and `fft-bench-negctl`, and cites `measurements/fft256-smoke.json`.
+`-2`, `-1` and `measurements/synth-placeholder.json` are recorded evidence and
+stay unchanged:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-2.json \
-    -o manifests/item10-attestation-2.json
+    --inventory manifests/item10-inventory-3.json \
+    -o manifests/item10-attestation-3.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-2.json \
-    --check manifests/item10-attestation-2.json
+    --inventory manifests/item10-inventory-3.json \
+    --check manifests/item10-attestation-3.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a
