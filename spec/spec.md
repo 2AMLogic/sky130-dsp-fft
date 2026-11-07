@@ -26,7 +26,7 @@ always a *simulated* figure.
 | Input / output width | 16-bit I + 16-bit Q | 12-bit | 18-bit | width asserted in the testbench; model bit-exact | evidenced (16-bit, 256-point smoke) |
 | Internal growth and scaling | generator parameters (width growth and scaling schedule). **The schedule is open**: `rtl/params/fft256.params` (`stage_widths=17..24`, `twiddle_width=16`) is a placeholder, and SQNR and overflow evidence is on it only; no accuracy or overflow claim rests on it; final reduction to output width as 0002 states | same | same | model bit-exact; overflow assertion on the vector set | **open target**: schedule not selected |
 | Rounding | convergent (0002); a generator parameter | truncation at the final reduction only (0002) | convergent | model bit-exact | evidenced (convergent, bit-exact vs model) |
-| Overflow | none; the vector set (amplitudes below) must not overflow, and the model states the measured no-overflow amplitude range | same | saturation (new record) | testbench asserts the no-overflow range | evidenced on the placeholder schedule only (0 overflow components in the smoke record; `make fft-bench` asserts zero model overflow on every vector set); no-overflow amplitude range not yet reported |
+| Overflow | none; the vector set (amplitudes below) must not overflow, and the model states the measured no-overflow amplitude range | same | saturation (new record) | testbench asserts the no-overflow range | evidenced on the placeholder schedule only (0 overflow components in the smoke record; `make fft-bench` asserts zero model overflow on every vector set); no-overflow amplitude range reported in `measurements/overflow-range.json` (simulated, placeholder schedule): random I/Q no overflow up to 0.92 of full scale, first overflow at 0.93 in stage 1; tone no overflow up to the 1.00 sweep end |
 | SQNR vs. double precision | ≥ 60 dB at 16-bit output | ≥ 40 dB at 12-bit output | ≥ 70 dB at 18-bit output | simulated, model vs. double-precision FFT, vector set below | evidenced, simulated (min 65.65 dB over the sets in the smoke record, on the placeholder schedule) |
 | FIR taps | 32 | 16 | 64 or decimating | FIR source undecided (see open items); coefficient-by-coefficient model | **target, no evidence**: FIR source undecided |
 | FIR coefficient width | 16-bit | 12-bit | 18-bit | model bit-exact | **target, no evidence** |
@@ -72,9 +72,10 @@ None. No Monte Carlo or process-variation row exists in v1.
   ratification gates above**: (1) vector set 2 is 70 % of full scale, because
   uniform random I/Q at 90 % overflowed the proposed core internally in 25 of
   100 frames (Icarus, 2026-10-20 review) and 70 % did not; the `sim/` model
-  must report the measured no-overflow amplitude range. The 90 % tone in set 3
-  is unaffected as an input amplitude but is only valid if the model shows it
-  does not overflow. (2) The fallback SQNR is ≥ 40 dB, matching ≈ 42 dB simulated
+  must report the measured no-overflow amplitude range. The model now reports
+  it (`measurements/overflow-range.json`, simulated, placeholder schedule), and
+  the 90 % tone in set 3 is inside the measured no-overflow range (tone: none up
+  to the 1.00 sweep end) on that schedule. (2) The fallback SQNR is ≥ 40 dB, matching ≈ 42 dB simulated
   on set 1 at 12-bit output (review run), not ≥ 50 dB. (3) The clock row binds
   at the three signoff corners and reports all 16 (0003).
 - **Clarification on the relaxations**: the 50 to 40 dB fallback SQNR and

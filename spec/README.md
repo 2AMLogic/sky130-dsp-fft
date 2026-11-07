@@ -5,6 +5,7 @@
   - [0001 generator](decisions/0001-generator.md)
   - [0002 numerics](decisions/0002-numerics.md)
   - [0003 timing and storage](decisions/0003-timing-and-storage.md)
+  - [0004 FFT architecture survey](decisions/0004-fft-architecture-survey.md)
 
 Records are not edited after ratification; a change is a new record that
 supersedes the old one.
