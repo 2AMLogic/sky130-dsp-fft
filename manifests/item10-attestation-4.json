@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "kind": "generic",
+  "status": "pass",
+  "t1_item": 10,
+  "summary": "T1 item 10 (Repo hygiene): 12/12 attestation checks passed (klt signoff --attest)",
+  "source": "manifests/item10-inventory-4.json",
+  "attestation": {
+    "producer": "klt signoff --attest",
+    "inventory_schema_version": 1,
+    "hash_algorithm": "sha256-raw-bytes",
+    "check_count": 12,
+    "passed_count": 12,
+    "checks": [
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": ".github/workflows/rtl-ci.yml",
+        "passed": true,
+        "content_hash": "sha256:6c2bdebdf3373a6384267402247ae46c679cd1ea5d67840f9a2969502c33f5d7"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": ".github/workflows/signoff.yml",
+        "passed": true,
+        "content_hash": "sha256:31c853777b28bc04d3b00ef8a084b217b73a7cf7a28493079525c7c945cff54f"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": "LICENSE",
+        "passed": true,
+        "content_hash": "sha256:cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": "README.md",
+        "passed": true,
+        "content_hash": "sha256:99a041c4c40a4d4c0670424283c7a9791b1e71be679eb8d9daf68d1f4cb4c590"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": "measurements/fft256-smoke.json",
+        "passed": true,
+        "content_hash": "sha256:6763a0af3b67b2659fb6dcddff88739ab514289b7c09d21872cdeffe48e69978"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": "verification/README.md",
+        "passed": true,
+        "content_hash": "sha256:ca2dab74caa4d6176c2bca928d624d46cce8c39b0dcda5267490bc649024da67"
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "lint",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "lint"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "lint-negctl",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "lint-negctl"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "lint-wrapper",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "lint-wrapper"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "fft-bench",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "fft-bench"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "fft-bench-negctl",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "fft-bench-negctl"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "synth-record-json",
+        "argv": [
+          "python3",
+          "-c",
+          "import json; json.load(open('measurements/fft256-smoke.json'))"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      }
+    ]
+  },
+  "provenance": {
+    "klt_version": "0.8.0",
+    "klayout_version": null,
+    "pdk": null,
+    "deck": null,
+    "input": {
+      "path": {
+        "path": "manifests/item10-inventory-4.json",
+        "scope": "repo"
+      },
+      "content_hash": "sha256:c433a0ac31e1b79639c8732176e7bd08a9cf3daacf8f17420286982925186cd5"
+    }
+  }
+}

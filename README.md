@@ -8,7 +8,17 @@ GDS by AI agents driving
 open-source digital flow: cocotb + Icarus for verification, Yosys for
 synthesis, OpenROAD for place-and-route.
 
-**Status: just opened, specification phase.** Nothing is designed yet.
+**Status: spec proposed, not ratified; simulation-stage evidence only.**
+The target specification ([`spec/spec.md`](spec/spec.md)) is still proposed,
+not ratified. On `main`: the project's own Apache-2.0 generator
+([`rtl/gen/`](rtl/gen/), decisions
+[0001](spec/decisions/0001-generator.md) and
+[0004](spec/decisions/0004-fft-architecture-survey.md)), generated RTL and a
+streaming wrapper, a sky130 gate-level netlist ([`netlist/`](netlist/), [`synth/`](synth/)),
+and a cocotb bench that checks the RTL bit-exactly against the reference
+model in simulation. SQNR is met on the *placeholder* growth schedule only
+(simulated, [`measurements/fft256-smoke.json`](measurements/fft256-smoke.json)). There is no layout,
+no timing closure and no silicon.
 
 **T1 status.** Graded by `klt signoff`, not restated here: see the verdict of
 record [`manifests/sky130-dsp-fft.signoff.json`](manifests/sky130-dsp-fft.signoff.json)
@@ -70,17 +80,23 @@ figure.
 Maturity ladder: generator chosen and pinned → spec ratified → generated
 RTL bit-exact against the reference model → numerics meet the SQNR target
 → layout DRC/LVS-clean → timing closed across corners → shuttle seat →
-measured silicon. **Current position: pre-spec.**
+measured silicon. **Current position: generated RTL bit-exact against the model in simulation, on a
+placeholder schedule; spec not ratified; no layout (held, #17), no timing
+closure, no silicon.**
 
 ## Repo layout
 
 ```
-spec/          ratified spec + decision records (generator choice first)
+spec/          proposed spec (not yet ratified) + decision records (generator choice first)
 rtl/           generated RTL + the pinned generator invocation that produced it
 verification/  cocotb testbenches against the reference model
 sim/           numerics: reference model, SQNR sweeps, scaling studies
-layout/        GDS + DRC/LVS reports (klayout-tools driven)
-measurements/  silicon characterization (empty until tape-out)
+netlist/       sky130_fd_sc_hd gate-level netlist of the generated FFT
+synth/         synthesis results for that netlist
+manifests/     signoff verdict of record and item attestations
+layout/        GDS + DRC/LVS reports (klayout-tools driven); none yet, held (#17)
+measurements/  simulated records (overflow range, smoke, synthesis);
+               silicon characterization still to come
 ```
 
 ## Reproduce
