@@ -4,9 +4,8 @@
   "private": true,
   "scripts": {
     "worktree:return": "./.loom/scripts/worktree-return.sh",
-    "check:ci": "make -C verification all",
     "check:all": "make -C verification all",
-    "test": "make -C verification sim negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl",
+    "test": "make -C verification fft-bench fft-bench-negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl",
     "lint": "make -C verification lint"
   }
 }
