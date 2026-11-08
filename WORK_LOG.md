@@ -3,6 +3,13 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-08
+
+- **PR #63**: docs: align README, spec index and Overflow status with evidence on main
+- **Issue #62** (closed): Bring README, spec/README and the spec's Overflow status in line with what main now holds
+- **PR #65**: fix: point npm test at live verification targets
+- **Issue #64** (closed): Fix package.json test script: it calls retired Makefile targets sim and negctl
+
 ### 2026-11-07
 
 - **PR #60**: Bump Repo Skills 0.25.1 -> 0.25.10
