@@ -23,12 +23,10 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import FallingEdge, RisingEdge
 
+from sim import fixedpoint_model, vectors
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-sys.path.insert(0, str(ROOT / "sim"))
-
-import fixedpoint_model  # noqa: E402
-import vectors  # noqa: E402
 
 PARAMS = ROOT / "rtl/params/fft256.params"
 MISMATCH_TEXT = "stream output differs from bit-accurate model"
