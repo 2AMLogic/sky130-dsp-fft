@@ -38,7 +38,7 @@
         "role": "hygiene",
         "path": "README.md",
         "passed": true,
-        "content_hash": "sha256:99a041c4c40a4d4c0670424283c7a9791b1e71be679eb8d9daf68d1f4cb4c590"
+        "content_hash": "sha256:264b1f9d94ee1264929ee7b3735535fef059e53ad2f94369743018663861a245"
       },
       {
         "check": "present",
@@ -52,7 +52,7 @@
         "role": "hygiene",
         "path": "verification/README.md",
         "passed": true,
-        "content_hash": "sha256:e7219e5e8f7917aaff7d4776e0ae4446ae48e704805047bda5df8f110f765426"
+        "content_hash": "sha256:ca2dab74caa4d6176c2bca928d624d46cce8c39b0dcda5267490bc649024da67"
       },
       {
         "check": "command",
@@ -154,7 +154,7 @@
         "path": "manifests/item10-inventory-5.json",
         "scope": "repo"
       },
-      "content_hash": "sha256:729df5419c04a735dd922eb71e1cf6c5870f2657056c143d79b85fb407f3a7eb"
+      "content_hash": "sha256:11f05afaeb1b460c2e4265eb1a1fc5a947db135711ad5a9d08d1eabe2f583928"
     }
   }
 }
