@@ -51,29 +51,39 @@ klt 0.8.0: **3 of 11 met**.
 
 ## Now
 
-Startable today, independent of the layout decision; none has an issue yet.
+All four are startable independently of the layout decision, and all four are
+filed as #76-#79, each curated at `points:3`. Two have already landed.
+**Tracker read 2026-11-14** — later than the `2026-11-13` evidence snapshot in
+the header above, which dates the measurements, not these pointers. The
+numbering is kept stable so the Next section's "after Now 1" still resolves.
 
-1. **Growth-schedule study.** The spec's "Internal growth and scaling" row is
-   an open target: `stage_widths=17..24`, `twiddle_width=16` is a placeholder
-   and every SQNR and overflow figure rests on it. Done when a `sim/` sweep
-   script with tests writes an append-only `measurements/schedule-sweep.json`
+1. **Growth-schedule study** — #76, **done** (closed completed, PR #87).
+   The spec's "Internal growth and scaling" row is still an open target:
+   `stage_widths=17..24`, `twiddle_width=16` is a placeholder and every SQNR
+   and overflow figure rests on it. `sim/schedule_sweep.py`, with tests in
+   `sim/test_schedule_sweep.py`, now writes `measurements/schedule-sweep.json`
    giving, per candidate schedule, the per-set minimum SQNR, overflow counts
-   and summed stage widths on the spec's vector sets. Blocks: nothing.
-2. **Fallback and stretch sizes in the model.** The spec's FFT-size row says
+   and summed stage widths. It surveys and selects nothing; choosing a
+   schedule is the first Next item.
+2. **Fallback and stretch sizes in the model** — #77, **ready and
+   dispatchable** (`loom:issue`). The spec's FFT-size row says
    "64/1024 not run". Done when committed parameter files for 64 and 1024
    points exist and a recorded model run gives simulated SQNR and overflow for
    each on the spec's vector sets, labelled placeholder-schedule. Blocks:
    nothing (the generator accepts powers of 4).
-3. **FIR source survey.** Every FIR row in the spec reads "target, no
-   evidence: FIR source undecided", and the spec asks for a decision record
-   first. Done when `spec/decisions/0005-*.md` exists with status Proposed:
-   options (extend `rtl/gen/`, an external generator with licence checked,
-   hand-written RTL), the verification cost of each, and a recommendation.
-   The ruling is not part of the item. Blocks: nothing.
-4. **README attestation pointer.** The README's Reproduce table names
-   `manifests/item10-attestation-3.json`; the cited one is `-4`. Done when
-   the README names the live attestation and, `README.md` being in the item 10
-   inventory, a superseding inventory and attestation pass `signoff.yml`.
+3. **FIR source survey** — #78, **done** (closed completed, PR #83).
+   Every FIR row in the spec reads "target, no evidence: FIR source
+   undecided", and the spec asks for a decision record first.
+   `spec/decisions/0005-fir-source.md` exists with status Proposed: the
+   options, the verification cost of each, and a recommendation. The ruling
+   was never part of the item and is still open — the FIR work under Next
+   waits on it.
+4. **README attestation pointer** — #79, **in flight** (`loom:building`).
+   The README's Reproduce table still names
+   `manifests/item10-attestation-3.json` at `README.md:113` on `main`; the
+   cited one is `-4`. Done when the README names the live attestation and,
+   `README.md` being in the item 10 inventory, a superseding inventory and
+   attestation pass `signoff.yml`.
 
 ## Next
 
@@ -121,8 +131,11 @@ Startable today, independent of the layout decision; none has an issue yet.
   Storage row and touches attested files.
 - **Spec ratification** waits on the reviews and ruling `spec/spec.md` names.
 
-No open issue is labelled ready today; the four Now items are the
-dispatchable work once filed.
+Of the Now items, #77 is the dispatchable one as the tracker reads on
+2026-11-14: #76 and #78 are closed completed, #79 is `loom:building`, and the
+rest of this roadmap waits on #17's operator decision, the 0005 ruling, or
+spec ratification. The ready queue also carries hygiene work outside these
+items (#91).
 
 ## Not planned
 
