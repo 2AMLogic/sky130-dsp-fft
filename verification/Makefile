@@ -59,12 +59,14 @@ sqnr-ref-negctl:
 	  echo "NEGATIVE CONTROL FAILED: wrong reference failed without the expected text '$(SQNR_NEGCTL_EXPECT)' (see sim_build/sqnr_negctl.out)"; exit 1; \
 	else echo "negative control OK: wrong reference caught by the tests"; fi
 
-# Bit-accurate fixed-point model tests, the no-overflow amplitude sweep tests
-# and the candidate growth-schedule sweep tests (pure Python + numpy).
+# Bit-accurate fixed-point model tests, the no-overflow amplitude sweep tests,
+# the candidate growth-schedule sweep tests and the per-size model record tests
+# (pure Python + numpy).
 fxp-model:
 	$(PYTHON) ../sim/test_fixedpoint_model.py
 	$(PYTHON) ../sim/test_overflow_range.py
 	$(PYTHON) ../sim/test_schedule_sweep.py
+	$(PYTHON) ../sim/test_model_sizes.py
 
 # Same tests with a flooring rounder; must fail on the convergent-tie check.
 fxp-model-negctl:

@@ -59,6 +59,23 @@ Bit-accurate reference models and the SQNR reference.
   must separate schedules by more than 10 dB, and the overflow column is driven
   with full-scale frames to prove it is wired to the model's `Stats`; run by
   `make -C verification fxp-model`.
+- `model_sizes.py`: recorded model runs for the spec's FFT-size row, whose
+  fallback and stretch sizes (64 and 1024 points) the row's status cell lists
+  as "not run". Takes several parameter files in one invocation and scores each
+  on all four `vectors.VECTOR_SETS`, reporting per set the minimum SQNR and the
+  overflow component count (shared with `schedule_sweep.score_frames`).
+  `--record` appends one dated record per file to
+  `measurements/model-sizes.json` (append-only). The committed
+  `rtl/params/fft64.params` / `rtl/params/fft1024.params` schedules are
+  PLACEHOLDERS following `fft256.params`' one-bit-per-stage pattern, so every
+  figure is **simulated** and carries **no accuracy claim**. From the repo root:
+  `python3 -m sim.model_sizes rtl/params/fft64.params rtl/params/fft1024.params [--record measurements/model-sizes.json]`.
+  The 1024-point figures on the 16-bit placeholder land below the spec's 60 dB
+  target row because ten radix-2 stages accumulate more rounding noise than
+  eight -- an artifact of pairing a stretch size with the target width, not a
+  verdict on 1024-point feasibility. Record the figure; do not widen a schedule
+  to clear a bar.
+- `test_model_sizes.py`: tests; run by `make -C verification fxp-model`.
 
 Run from a fresh clone (see `verification/README.md`):
 
