@@ -122,6 +122,7 @@ class Invalid(unittest.TestCase):
         self.rejects("direction", direction="inverse")
         self.rejects("output_width", output_width=30)
         self.rejects("stage_widths", stage_widths="17,16,19,20,21,22,23,24")
+        self.rejects("stage_widths", stage_widths="17,18,19,20,21,22,23,33")
 
     def test_unknown_missing_duplicate(self):
         with self.assertRaises(P.ParamError) as c:

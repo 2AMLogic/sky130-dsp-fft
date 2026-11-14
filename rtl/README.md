@@ -36,7 +36,7 @@ This schema is the contract with the model (#31); keep key names stable.
 | `architecture` | `r22sdf` | only choice |
 | `direction` | `forward` | inverse is not implemented |
 | `input_width`, `output_width` | 4..32 | bits per I and Q; output ≤ last stage width |
-| `stage_widths` | list, 2·log4(size) entries | data width after each radix-2 stage (and its twiddle multiplier); non-decreasing from `input_width` |
+| `stage_widths` | list, 2·log4(size) entries, each ≤ 32 | data width after each radix-2 stage (and its twiddle multiplier); non-decreasing from `input_width`; the bit-accurate model in `sim/` holds no wider stage |
 | `twiddle_width` | 6..24 | signed twiddle bits, 2 integer bits |
 | `complex_mult` | `3mult`, `4mult` | multiplier form |
 | `rounding` | `convergent`, `truncate` | final reduction (multiplier reductions are always convergent; `truncate` is floor) |
