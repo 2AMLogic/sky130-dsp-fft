@@ -167,6 +167,22 @@ class Stats:
         self.peak = [0] * (nstages + 1)
 
 
+def score_set(model, frames, ndigits=None) -> dict:
+    """One set's figures for `model`: minimum simulated SQNR (dB) and overflow components.
+
+    Resets `Stats` first -- it accumulates across `run()` calls, so scoring a
+    second set on a shared model would otherwise report a running total.
+    `ndigits` rounds the SQNR figure for a caller whose record format does
+    (the smoke record keeps 2 decimals); `schedule-sweep.json` stays unrounded
+    here and rounds in its own `_json_safe`.
+    """
+    model.stats = Stats(len(model.p.stage_widths))
+    sqnr = reference.set_sqnr_db(frames, model.candidate)
+    if ndigits is not None:
+        sqnr = round(sqnr, ndigits)
+    return {"min_sqnr_db": sqnr, "overflow_components": sum(model.stats.overflow)}
+
+
 @dataclass
 class Result:
     re: np.ndarray
@@ -333,11 +349,9 @@ def main(argv=None) -> int:
     print("SQNR (SIMULATED, min over frames, model vs double-precision reference):")
     for name in vectors.VECTOR_SETS:
         frames = vectors.generate_frames(name, n=p.size, width=p.input_width)
-        model.stats = Stats(len(p.stage_widths))
-        sq = reference.set_sqnr_db(frames, model.candidate)
-        ovf = sum(model.stats.overflow)
-        print(f"  {name:9s} {sq:7.2f} dB   overflow components: {ovf}   "
-              f"peak/stage: {model.stats.peak}")
+        figures = score_set(model, frames)
+        print(f"  {name:9s} {figures['min_sqnr_db']:7.2f} dB   overflow components: "
+              f"{figures['overflow_components']}   peak/stage: {model.stats.peak}")
     return 0
 
 
