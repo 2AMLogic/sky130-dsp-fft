@@ -10,15 +10,13 @@ import os
 import random
 import shutil
 import subprocess
-import sys
 import tempfile
 import unittest
 
-ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
-sys.path.insert(0, ROOT)
+from rtl.gen import params as P
+from rtl.gen.emit import generate, write_rtl
 
-from rtl.gen import params as P  # noqa: E402
-from rtl.gen.emit import generate, write_rtl  # noqa: E402
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
 
 BASE = dict(
     size=256, architecture="r22sdf", direction="forward", input_width=16,

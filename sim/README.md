@@ -1,7 +1,10 @@
 # sim
 
-Bit-accurate reference models and the SQNR reference.
+Bit-accurate reference models and the SQNR reference. A Python package: run the
+entry points as modules from the repo root (`python3 -m sim.<module>`), or put
+the repo root on `PYTHONPATH`, as `verification/Makefile` does.
 
+- `__init__.py`: package marker (docstring only).
 - `vectors.py`: seeded, deterministic vector sets. `VECTOR_SETS` is the single
   place the draft-spec sets are defined (random I/Q at 50 % and 70 % of full
   scale, non-coherent tone at bin N/8 + 0.3 at 50 % and 90 %); `generate_frames`

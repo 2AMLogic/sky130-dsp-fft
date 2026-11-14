@@ -21,15 +21,11 @@ from pathlib import Path
 
 import numpy as np
 
+import flow_tools
+from sim import fixedpoint_model, reference, vectors
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-sys.path.insert(0, str(ROOT / "sim"))
-sys.path.insert(0, str(HERE))
-
-import flow_tools  # noqa: E402
-import fixedpoint_model  # noqa: E402
-import reference  # noqa: E402
-import vectors  # noqa: E402
 
 PARAMS = ROOT / "rtl/params/fft256.params"
 RECORD = ROOT / "measurements/fft256-smoke.json"

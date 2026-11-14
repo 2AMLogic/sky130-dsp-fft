@@ -9,11 +9,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-import fixedpoint_model as fm  # noqa: E402
-import overflow_range as orr  # noqa: E402
-import vectors  # noqa: E402
+from sim import fixedpoint_model as fm
+from sim import overflow_range as orr
+from sim import vectors
 
 PARAMS = Path(__file__).resolve().parent.parent / "rtl" / "params" / "fft256.params"
 FRAMES = 20  # fewer frames keep the tests quick; the committed record uses 100
