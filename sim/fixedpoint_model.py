@@ -52,16 +52,11 @@ so it does not change the model's output.
 import math
 import sys
 from dataclasses import dataclass, field
-from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-import reference  # noqa: E402
-import vectors  # noqa: E402
-from rtl.gen import params as generator_params  # noqa: E402
+from rtl.gen import params as generator_params
+from sim import reference, vectors
 
 MODEL_ID = "fixedpoint_model r22sdf v1"
 
