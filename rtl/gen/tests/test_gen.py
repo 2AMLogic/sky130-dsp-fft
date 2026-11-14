@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 """Generator tests (unittest; also collected by pytest).
 
-Run from the repo root: python3 -m unittest discover -s rtl/gen/tests -t .
+Run from the repo root: python3 -m unittest rtl.gen.tests.test_gen
 Icarus/Yosys steps are skipped, with a reason, when the tool is not on PATH.
 """
 import cmath
