@@ -41,6 +41,27 @@ the repo root on `PYTHONPATH`, as `verification/Makefile` does.
   `stage_widths` entry does not lower the range (the model drops one more LSB,
   same threshold); widening one raises it.
 - `test_overflow_range.py`: tests incl. the widened-stage control; run by `make -C verification fxp-model`.
+- `schedule_sweep.py`: candidate growth-schedule survey for the spec's "Internal
+  growth and scaling" row, which is an open target (the committed `stage_widths`
+  and `twiddle_width` are placeholders). Runs `fixedpoint_model` over the
+  `CANDIDATES` table -- the single place the study is defined -- on all four
+  `vectors.VECTOR_SETS`, reporting per candidate the per-set minimum SQNR, the
+  per-set overflow component count, the sum of stage widths as a size proxy, and
+  whether the generator's own parser (`rtl/gen/params.py`) accepts the schedule.
+  Candidates override `stage_widths`/`twiddle_width` on the base `Params`; no
+  parameter file is written, so the recorded sha256 is the **base** file's. From
+  the repo root:
+  `python3 -m sim.schedule_sweep rtl/params/fft256.params [--record measurements/schedule-sweep.json]`.
+  Figures are **simulated**; the module **reports and selects nothing** -- choosing a
+  schedule is a decision record's job. Two findings it makes visible: minimum SQNR
+  is **not** monotone in the width sum (the widest candidate is the only one below
+  the spec's SQNR target), and the overflow column is `0` for every candidate
+  because overflow in this model is amplitude driven, not width driven (the
+  mechanism `overflow_range.py` measures from the other direction).
+- `test_schedule_sweep.py`: tests incl. both negative controls -- the SQNR column
+  must separate schedules by more than 10 dB, and the overflow column is driven
+  with full-scale frames to prove it is wired to the model's `Stats`; run by
+  `make -C verification fxp-model`.
 
 Run from a fresh clone (see `verification/README.md`):
 
