@@ -20,7 +20,9 @@ _None._
 
 `loom:important`; taken before unlabelled work.
 
-_None._
+- **#18**: T1 item 3 (DRC clean): klt drc on the routed FFT GDS with coverage disclosed
+- **#19**: T1 item 4 (LVS clean): klt lvs of the routed FFT vs the gate-level netlist
+- **#20**: T1 item 11 (power delivery): klt erc supply spec and PDN evidence for the routed FFT
 
 ## Ready
 
@@ -66,7 +68,7 @@ _None._
 |------|-------|
 | Operator merge-risk holds | 0 |
 | Very important | 1 |
-| Important | 0 |
+| Important | 3 |
 | Ready (`loom:issue`) | 0 |
 | In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
