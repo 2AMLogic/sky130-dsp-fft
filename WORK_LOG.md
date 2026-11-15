@@ -3,6 +3,17 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-14
+
+- **PR #93**: docs: make README item 10 attestation row defer to manifests/README.md
+- **Issue #79** (closed): README Reproduce table names superseded item 10 attestation -3; point it at the live one
+- **PR #87**: feat: survey candidate growth schedules in the fixed-point model
+- **Issue #76** (closed): Sweep candidate growth schedules in the fixed-point model and record SQNR and overflow per candidate
+- **PR #84**: refactor: import sim as a package instead of patching sys.path
+- **Issue #80** (closed): Retire the hand-rolled sys.path bootstraps: run sim and generator entry points as modules
+- **PR #83**: docs: add decision record 0005 surveying FIR sources
+- **Issue #78** (closed): Survey FIR sources and write decision record 0005 (Proposed)
+
 ### 2026-11-12
 
 - **PR #67**: Bump Repo Skills 0.25.10 -> 0.26.1
