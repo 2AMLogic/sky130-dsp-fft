@@ -5,6 +5,13 @@ Maintained by the Guide triage role.
 
 ### 2026-11-15
 
+- **PR #103**: refactor(sim): consolidate the three append-only record writers into sim/records.py
+- **Issue #94** (closed): Consolidate the three copy-pasted append-only record writers; the untested one feeds committed evidence
+- **PR #96**: refactor: one score_set helper for the three SQNR/overflow scoring paths
+- **Issue #92** (closed): Consolidate the three copy-pasted SQNR/overflow scoring paths onto one helper
+- **PR #95**: refactor(verification): single-source the negctl must-fail contract in negctl.sh
+- **Issue #81** (closed): Collapse the four copy-pasted negative-control recipes in verification/Makefile into one helper
+- **Issue #102** (closed): manifests/README.md 'Current verdict' says all 11 T1 items are unmet; the record says 3 are met
 - **PR #75**: docs: roadmap as of 2026-11-13
 
 ### 2026-11-14
