@@ -5,6 +5,18 @@ Maintained by the Guide triage role.
 
 ### 2026-11-15
 
+- **PR #117**: docs: defer manifests README evidence-map bullet to the signoff record
+- **PR #107**: refactor: collapse the four copied sim/ test runners onto unittest
+- **PR #100**: fix: cap generator stage_widths at 32, the model's verified bound
+- **PR #99**: refactor: derive the overflow sweep's vector kinds from VECTOR_SETS
+- **PR #98**: docs: fix two documented Python invocations in rtl/ that do not run
+- **Issue #112** (closed): manifests/README.md § Files says the evidence map is "deliberately empty"; it cites items 1, 9 and 10
+- **Issue #115** (closed): yosys-abc pipe wedge reproduced on fleet workers: fft256 smoke frozen in abc -liberty
+- **Issue #109** (closed): T1 item 9's attestation hashes drift silently: signoff.yml re-attests only item 10
+- **Issue #91** (closed): test_gen.py documents a unittest discover command that does not run
+- **Issue #89** (closed): Narrow the generator's stage_widths cap from 40 to 32: widths above 32 have no reference model
+- **Issue #88** (closed): Derive the overflow sweep's vector kinds from VECTOR_SETS instead of restating the seeds
+- **Issue #86** (closed): Collapse the three copy-pasted test runners in sim/ onto unittest, the repo's attested runner
 - **PR #103**: refactor(sim): consolidate the three append-only record writers into sim/records.py
 - **Issue #94** (closed): Consolidate the three copy-pasted append-only record writers; the untested one feeds committed evidence
 - **PR #96**: refactor: one score_set helper for the three SQNR/overflow scoring paths
