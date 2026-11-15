@@ -24,7 +24,7 @@
         "role": "hygiene",
         "path": ".github/workflows/signoff.yml",
         "passed": true,
-        "content_hash": "sha256:ff53d30e3ee9017ad9396366f3e3c4d02bc297f6edb7c2232c1239dd8b152dba"
+        "content_hash": "sha256:0e1431a26b8aa88c1e542bbab18ea5c31291bd6d1bd86147dd3887c53410ef12"
       },
       {
         "check": "present",
@@ -45,7 +45,7 @@
         "role": "hygiene",
         "path": "measurements/fft256-smoke.json",
         "passed": true,
-        "content_hash": "sha256:6763a0af3b67b2659fb6dcddff88739ab514289b7c09d21872cdeffe48e69978"
+        "content_hash": "sha256:6eb106e7733ecb8fdcce698b4c5bf3147a1a06dab19b166e6e422cce6f92386b"
       },
       {
         "check": "present",
@@ -184,7 +184,7 @@
         "path": "manifests/item10-inventory-8.json",
         "scope": "repo"
       },
-      "content_hash": "sha256:7b62d449375953b3d7cb107959c3010782ba0fd8dbe1d7fb1a60937ff8dcbd62"
+      "content_hash": "sha256:39cd90df057837b71a36dbe85be211461abd85b78255151c2ac6c88104100266"
     }
   }
 }
