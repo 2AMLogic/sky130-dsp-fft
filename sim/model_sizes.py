@@ -26,14 +26,12 @@ CLI, from the repo root:
 `--record` appends one dated record per parameter file (append-only evidence).
 """
 
-import datetime
-import json
 import math
 import sys
-from pathlib import Path
 
 from rtl.gen import params as generator_params
 from sim import fixedpoint_model as fm
+from sim import records
 from sim import schedule_sweep as ss
 from sim import vectors
 
@@ -68,7 +66,7 @@ def describe(res: dict) -> str:
 def record(path, params_file, p: fm.Params, res: dict, frames: int = FRAMES) -> dict:
     """Append one dated record to `path` ({"records": [...]}); earlier records are kept."""
     rec = {
-        "date_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "date_utc": records.utc_stamp(),
         "note": "SIMULATED (this model against a double-precision reference, not "
                 "silicon) and on the PLACEHOLDER schedule: this size's stage_widths "
                 "follow rtl/params/fft256.params' one-bit-per-stage pattern and "
@@ -99,11 +97,7 @@ def record(path, params_file, p: fm.Params, res: dict, frames: int = FRAMES) -> 
         "min_sqnr_db": ss._json_safe(res["min_sqnr_db"]),
         "overflow_components": res["overflow_components"],
     }
-    path = Path(path)
-    data = json.loads(path.read_text()) if path.exists() else {"records": []}
-    data["records"].append(rec)
-    path.write_text(json.dumps(data, indent=2) + "\n")
-    return rec
+    return records.append_record(path, rec)
 
 
 def main(argv=None) -> int:
