@@ -169,7 +169,7 @@ def score_set(model, frames, ndigits=None) -> dict:
     second set on a shared model would otherwise report a running total.
     `ndigits` rounds the SQNR figure for a caller whose record format does
     (the smoke record keeps 2 decimals); `schedule-sweep.json` stays unrounded
-    here and rounds in its own `_json_safe`.
+    here and rounds in `records.json_safe`.
     """
     model.stats = Stats(len(model.p.stage_widths))
     sqnr = reference.set_sqnr_db(frames, model.candidate)

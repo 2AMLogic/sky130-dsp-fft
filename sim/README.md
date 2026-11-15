@@ -64,7 +64,9 @@ the repo root on `PYTHONPATH`, as `verification/Makefile` does.
   `make -C verification fxp-model`.
 - `records.py`: the one append-only evidence writer (`append_record`) and the
   evidence `date_utc` format (`utc_stamp`), shared by `overflow_range.py`,
-  `schedule_sweep.py` and the generated-core smoke (`verification/test_fft256_smoke.py`).
+  `schedule_sweep.py`, `model_sizes.py` and the generated-core smoke
+  (`verification/test_fft256_smoke.py`). Also `json_safe`, the `"inf"`/`null`
+  encoding `measurements/README.md` states for non-finite SQNR values.
   Earlier records are never rewritten, and the file is written
   `json.dumps(..., indent=2) + "\n"` -- byte-for-byte the format the committed
   evidence files already use, so no evidence file re-indents on its next append.
