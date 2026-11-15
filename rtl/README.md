@@ -15,7 +15,7 @@ Generated FFT RTL plus the project's own Apache-2.0 generator.
 
 ```sh
 rtl/regen.sh                                   # regenerate rtl/generated
-python3 -m rtl.gen rtl/params/fft64.params /tmp/out   # any params file, from the repo root
+python3 -m rtl.gen rtl/params/fft256.params /tmp/out   # any params file, from the repo root
 python3 -m unittest rtl.gen.tests.test_gen     # tests (Icarus/Yosys steps skip if absent)
 ```
 
