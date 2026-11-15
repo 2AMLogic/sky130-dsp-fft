@@ -92,10 +92,12 @@ def _validate(p):
         raise ParamError("twiddle_width: must be in 6..24")
     prev = p["input_width"]
     for w in sw:
-        if w < prev or w > 40:
+        if w < prev or w > 32:
             raise ParamError("stage_widths: entries must be non-decreasing "
-                             "from input_width (%d) and at most 40, got %d"
-                             % (p["input_width"], w))
+                             "from input_width (%d) and at most 32 (the "
+                             "bit-accurate model in sim/ holds no wider "
+                             "stage, so a wider stage has no reference), "
+                             "got %d" % (p["input_width"], w))
         prev = w
     if p["output_width"] > sw[-1]:
         raise ParamError("output_width: %d exceeds the last stage width %d"
