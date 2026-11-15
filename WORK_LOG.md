@@ -3,6 +3,10 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-15
+
+- **PR #75**: docs: roadmap as of 2026-11-13
+
 ### 2026-11-14
 
 - **PR #93**: docs: make README item 10 attestation row defer to manifests/README.md

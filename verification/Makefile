@@ -71,6 +71,9 @@ fxp-model:
 	$(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model
 	$(PYPATH) $(PYTHON) -m unittest sim.test_overflow_range
 	$(PYPATH) $(PYTHON) -m unittest sim.test_schedule_sweep
+	# test_records.py keeps its own runner: its tests are module-level
+	# functions, which `-m unittest` would not collect (a vacuous pass).
+	$(PYPATH) $(PYTHON) -m sim.test_records
 
 # Same tests with a flooring rounder; must fail on the convergent-tie check.
 fxp-model-negctl:
