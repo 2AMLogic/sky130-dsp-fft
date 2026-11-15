@@ -23,12 +23,10 @@ import cocotb
 from cocotb.clock import Clock
 from cocotb.triggers import FallingEdge, RisingEdge
 
+from sim import fixedpoint_model, vectors
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-sys.path.insert(0, str(ROOT / "sim"))
-
-import fixedpoint_model  # noqa: E402
-import vectors  # noqa: E402
 
 PARAMS = ROOT / "rtl/params/fft256.params"
 MISMATCH_TEXT = "stream output differs from bit-accurate model"
@@ -47,9 +45,11 @@ def vector_set(name):
     if name not in _cache:
         z = vectors.generate_frames(name, n=P.size, width=P.input_width)
         re, im = z.real.astype(np.int64), z.imag.astype(np.int64)
-        model = fixedpoint_model.FixedPointFFT.from_file(PARAMS)  # fresh stats per set
-        res = model.run(re, im)
-        _cache[name] = (re, im, res.re, res.im, int(sum(model.stats.overflow)))
+        res = _MODEL.run(re, im)
+        # score_set resets Stats before counting, so the shared model reports
+        # this set's overflow count rather than a running total.
+        count = fixedpoint_model.score_set(_MODEL, z)["overflow_components"]
+        _cache[name] = (re, im, res.re, res.im, int(count))
     return _cache[name]
 
 

@@ -25,8 +25,10 @@ Two findings the table makes visible, both reproducible by running it:
   narrow stage is scale-compensated and a wide one only sign-extends (the same
   mechanism `overflow_range.py` and its tests record). The amplitude at which
   the placeholder does overflow is `overflow_range.py`'s question, not this
-  module's; `test_schedule_sweep.py` uses it as the control that proves this
-  column is wired to the model's `Stats` rather than hard-coded.
+  module's; `test_schedule_sweep.py` drives the one shared scoring helper
+  (`fixedpoint_model.score_set`, which this sweep, `fixedpoint_model.main`
+  and the smoke flow's SQNR leg all score through) with full-scale frames,
+  proving the column is wired to the model's `Stats` rather than hard-coded.
 
 Candidates are built by overriding `stage_widths` / `twiddle_width` on the base
 parameter file's `Params`; no parameter file is written, so the recorded
@@ -43,17 +45,12 @@ CLI, from the repo root:
 import datetime
 import json
 import math
-
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-import fixedpoint_model as fm  # noqa: E402
-import reference  # noqa: E402
-import vectors  # noqa: E402
-from rtl.gen import params as generator_params  # noqa: E402
+from rtl.gen import params as generator_params
+from sim import fixedpoint_model as fm
+from sim import vectors
 
 FRAMES = vectors.FRAMES_PER_SET
 
@@ -146,15 +143,14 @@ def generator_verdict(p: fm.Params):
 def score_frames(model: fm.FixedPointFFT, data) -> dict:
     """One set's figures for `model`: minimum simulated SQNR and overflow count.
 
-    `Stats` accumulates, so it is reset first: AC 2 asks for a per-set overflow
-    count and a shared model would otherwise report a running total. This is
-    the whole measurement path, so the overflow negative control in
-    `test_schedule_sweep.py` drives it with full-scale frames rather than
-    re-implementing it.
+    Delegates to `fixedpoint_model.score_set`, which owns the `Stats` reset (it
+    accumulates across `run()` calls; AC 2 asks for a per-set overflow count).
+    That helper is the whole measurement path -- `fixedpoint_model.main` and
+    the smoke flow's SQNR leg score through it too -- so the overflow negative
+    control in `test_schedule_sweep.py` drives every committed figure's path
+    with full-scale frames rather than re-implementing it.
     """
-    model.stats = fm.Stats(len(model.p.stage_widths))
-    return {"min_sqnr_db": reference.set_sqnr_db(data, model.candidate),
-            "overflow_components": sum(model.stats.overflow)}
+    return fm.score_set(model, data)
 
 
 def evaluate(base: fm.Params, cand: dict, frames: int = FRAMES) -> dict:

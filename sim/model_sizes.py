@@ -29,17 +29,13 @@ CLI, from the repo root:
 import datetime
 import json
 import math
-
 import sys
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
-
-import fixedpoint_model as fm  # noqa: E402
-import schedule_sweep as ss  # noqa: E402
-import vectors  # noqa: E402
-from rtl.gen import params as generator_params  # noqa: E402
+from rtl.gen import params as generator_params
+from sim import fixedpoint_model as fm
+from sim import schedule_sweep as ss
+from sim import vectors
 
 FRAMES = vectors.FRAMES_PER_SET
 

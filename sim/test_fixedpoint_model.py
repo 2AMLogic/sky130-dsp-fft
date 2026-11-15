@@ -15,11 +15,8 @@ from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-import fixedpoint_model as fm  # noqa: E402
-import reference  # noqa: E402
-import vectors  # noqa: E402
+from sim import fixedpoint_model as fm
+from sim import reference, vectors
 
 if os.environ.get("FXP_MUTANT") == "floor_ties":
     _orig_round_shift = fm.round_shift
@@ -185,6 +182,28 @@ def test_sqnr_near_output_quantisation_floor():
     sig = np.mean([np.mean(np.abs(reference.reference_fft(f)) ** 2) for f in frames])
     expect = 10 * math.log10(sig / (2 * 256 ** 2 / 12))
     assert abs(got - expect) < 1.5, f"SQNR {got:.2f} dB not near {expect:.2f} dB"
+
+
+def test_score_set_resets_stats_and_rounds():
+    """One measurement primitive for every caller: per-set reset, caller's rounding.
+
+    The sweep, the model CLI and the smoke flow's SQNR leg all score through
+    `score_set`; the reset is the invariant each of them used to guard
+    separately (fresh `Stats`, a fresh model, or an inline reset).
+    """
+    mod = model(TEMPLATE)
+    hot = vectors.generate_swept_frames(vectors.VECTOR_SETS["random50"], 1.00, frames=20)
+    assert fm.score_set(mod, hot)["overflow_components"] > 0, (
+        "full-scale frames reported no overflow; the figures are not wired to Stats")
+    cool = vectors.generate_frames("random50", frames=20)
+    raw = fm.score_set(mod, cool)
+    assert raw["overflow_components"] == 0, (
+        f"score_set did not reset Stats between sets on a shared model: {raw}")
+    rounded = fm.score_set(mod, cool, ndigits=2)
+    assert rounded["min_sqnr_db"] == round(raw["min_sqnr_db"], 2), (
+        "ndigits must stay the caller's choice: the smoke record keeps 2 decimals, "
+        "schedule-sweep.json stays unrounded")
+    assert rounded["overflow_components"] == raw["overflow_components"]
 
 
 def test_cli_labels_simulated_and_prints_config():

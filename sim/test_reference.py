@@ -7,14 +7,10 @@ wrong reference so the negative control reuses the same test.
 import math
 import os
 import sys
-from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-import reference  # noqa: E402
-import vectors  # noqa: E402
+from sim import reference, vectors
 
 
 def _swap_iq(x):

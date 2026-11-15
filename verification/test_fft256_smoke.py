@@ -21,15 +21,11 @@ from pathlib import Path
 
 import numpy as np
 
+import flow_tools
+from sim import fixedpoint_model, vectors
+
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
-sys.path.insert(0, str(ROOT / "sim"))
-sys.path.insert(0, str(HERE))
-
-import flow_tools  # noqa: E402
-import fixedpoint_model  # noqa: E402
-import reference  # noqa: E402
-import vectors  # noqa: E402
 
 PARAMS = ROOT / "rtl/params/fft256.params"
 RECORD = ROOT / "measurements/fft256-smoke.json"
@@ -111,11 +107,10 @@ def compare(model, sets, p, perturb):
 
 
 def simulated_sqnr(model, sets):
+    """Per-set figures through the shared scoring helper; `ndigits=2` is the record format."""
     out = {}
     for name, frames in sets.items():
-        model.stats = fixedpoint_model.Stats(len(model.p.stage_widths))
-        out[name] = {"min_sqnr_db": round(reference.set_sqnr_db(frames, model.candidate), 2),
-                     "overflow_components": sum(model.stats.overflow)}
+        out[name] = fixedpoint_model.score_set(model, frames, ndigits=2)
     return out
 
 

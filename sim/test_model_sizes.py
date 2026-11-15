@@ -10,12 +10,10 @@ import sys
 import tempfile
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-import fixedpoint_model as fm  # noqa: E402
-import model_sizes as ms  # noqa: E402
-import vectors  # noqa: E402
-from rtl.gen import params as generator_params  # noqa: E402
+from rtl.gen import params as generator_params
+from sim import fixedpoint_model as fm
+from sim import model_sizes as ms
+from sim import vectors
 
 ROOT = Path(__file__).resolve().parent.parent
 SIZE_PARAMS = (ROOT / "rtl" / "params" / "fft64.params",
@@ -109,10 +107,14 @@ def test_cli_labels_simulated_and_placeholder():
 
 def test_cli_without_record_writes_nothing():
     out = io.StringIO()
-    with contextlib.redirect_stdout(out):
-        assert ms.main([str(SIZE_PARAMS[0])]) == 0
-    assert "record" not in out.getvalue().lower().replace("records", "", 0) or \
-        "appended" not in out.getvalue(), out.getvalue()
+    # A plausible record target's parent, empty at entry: without --record the
+    # CLI must not create a file (or anything else) here.
+    with tempfile.TemporaryDirectory() as d:
+        with contextlib.redirect_stdout(out):
+            assert ms.main([str(SIZE_PARAMS[0])]) == 0
+        written = list(Path(d).iterdir())
+        assert written == [], f"the CLI wrote without --record: {written}"
+    assert "record" not in out.getvalue().lower(), out.getvalue()
 
 
 def test_rejected_size_surfaces_paramerror_naming_key():
