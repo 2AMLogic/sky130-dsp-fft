@@ -67,8 +67,9 @@ sqnr-ref-negctl:
 	@./negctl.sh "wrong reference" "the tests" "$(SQNR_NEGCTL_EXPECT)" sim_build/sqnr_negctl.out -- \
 	  env REF_MUTANT=swap_iq $(PYPATH) $(PYTHON) -m unittest sim.test_reference
 
-# Bit-accurate fixed-point model tests, the no-overflow amplitude sweep tests
-# and the candidate growth-schedule sweep tests (pure Python + numpy).
+# Bit-accurate fixed-point model tests, the no-overflow amplitude sweep tests,
+# the candidate growth-schedule sweep tests and the per-size model record tests
+# (pure Python + numpy).
 fxp-model:
 	$(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model
 	$(PYPATH) $(PYTHON) -m unittest sim.test_overflow_range
@@ -76,6 +77,7 @@ fxp-model:
 	# test_records.py keeps its own runner: its tests are module-level
 	# functions, which `-m unittest` would not collect (a vacuous pass).
 	$(PYPATH) $(PYTHON) -m sim.test_records
+	$(PYPATH) $(PYTHON) -m sim.test_model_sizes
 
 # Same tests with a flooring rounder; must fail on the convergent-tie check.
 fxp-model-negctl:

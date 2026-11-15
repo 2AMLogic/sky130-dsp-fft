@@ -1,0 +1,17 @@
+# 1024-point radix-2^2 SDF parameters (schema: rtl/README.md).
+# stage_widths and twiddle_width are PLACEHOLDERS, following the same
+# one-bit-per-stage pattern as rtl/params/fft256.params; no accuracy or
+# overflow claim is made by these values. Selecting a schedule for any size is
+# a decision record's job (spec/decisions/0002), not this file's.
+size=1024
+architecture=r22sdf
+direction=forward
+input_width=16
+output_width=16
+stage_widths=17,18,19,20,21,22,23,24,25,26
+twiddle_width=16
+complex_mult=3mult
+rounding=convergent
+output_order=natural
+pipeline=1
+stall=1

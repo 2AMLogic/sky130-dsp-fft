@@ -24,3 +24,16 @@ Recorded results, append-only evidence. Every record names its liberty corner.
   the rows must not be ranked by `width_sum`. An exact SQNR match is written as the
   string `"inf"` and any other non-finite value as `null`, because strict JSON cannot
   carry a non-finite number. Never edit or drop an earlier record.
+- `model-sizes.json`: `{"records": [...]}`; each `python3 -m sim.model_sizes <params>... --record measurements/model-sizes.json`
+  run appends one dated record **per parameter file** for the spec's FFT-size
+  row, 64/1024 (model id, params file and sha256, size, `stage_widths`,
+  twiddle width, frames/set, and per vector set the minimum SQNR and the
+  overflow component count). SIMULATED, on the PLACEHOLDER one-bit-per-stage
+  schedule each size's params file carries (following `fft256.params`); no
+  accuracy claim, no schedule selected. Reading note: the 1024-point figures
+  on the 16-bit placeholder land below the spec's 60 dB target row because ten
+  radix-2 stages accumulate more rounding noise than eight -- a stretch size
+  paired with the target width, not a verdict on 1024-point feasibility. An
+  exact SQNR match is written as the string `"inf"` and any other non-finite
+  value as `null`, because strict JSON cannot carry a non-finite number. Never
+  edit or drop an earlier record.
