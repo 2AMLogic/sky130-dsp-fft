@@ -62,6 +62,18 @@ the repo root on `PYTHONPATH`, as `verification/Makefile` does.
   must separate schedules by more than 10 dB, and the overflow column is driven
   with full-scale frames to prove it is wired to the model's `Stats`; run by
   `make -C verification fxp-model`.
+- `records.py`: the one append-only evidence writer (`append_record`) and the
+  evidence `date_utc` format (`utc_stamp`), shared by `overflow_range.py`,
+  `schedule_sweep.py` and the generated-core smoke (`verification/test_fft256_smoke.py`).
+  Earlier records are never rewritten, and the file is written
+  `json.dumps(..., indent=2) + "\n"` -- byte-for-byte the format the committed
+  evidence files already use, so no evidence file re-indents on its next append.
+  Also the sweep CLIs' shared `--record` argv parser. `measurements/README.md`
+  states the invariant; this module implements and `test_records.py` enforces it.
+- `test_records.py`: tests for `records.py`, incl. the append-only invariant at
+  full strength (an earlier record must be unchanged after a later append, not
+  merely still counted) and the smoke writer through its `path` parameter; run
+  by `make -C verification fxp-model`.
 - `model_sizes.py`: recorded model runs for the spec's FFT-size row, whose
   fallback and stretch sizes (64 and 1024 points) the row's status cell lists
   as "not run". Takes several parameter files in one invocation and scores each

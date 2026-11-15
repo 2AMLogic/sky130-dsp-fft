@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "kind": "generic",
+  "status": "pass",
+  "t1_item": 9,
+  "summary": "T1 item 9 (Testbenches shipped): 15/15 attestation checks passed (klt signoff --attest)",
+  "source": "manifests/item9-inventory-3.json",
+  "attestation": {
+    "producer": "klt signoff --attest",
+    "inventory_schema_version": 1,
+    "hash_algorithm": "sha256-raw-bytes",
+    "check_count": 15,
+    "passed_count": 15,
+    "checks": [
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "rtl/params/fft256.params",
+        "passed": true,
+        "content_hash": "sha256:0016f2bd85c2a7910db3af813e48efba2f082d7d1880d53242d96fc65f1273d8"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/fixedpoint_model.py",
+        "passed": true,
+        "content_hash": "sha256:f16a484b4bd9235e0f87797c1a2ef65a0fb47b8c77d5b46ca87c355ebca88573"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/records.py",
+        "passed": true,
+        "content_hash": "sha256:c3604ceb11cd757b61f641bc180aa8dec0591086511b4b55df1407151b9166ef"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/reference.py",
+        "passed": true,
+        "content_hash": "sha256:139087f70c370ed120dc90dc9dbe199e6bbf51a51cf1d888a3d87dd3677b1d5a"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_fixedpoint_model.py",
+        "passed": true,
+        "content_hash": "sha256:6a3ece5620b883d2d52ac43225234f9892b1548dfab86f2c0ff87ca37fc0c90f"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_records.py",
+        "passed": true,
+        "content_hash": "sha256:9fe38fda5eca1b01b0743862f35e58dee850fd66973a2833344b06ed2b65c9a5"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_reference.py",
+        "passed": true,
+        "content_hash": "sha256:8445117d5bce8875f4a11fb16c859a79b0244726752674895dd4ae07a58f6736"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/vectors.py",
+        "passed": true,
+        "content_hash": "sha256:822310ed947b5cf50134bc5927a2541421ccb9aee514dd715f7a7d46ee558cc2"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/Makefile",
+        "passed": true,
+        "content_hash": "sha256:3a09d9ee49aa5b5218347a78555813cce3771e2b4c722844b02e162d55d99921"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/tb_fft256_smoke.v",
+        "passed": true,
+        "content_hash": "sha256:04179e249996ab6b1428b1fabbec57f0863f69ad9fd99031d5eba34954c5de12"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/test_fft256_smoke.py",
+        "passed": true,
+        "content_hash": "sha256:25eab0132cbe80fa6ad8df585bb32a480a05e740c64710c98911932f48738031"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/test_fft256_stream.py",
+        "passed": true,
+        "content_hash": "sha256:cf44d4d386b27d0252d74726d883066021ac541e8f1cac152c8772562c16d2f9"
+      },
+      {
+        "check": "command",
+        "role": "cold_start",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "fft-bench",
+          "fft-bench-negctl",
+          "fxp-model",
+          "fxp-model-negctl",
+          "sqnr-ref",
+          "sqnr-ref-negctl"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "pin",
+        "role": "pdk",
+        "passed": true,
+        "value": {
+          "name": "sky130",
+          "revision": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+        }
+      },
+      {
+        "check": "pin",
+        "role": "tools",
+        "passed": true,
+        "value": {
+          "cocotb": "2.1.0",
+          "icarus_verilog": "13.0",
+          "numpy": "2.3.4",
+          "python": "3.13"
+        }
+      }
+    ]
+  },
+  "provenance": {
+    "klt_version": "0.8.0",
+    "klayout_version": null,
+    "pdk": null,
+    "deck": null,
+    "input": {
+      "path": {
+        "path": "manifests/item9-inventory-3.json",
+        "scope": "repo"
+      },
+      "content_hash": "sha256:47d4113ade43ad7a8dbb4cdb5602b1c0d39a282253b99483217f613cd18bd4fc"
+    }
+  }
+}
