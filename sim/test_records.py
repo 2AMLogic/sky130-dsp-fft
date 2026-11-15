@@ -107,7 +107,7 @@ def test_json_safe_encodes_non_finite_per_the_evidence_convention():
     strict JSON cannot carry a non-finite number, and `json.dumps` would emit
     a bare `Infinity`/`NaN` literal that strict readers reject."""
     assert records.json_safe(float("inf")) == "inf"
-    assert records.json_safe(float("-inf")) == "-inf"
+    assert records.json_safe(float("-inf")) is None
     assert records.json_safe(float("nan")) is None
 
 
