@@ -271,24 +271,39 @@ class ScheduleSweep(unittest.TestCase):
         generator must accept, so it is not needlessly narrower than the model.
 
         The generator may be narrower than the model on the low side by design
-        (4../6.. vs the model's 2..); only the ceilings are guarded. Any
-        ParamError here is a malformed probe to fix -- including one naming
-        the probed key itself -- never evidence of a narrower bound: only a
-        probe valid for every other constraint can testify.
+        (4../6.. vs the model's 2..); only the ceilings are guarded. A red
+        here has two possible causes: the probe is malformed, or a generator
+        ceiling has been narrowed below the model's `_WIDTH_MAX`. Determine
+        which side is wrong before fixing anything: run the same
+        `_width_probe(base, key, top)` against a pristine `rtl/gen/params.py`
+        -- if it is accepted there, the probe is sound and the generator under
+        test has drifted; fix whichever side is actually wrong (never widen a
+        generator bound merely to clear this). The malformed-probe exemplar:
+        a plain one-key `output_width=32` mutation is rejected with
+        `output_width: 32 exceeds the last stage width 24` because the
+        committed schedule ends lower -- that rejection means the probe is
+        malformed (it needs the companion mutation in `_width_probe`), not
+        that `output_width`'s bound is narrow.
         """
         base = fm.load_params(PARAMS)
         for key, top in fm._WIDTH_MAX.items():
             legal, reason = ss.generator_verdict(_width_probe(base, key, top))
             assert legal, (
                 f"{key}: the generator rejected the model's own ceiling {top}: "
-                f"{reason!r} -- a malformed probe is fixed, not reported")
-        # One construction at the ceiling of all four keys at once is legal too:
-        # the cheapest shape that exercises every dual together.
-        top = fm._WIDTH_MAX
-        p = fm.Params(**dict(base.__dict__,
-                             input_width=top["input_width"],
-                             output_width=top["output_width"],
-                             twiddle_width=top["twiddle_width"],
-                             stage_widths=(top["stage_widths"],) * len(base.stage_widths)))
+                f"{reason!r} -- either this probe is malformed, or the "
+                "generator's bound has been narrowed below the model's "
+                f"`_WIDTH_MAX` ceiling {top}; probe a pristine "
+                "`rtl/gen/params.py` with `_width_probe(base, key, top)` to "
+                "tell which, and fix whichever side is actually wrong (never "
+                "widen a generator bound to clear this)")
+        # One construction at the ceiling of every width key at once is legal
+        # too: the cheapest shape that exercises every dual together. The key
+        # set is derived from `fm._WIDTH_MAX` so a key added there is covered
+        # and a removed key cannot KeyError; `stage_widths` is the one key
+        # whose ceiling applies per entry, so it expands to a tuple.
+        ceiling_overrides = {
+            k: ((v,) * len(base.stage_widths) if k == "stage_widths" else v)
+            for k, v in fm._WIDTH_MAX.items()}
+        p = fm.Params(**dict(base.__dict__, **ceiling_overrides))
         legal, reason = ss.generator_verdict(p)
         assert legal, f"the all-ceiling construction is not generator-legal: {reason!r}"
