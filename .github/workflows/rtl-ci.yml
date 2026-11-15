@@ -44,3 +44,7 @@ jobs:
         run: make -C verification fft-bench
       - name: Streaming FFT cocotb bench negative control
         run: make -C verification fft-bench-negctl
+      - name: Generated FFT bit-exact vs model (multi-configuration)
+        run: make -C verification gen-exact
+      - name: Generated FFT bit-exact negative control
+        run: make -C verification gen-exact-negctl
