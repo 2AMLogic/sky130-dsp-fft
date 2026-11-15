@@ -5,6 +5,7 @@ Run through `make -C verification fxp-model`.
 
 import contextlib
 import io
+import json
 import sys
 import tempfile
 from pathlib import Path
@@ -71,18 +72,21 @@ def test_width_change_moves_range_negative_control():
     assert narrow["first_overflow_stage"] == "stage 1", narrow
 
 
-def test_record_is_append_only():
+def test_record_carries_params_and_note():
+    """The sweep's own record fields. The append-only invariant and its
+    full-strength test moved onto the shared writer (`sim/records.py`,
+    `test_records.py`); the weaker `len == 2` copy that stood here before is
+    retired with the duplication it tested."""
     p = fm.load_params(PARAMS)
     res = {"tone": {"max_no_overflow_fraction": 1.0, "first_overflow_fraction": None,
                     "first_overflow_stage": None, "bound": "at_least_sweep_end"}}
     with tempfile.TemporaryDirectory() as d:
         path = Path(d) / "r.json"
-        orr.record(path, PARAMS, p, res)
-        orr.record(path, PARAMS, p, res)
-        import json
+        rec = orr.record(path, PARAMS, p, res)
         data = json.loads(path.read_text())
-        assert len(data["records"]) == 2
-        assert data["records"][0]["parameter_file_sha256"] == p.sha256
+    assert data["records"] == [rec], data
+    assert rec["parameter_file_sha256"] == p.sha256
+    assert "SIMULATED" in rec["note"]
 
 
 def main() -> int:

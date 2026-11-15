@@ -71,6 +71,7 @@ fxp-model:
 	$(PYPATH) $(PYTHON) -m sim.test_fixedpoint_model
 	$(PYPATH) $(PYTHON) -m sim.test_overflow_range
 	$(PYPATH) $(PYTHON) -m sim.test_schedule_sweep
+	$(PYPATH) $(PYTHON) -m sim.test_records
 
 # Same tests with a flooring rounder; must fail on the convergent-tie check.
 fxp-model-negctl:

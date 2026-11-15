@@ -161,19 +161,19 @@ def test_candidate_params_do_not_claim_a_file_hash():
         "a per-candidate sha256 would assert a hash for a file that does not exist")
 
 
-def test_record_is_append_only():
+def test_record_carries_model_and_note():
+    """The sweep's own record fields. The append-only invariant and its
+    full-strength test moved onto the shared writer (`sim/records.py`,
+    `test_records.py`), which every evidence writer now goes through."""
     base = fm.load_params(PARAMS)
     res = ss.sweep(_small_base(), SMALL_CANDIDATES[:1], 5)
     with tempfile.TemporaryDirectory() as d:
         path = Path(d) / "r.json"
-        ss.record(path, PARAMS, base, res, 5)
-        first = json.loads(path.read_text())["records"][0]
-        ss.record(path, PARAMS, base, res, 5)
+        rec = ss.record(path, PARAMS, base, res, 5)
         data = json.loads(path.read_text())
-    assert len(data["records"]) == 2, data
-    assert data["records"][0] == first, "the earlier record was modified"
-    assert "SIMULATED" in data["records"][0]["note"]
-    assert data["records"][0]["model"] == fm.MODEL_ID
+    assert data["records"] == [rec], data
+    assert "SIMULATED" in rec["note"]
+    assert rec["model"] == fm.MODEL_ID
 
 
 def test_record_json_is_strict_no_infinity():
