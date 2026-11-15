@@ -107,13 +107,22 @@ def test_cli_labels_simulated_and_placeholder():
 
 def test_cli_without_record_writes_nothing():
     out = io.StringIO()
-    # A plausible record target's parent, empty at entry: without --record the
-    # CLI must not create a file (or anything else) here.
+    # The strong form: run once WITH --record and confirm the record file
+    # appears, then re-run WITHOUT --record against the same path and confirm
+    # the file is byte-identical. A CLI that wrote or truncated without
+    # --record now fails this; inspecting a directory the CLI holds no
+    # reference to could not fail for any realistic defect.
     with tempfile.TemporaryDirectory() as d:
+        path = Path(d) / "r.json"
+        with contextlib.redirect_stdout(io.StringIO()):
+            assert ms.main([str(SIZE_PARAMS[0]), "--record", str(path)]) == 0
+        assert path.exists() and json.loads(path.read_text())["records"], \
+            "--record did not append a record"
+        first_text = path.read_text()
         with contextlib.redirect_stdout(out):
             assert ms.main([str(SIZE_PARAMS[0])]) == 0
-        written = list(Path(d).iterdir())
-        assert written == [], f"the CLI wrote without --record: {written}"
+        assert path.read_text() == first_text, \
+            "the CLI wrote without --record: the record file changed"
     assert "record" not in out.getvalue().lower(), out.getvalue()
 
 
