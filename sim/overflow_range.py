@@ -16,25 +16,19 @@ CLI, from the repo root:
 `--record` appends one dated record to the file (append-only evidence).
 """
 
-import datetime
-import json
 import sys
-from pathlib import Path
 
 from sim import fixedpoint_model as fm
-from sim import vectors
+from sim import records, vectors
 
 FRACTION_LO = 0.50
 FRACTION_HI = 1.00
 STEP = 0.01
 FRAMES = 100
 
-# Seeds are those of the fixed sets: random uses random50 + random70 seeds
-# (1..20, frames split evenly), tone uses the tone sets' seed and bin offset.
-KINDS = {
-    "random": {"kind": "random", "seeds": list(range(1, 21))},
-    "tone": {"kind": "tone", "bin_offset": 0.3, "seed": 1},
-}
+# Per-kind sweep specs, derived from vectors.VECTOR_SETS (the single source of
+# truth, sim/vectors.py); the derivation raises if a kind's geometry disagrees.
+KINDS = vectors.sweep_specs()
 
 
 def fractions():
@@ -87,10 +81,18 @@ def describe(r: dict) -> str:
             f"first in {r['first_overflow_stage']})")
 
 
+def _provenance(spec: dict) -> dict:
+    """Record-facing view of a sweep spec: minus `kind`, scalar `seed` as `seeds`."""
+    out = {k: v for k, v in spec.items() if k not in ("kind", "seed")}
+    if "seed" in spec:
+        out["seeds"] = [spec["seed"]]
+    return out
+
+
 def record(path, params_file, p: fm.Params, res: dict) -> dict:
     """Append one dated record to `path` ({"records": [...]}); earlier records are kept."""
     rec = {
-        "date_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "date_utc": records.utc_stamp(),
         "note": "SIMULATED (model, not silicon) and on the PLACEHOLDER schedule "
                 "(spec, Internal growth row); no final-schedule or timing claim",
         "model": fm.MODEL_ID,
@@ -100,27 +102,18 @@ def record(path, params_file, p: fm.Params, res: dict) -> dict:
         "sweep": {"fraction_lo": FRACTION_LO, "fraction_hi": FRACTION_HI, "step": STEP,
                   "frames_per_step": FRAMES,
                   "rule": "largest fraction below the first overflowing step"},
-        "kinds": {name: dict(r, seeds=(KINDS[name]["seeds"] if "seeds" in KINDS[name]
-                                       else [KINDS[name]["seed"]]),
-                             **({"bin_offset": KINDS[name]["bin_offset"]}
-                                if "bin_offset" in KINDS[name] else {}))
-                  for name, r in res.items()},
+        "kinds": {name: dict(r, **_provenance(KINDS[name])) for name, r in res.items()},
     }
-    path = Path(path)
-    data = json.loads(path.read_text()) if path.exists() else {"records": []}
-    data["records"].append(rec)
-    path.write_text(json.dumps(data, indent=2) + "\n")
-    return rec
+    return records.append_record(path, rec)
 
 
 def main(argv=None) -> int:
     argv = sys.argv[1:] if argv is None else argv
-    rec_path = None
-    if len(argv) == 3 and argv[1] == "--record":
-        argv, rec_path = argv[:1], argv[2]
-    if len(argv) != 1:
-        print("usage: python3 -m sim.overflow_range <params-file> [--record <json>]",
-              file=sys.stderr)
+    try:
+        argv, rec_path = records.parse_record_argv(
+            argv, "usage: python3 -m sim.overflow_range <params-file> [--record <json>]")
+    except ValueError as e:
+        print(e, file=sys.stderr)
         return 2
     p = fm.load_params(argv[0])
     res = sweep(p)

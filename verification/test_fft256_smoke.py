@@ -10,9 +10,7 @@ macro/SRAM cell in the mapped netlist. Run through `make smoke-fft256`.
 Environment: PERTURB=<i> flips one DUT output bit (negative control, no record).
 """
 
-import datetime
 import hashlib
-import json
 import os
 import re
 import subprocess
@@ -22,7 +20,7 @@ from pathlib import Path
 import numpy as np
 
 import flow_tools
-from sim import fixedpoint_model, reference, vectors
+from sim import fixedpoint_model, records, vectors
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
@@ -107,11 +105,10 @@ def compare(model, sets, p, perturb):
 
 
 def simulated_sqnr(model, sets):
+    """Per-set figures through the shared scoring helper; `ndigits=2` is the record format."""
     out = {}
     for name, frames in sets.items():
-        model.stats = fixedpoint_model.Stats(len(model.p.stage_widths))
-        out[name] = {"min_sqnr_db": round(reference.set_sqnr_db(frames, model.candidate), 2),
-                     "overflow_components": sum(model.stats.overflow)}
+        out[name] = fixedpoint_model.score_set(model, frames, ndigits=2)
     return out
 
 
@@ -121,10 +118,11 @@ def check_no_macros(cells):
         sys.exit(f"mapped netlist contains non-standard-cell or SRAM cells: {bad}")
 
 
-def append_record(record):
-    data = json.loads(RECORD.read_text()) if RECORD.exists() else {"records": []}
-    data["records"].append(record)  # append-only: earlier records are never rewritten
-    RECORD.write_text(json.dumps(data, indent=2) + "\n")
+def append_record(record, path=RECORD):
+    # append-only: earlier records are never rewritten -- sim/records.py owns
+    # the invariant and its test; the path parameter makes this writer testable
+    # (the default stays the committed evidence file).
+    return records.append_record(path, record)
 
 
 def main():
@@ -146,7 +144,7 @@ def main():
     pdk = flow_tools.PINS["pdk"]
     stim = hashlib.sha256("\n".join(pack(np.concatenate(list(sets.values())), p.input_width)).encode()).hexdigest()
     record = {
-        "date_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "date_utc": records.utc_stamp(),
         "module": "fft256",
         "note": "smoke run of the generated top at PLACEHOLDER widths; single corner, cell count and area only; no timing claim",
         "generator": {

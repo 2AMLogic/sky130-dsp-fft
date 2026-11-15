@@ -25,8 +25,10 @@ Two findings the table makes visible, both reproducible by running it:
   narrow stage is scale-compensated and a wide one only sign-extends (the same
   mechanism `overflow_range.py` and its tests record). The amplitude at which
   the placeholder does overflow is `overflow_range.py`'s question, not this
-  module's; `test_schedule_sweep.py` uses it as the control that proves this
-  column is wired to the model's `Stats` rather than hard-coded.
+  module's; `test_schedule_sweep.py` drives the one shared scoring helper
+  (`fixedpoint_model.score_set`, which this sweep, `fixedpoint_model.main`
+  and the smoke flow's SQNR leg all score through) with full-scale frames,
+  proving the column is wired to the model's `Stats` rather than hard-coded.
 
 Candidates are built by overriding `stage_widths` / `twiddle_width` on the base
 parameter file's `Params`; no parameter file is written, so the recorded
@@ -40,15 +42,12 @@ CLI, from the repo root:
 `--record` appends one dated record to the file (append-only evidence).
 """
 
-import datetime
-import json
 import math
 import sys
-from pathlib import Path
 
 from rtl.gen import params as generator_params
 from sim import fixedpoint_model as fm
-from sim import reference, vectors
+from sim import records, vectors
 
 FRAMES = vectors.FRAMES_PER_SET
 
@@ -141,15 +140,14 @@ def generator_verdict(p: fm.Params):
 def score_frames(model: fm.FixedPointFFT, data) -> dict:
     """One set's figures for `model`: minimum simulated SQNR and overflow count.
 
-    `Stats` accumulates, so it is reset first: AC 2 asks for a per-set overflow
-    count and a shared model would otherwise report a running total. This is
-    the whole measurement path, so the overflow negative control in
-    `test_schedule_sweep.py` drives it with full-scale frames rather than
-    re-implementing it.
+    Delegates to `fixedpoint_model.score_set`, which owns the `Stats` reset (it
+    accumulates across `run()` calls; AC 2 asks for a per-set overflow count).
+    That helper is the whole measurement path -- `fixedpoint_model.main` and
+    the smoke flow's SQNR leg score through it too -- so the overflow negative
+    control in `test_schedule_sweep.py` drives every committed figure's path
+    with full-scale frames rather than re-implementing it.
     """
-    model.stats = fm.Stats(len(model.p.stage_widths))
-    return {"min_sqnr_db": reference.set_sqnr_db(data, model.candidate),
-            "overflow_components": sum(model.stats.overflow)}
+    return fm.score_set(model, data)
 
 
 def evaluate(base: fm.Params, cand: dict, frames: int = FRAMES) -> dict:
@@ -211,7 +209,7 @@ def _json_safe(x: float):
 def record(path, params_file, base: fm.Params, results: list, frames: int = FRAMES) -> dict:
     """Append one dated record to `path` ({"records": [...]}); earlier records are kept."""
     rec = {
-        "date_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "date_utc": records.utc_stamp(),
         "note": "SIMULATED (this model against a double-precision reference, not "
                 "silicon). A survey of candidate growth schedules for the spec's "
                 "Internal growth row: it reports, it selects nothing. No schedule "
@@ -242,21 +240,16 @@ def record(path, params_file, base: fm.Params, results: list, frames: int = FRAM
                      for name, s in r["sets"].items()},
         } for r in results],
     }
-    path = Path(path)
-    data = json.loads(path.read_text()) if path.exists() else {"records": []}
-    data["records"].append(rec)
-    path.write_text(json.dumps(data, indent=2) + "\n")
-    return rec
+    return records.append_record(path, rec)
 
 
 def main(argv=None) -> int:
     argv = sys.argv[1:] if argv is None else argv
-    rec_path = None
-    if len(argv) == 3 and argv[1] == "--record":
-        argv, rec_path = argv[:1], argv[2]
-    if len(argv) != 1:
-        print("usage: python3 -m sim.schedule_sweep <params-file> [--record <json>]",
-              file=sys.stderr)
+    try:
+        argv, rec_path = records.parse_record_argv(
+            argv, "usage: python3 -m sim.schedule_sweep <params-file> [--record <json>]")
+    except ValueError as e:
+        print(e, file=sys.stderr)
         return 2
     base = fm.load_params(argv[0])
     results = sweep(base, CANDIDATES, FRAMES)

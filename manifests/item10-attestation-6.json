@@ -52,7 +52,7 @@
         "role": "hygiene",
         "path": "verification/README.md",
         "passed": true,
-        "content_hash": "sha256:f65c8dc8b8358f2f6e15515c1d426f97866d37a8c017b8f03f5f4fa88476aae9"
+        "content_hash": "sha256:0d1c4b087f3b3cba4ae64d4f2a429eb2c6f07e44b321b13a5e261d91e73c07b0"
       },
       {
         "check": "command",
@@ -184,7 +184,7 @@
         "path": "manifests/item10-inventory-6.json",
         "scope": "repo"
       },
-      "content_hash": "sha256:5fc280b51ac82573b68a48e8a58bec3f4f3a778c597b35a6e8730cbf24ed21cf"
+      "content_hash": "sha256:014f2be9618c56ae62dcba1ba567f85ee271ab21ebb38e9678840bbd6f1887fd"
     }
   }
 }

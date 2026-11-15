@@ -40,29 +40,30 @@ next supersession.
 
 `-6` supersedes `item10-inventory-5.json` / `item10-attestation-5.json`, which
 hashed `verification/README.md` and `.github/workflows/rtl-ci.yml` before
-issue #90 moved the generated-RTL exactness check out of
+PR #95 single-sourced the negctl must-fail contract into
+`verification/negctl.sh` (its four rows now name the helper) and issue #90
+moved the generated-RTL exactness check out of
 `rtl/gen/tests/test_gen.py`: the loose-tolerance smoke became
 `verification/test_gen_exact.py` (bit-exact vs the fixed-point model at six
 configurations), wired into `rtl-ci.yml` as the `gen-exact` /
 `gen-exact-negctl` targets, and those two checks join this inventory so the
-bit-exactness evidence is attested. The same hygiene entries and the previous
-checks are carried unchanged. `-5` supersedes `item10-inventory-4.json` / `item10-attestation-4.json`, which
-hashed `README.md` and `.github/workflows/signoff.yml` before issue #79 fixed
+bit-exactness evidence is attested. The remaining checks and the hygiene
+entries are carried unchanged. `-5` in turn superseded
+`item10-inventory-4.json` / `item10-attestation-4.json`, which hashed
+`README.md` and `.github/workflows/signoff.yml` before issue #79 fixed
 that Reproduce row (it still named the by-then-superseded `-3`) and repointed
-the workflow's re-attest step; `-5` carries the same checks and hygiene
-entries. `-4` in turn superseded `item10-inventory-3.json` /
-`item10-attestation-3.json`, which hashed `README.md` before the status
-alignment of issue #62. `-3` in turn superseded `item10-inventory-2.json` /
-`item10-attestation-2.json`, whose checks (`lint`, `sim`, `negctl`) and hygiene
-entry `measurements/synth-placeholder.json` covered the retired placeholder
-flow. `-6` checks the generated core's `lint` and `lint-negctl`,
-`lint-wrapper`, `fft-bench` and `fft-bench-negctl`, the multi-configuration
-`gen-exact` and `gen-exact-negctl`, and cites `measurements/fft256-smoke.json`.
-`-5`, `-4`, `-3`, `-2`, `-1` and
+the workflow's re-attest step. `-4` in turn superseded
+`item10-inventory-3.json` / `item10-attestation-3.json`, which hashed
+`README.md` before the status alignment of issue #62. `-3` in turn superseded
+`item10-inventory-2.json` / `item10-attestation-2.json`, whose checks (`lint`,
+`sim`, `negctl`) and hygiene entry `measurements/synth-placeholder.json`
+covered the retired placeholder flow. `-6` checks the generated core's `lint`
+and `lint-negctl`, `lint-wrapper`, `fft-bench` and `fft-bench-negctl`, the
+multi-configuration `gen-exact` and `gen-exact-negctl`, and cites
+`measurements/fft256-smoke.json`. `-5`, `-4`, `-3`, `-2`, `-1` and
 `measurements/synth-placeholder.json` are recorded evidence and stay
-unchanged. `README.md`, `verification/README.md`, `.github/workflows/rtl-ci.yml`
-and `.github/workflows/signoff.yml` are hashed hygiene
-files, so any edit to any of them needs a new superseding pair:
+unchanged. Every hygiene file is hash-pinned, so any edit to one of them needs
+a new superseding pair:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
@@ -104,23 +105,29 @@ klt signoff --attest 1 --inventory manifests/item1-inventory.json \
     --check manifests/item1-attestation.json
 ```
 
-Item 9 is cited from `item9-attestation-2.json`, generated from
-`item9-inventory-2.json` (the cocotb streaming-FFT bench and its negative
-control, plus the model, reference and generated-core smoke benches). It
-supersedes `item9-inventory.json` / `item9-attestation.json`, which cited the
-removed Icarus wrapper smoke bench (`tb_fft256_stream.sv`, `sim-wrapper*`).
-Those two files are recorded evidence and stay unchanged; their hashes still
-match the commit that produced them, but `--check` against the current tree
-no longer applies to them. Item 9's checks are `local_only` (they need Icarus
-and the cocotb venv, see `verification/README.md`), so `--check` in CI skips
-running them and only re-verifies the recorded hashes. Pinned
-`klayout-tools==0.8.0`:
+Item 9 is cited from `item9-attestation-3.json`, generated from
+`item9-inventory-3.json` (the cocotb streaming-FFT bench and its negative
+control, plus the model, reference and generated-core smoke benches and the
+tests of the shared append-only record writer). It supersedes
+`item9-inventory-2.json` / `item9-attestation-2.json`, whose hashes predate
+issue #94's record-writer consolidation: the append-only write moved from
+three copy-pasted tails to `sim/records.py` (new in the inventory),
+`verification/test_fft256_smoke.py`'s writer gained a path parameter, and
+`verification/Makefile`'s `fxp-model` target now also runs `sim.test_records`.
+`-3` in turn supersedes `item9-inventory.json` / `item9-attestation.json`,
+which cited the removed Icarus wrapper smoke bench (`tb_fft256_stream.sv`,
+`sim-wrapper*`). Those superseded files are recorded evidence and stay
+unchanged; their hashes still match the commit that produced them, but
+`--check` against the current tree no longer applies to them. Item 9's checks
+are `local_only` (they need Icarus and the cocotb venv, see
+`verification/README.md`), so `--check` in CI skips running them and only
+re-verifies the recorded hashes. Pinned `klayout-tools==0.8.0`:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-2.json \
-    -o manifests/item9-attestation-2.json
+    --inventory manifests/item9-inventory-3.json \
+    -o manifests/item9-attestation-3.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-2.json \
-    --check manifests/item9-attestation-2.json
+    --inventory manifests/item9-inventory-3.json \
+    --check manifests/item9-attestation-3.json
 ```
