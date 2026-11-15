@@ -57,27 +57,29 @@ lint-negctl:
 
 # Vector sets and double-precision SQNR reference (pure Python + numpy).
 sqnr-ref:
-	$(PYPATH) $(PYTHON) -m sim.test_reference
+	$(PYPATH) $(PYTHON) -m unittest sim.test_reference
 
 # Same tests with a wrong reference (I/Q swapped); must fail on the intended text.
 sqnr-ref-negctl:
 	@mkdir -p sim_build
 	@./negctl.sh "wrong reference" "the tests" "$(SQNR_NEGCTL_EXPECT)" sim_build/sqnr_negctl.out -- \
-	  env REF_MUTANT=swap_iq $(PYPATH) $(PYTHON) -m sim.test_reference
+	  env REF_MUTANT=swap_iq $(PYPATH) $(PYTHON) -m unittest sim.test_reference
 
 # Bit-accurate fixed-point model tests, the no-overflow amplitude sweep tests
 # and the candidate growth-schedule sweep tests (pure Python + numpy).
 fxp-model:
-	$(PYPATH) $(PYTHON) -m sim.test_fixedpoint_model
-	$(PYPATH) $(PYTHON) -m sim.test_overflow_range
-	$(PYPATH) $(PYTHON) -m sim.test_schedule_sweep
+	$(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model
+	$(PYPATH) $(PYTHON) -m unittest sim.test_overflow_range
+	$(PYPATH) $(PYTHON) -m unittest sim.test_schedule_sweep
+	# test_records.py keeps its own runner: its tests are module-level
+	# functions, which `-m unittest` would not collect (a vacuous pass).
 	$(PYPATH) $(PYTHON) -m sim.test_records
 
 # Same tests with a flooring rounder; must fail on the convergent-tie check.
 fxp-model-negctl:
 	@mkdir -p sim_build
 	@./negctl.sh "flooring rounder" "the tests" "$(FXP_NEGCTL_EXPECT)" sim_build/fxp_negctl.out -- \
-	  env FXP_MUTANT=floor_ties $(PYPATH) $(PYTHON) -m sim.test_fixedpoint_model
+	  env FXP_MUTANT=floor_ties $(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model
 
 # End-to-end smoke of the generated 256-point FFT: regen, Icarus vs the model,
 # Yosys at tt_025C_1v80; appends a record to ../measurements/fft256-smoke.json.
