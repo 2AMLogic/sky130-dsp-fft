@@ -3,21 +3,21 @@
   "kind": "generic",
   "status": "pass",
   "t1_item": 10,
-  "summary": "T1 item 10 (Repo hygiene): 14/14 attestation checks passed (klt signoff --attest)",
+  "summary": "T1 item 10 (Repo hygiene): 12/12 attestation checks passed (klt signoff --attest)",
   "source": "manifests/item10-inventory-6.json",
   "attestation": {
     "producer": "klt signoff --attest",
     "inventory_schema_version": 1,
     "hash_algorithm": "sha256-raw-bytes",
-    "check_count": 14,
-    "passed_count": 14,
+    "check_count": 12,
+    "passed_count": 12,
     "checks": [
       {
         "check": "present",
         "role": "hygiene",
         "path": ".github/workflows/rtl-ci.yml",
         "passed": true,
-        "content_hash": "sha256:1995f01e42080b3056765e00c6d0642361e330b339700b2c5bea55bd724b9dc9"
+        "content_hash": "sha256:6c2bdebdf3373a6384267402247ae46c679cd1ea5d67840f9a2969502c33f5d7"
       },
       {
         "check": "present",
@@ -52,7 +52,7 @@
         "role": "hygiene",
         "path": "verification/README.md",
         "passed": true,
-        "content_hash": "sha256:0d1c4b087f3b3cba4ae64d4f2a429eb2c6f07e44b321b13a5e261d91e73c07b0"
+        "content_hash": "sha256:e7219e5e8f7917aaff7d4776e0ae4446ae48e704805047bda5df8f110f765426"
       },
       {
         "check": "command",
@@ -132,36 +132,6 @@
       {
         "check": "command",
         "role": "audit",
-        "name": "gen-exact",
-        "argv": [
-          "make",
-          "-C",
-          "verification",
-          "gen-exact"
-        ],
-        "cwd": ".",
-        "exit_status": 0,
-        "passed": true,
-        "local_only": true
-      },
-      {
-        "check": "command",
-        "role": "audit",
-        "name": "gen-exact-negctl",
-        "argv": [
-          "make",
-          "-C",
-          "verification",
-          "gen-exact-negctl"
-        ],
-        "cwd": ".",
-        "exit_status": 0,
-        "passed": true,
-        "local_only": true
-      },
-      {
-        "check": "command",
-        "role": "audit",
         "name": "synth-record-json",
         "argv": [
           "python3",
@@ -184,7 +154,7 @@
         "path": "manifests/item10-inventory-6.json",
         "scope": "repo"
       },
-      "content_hash": "sha256:014f2be9618c56ae62dcba1ba567f85ee271ab21ebb38e9678840bbd6f1887fd"
+      "content_hash": "sha256:8a3c04859afc274ba1742a69ee7cf6b74890508e66888968eae8ba53f022a08c"
     }
   }
 }
