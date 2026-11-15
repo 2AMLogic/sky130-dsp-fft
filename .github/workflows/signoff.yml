@@ -67,5 +67,15 @@ jobs:
           # toolchain) are skipped here and carried with their committed
           # outcome; rtl-ci.yml runs lint and lint-negctl on this runner.
           klt signoff --attest 10 \
-              --inventory manifests/item10-inventory-7.json \
-              --check manifests/item10-attestation-7.json
+              --inventory manifests/item10-inventory-8.json \
+              --check manifests/item10-attestation-8.json
+
+      - name: Re-attest T1 item 9 and compare against the committed envelope
+        run: |
+          # Fails on drift: an edited inventory or hashed testbench. The
+          # local_only cold_start check (it needs Icarus and the cocotb venv)
+          # is skipped here and carried with its committed outcome;
+          # rtl-ci.yml runs the benches it covers on this runner.
+          klt signoff --attest 9 \
+              --inventory manifests/item9-inventory-4.json \
+              --check manifests/item9-attestation-4.json
