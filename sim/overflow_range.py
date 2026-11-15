@@ -82,7 +82,18 @@ def describe(r: dict) -> str:
 
 
 def _provenance(spec: dict) -> dict:
-    """Record-facing view of a sweep spec: minus `kind`, scalar `seed` as `seeds`."""
+    """Record-facing view of a sweep spec: minus `kind`, scalar `seed` as `seeds`.
+
+    Refuses a spec carrying both `seeds` and scalar `seed` rather than let one
+    silently overwrite the other in the record. `vectors.sweep_specs()` already
+    rejects such a table, so this is defense-in-depth for a spec reaching here
+    by another route. Scalar `seed` alone is legitimate (`tone`) and is
+    normalized as before.
+    """
+    if "seed" in spec and "seeds" in spec:
+        raise ValueError(
+            f"sweep spec {spec!r} mixes 'seeds' with scalar 'seed'; "
+            "refusing to record one in place of the other")
     out = {k: v for k, v in spec.items() if k not in ("kind", "seed")}
     if "seed" in spec:
         out["seeds"] = [spec["seed"]]
