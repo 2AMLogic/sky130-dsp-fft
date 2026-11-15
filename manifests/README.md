@@ -94,23 +94,29 @@ klt signoff --attest 1 --inventory manifests/item1-inventory.json \
     --check manifests/item1-attestation.json
 ```
 
-Item 9 is cited from `item9-attestation-2.json`, generated from
-`item9-inventory-2.json` (the cocotb streaming-FFT bench and its negative
-control, plus the model, reference and generated-core smoke benches). It
-supersedes `item9-inventory.json` / `item9-attestation.json`, which cited the
-removed Icarus wrapper smoke bench (`tb_fft256_stream.sv`, `sim-wrapper*`).
-Those two files are recorded evidence and stay unchanged; their hashes still
-match the commit that produced them, but `--check` against the current tree
-no longer applies to them. Item 9's checks are `local_only` (they need Icarus
-and the cocotb venv, see `verification/README.md`), so `--check` in CI skips
-running them and only re-verifies the recorded hashes. Pinned
-`klayout-tools==0.8.0`:
+Item 9 is cited from `item9-attestation-3.json`, generated from
+`item9-inventory-3.json` (the cocotb streaming-FFT bench and its negative
+control, plus the model, reference and generated-core smoke benches and the
+tests of the shared append-only record writer). It supersedes
+`item9-inventory-2.json` / `item9-attestation-2.json`, whose hashes predate
+issue #94's record-writer consolidation: the append-only write moved from
+three copy-pasted tails to `sim/records.py` (new in the inventory),
+`verification/test_fft256_smoke.py`'s writer gained a path parameter, and
+`verification/Makefile`'s `fxp-model` target now also runs `sim.test_records`.
+`-3` in turn supersedes `item9-inventory.json` / `item9-attestation.json`,
+which cited the removed Icarus wrapper smoke bench (`tb_fft256_stream.sv`,
+`sim-wrapper*`). Those superseded files are recorded evidence and stay
+unchanged; their hashes still match the commit that produced them, but
+`--check` against the current tree no longer applies to them. Item 9's checks
+are `local_only` (they need Icarus and the cocotb venv, see
+`verification/README.md`), so `--check` in CI skips running them and only
+re-verifies the recorded hashes. Pinned `klayout-tools==0.8.0`:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-2.json \
-    -o manifests/item9-attestation-2.json
+    --inventory manifests/item9-inventory-3.json \
+    -o manifests/item9-attestation-3.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-2.json \
-    --check manifests/item9-attestation-2.json
+    --inventory manifests/item9-inventory-3.json \
+    --check manifests/item9-attestation-3.json
 ```

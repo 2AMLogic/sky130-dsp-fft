@@ -40,15 +40,12 @@ CLI, from the repo root:
 `--record` appends one dated record to the file (append-only evidence).
 """
 
-import datetime
-import json
 import math
 import sys
-from pathlib import Path
 
 from rtl.gen import params as generator_params
 from sim import fixedpoint_model as fm
-from sim import reference, vectors
+from sim import records, reference, vectors
 
 FRAMES = vectors.FRAMES_PER_SET
 
@@ -211,7 +208,7 @@ def _json_safe(x: float):
 def record(path, params_file, base: fm.Params, results: list, frames: int = FRAMES) -> dict:
     """Append one dated record to `path` ({"records": [...]}); earlier records are kept."""
     rec = {
-        "date_utc": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "date_utc": records.utc_stamp(),
         "note": "SIMULATED (this model against a double-precision reference, not "
                 "silicon). A survey of candidate growth schedules for the spec's "
                 "Internal growth row: it reports, it selects nothing. No schedule "
@@ -242,21 +239,16 @@ def record(path, params_file, base: fm.Params, results: list, frames: int = FRAM
                      for name, s in r["sets"].items()},
         } for r in results],
     }
-    path = Path(path)
-    data = json.loads(path.read_text()) if path.exists() else {"records": []}
-    data["records"].append(rec)
-    path.write_text(json.dumps(data, indent=2) + "\n")
-    return rec
+    return records.append_record(path, rec)
 
 
 def main(argv=None) -> int:
     argv = sys.argv[1:] if argv is None else argv
-    rec_path = None
-    if len(argv) == 3 and argv[1] == "--record":
-        argv, rec_path = argv[:1], argv[2]
-    if len(argv) != 1:
-        print("usage: python3 -m sim.schedule_sweep <params-file> [--record <json>]",
-              file=sys.stderr)
+    try:
+        argv, rec_path = records.parse_record_argv(
+            argv, "usage: python3 -m sim.schedule_sweep <params-file> [--record <json>]")
+    except ValueError as e:
+        print(e, file=sys.stderr)
         return 2
     base = fm.load_params(argv[0])
     results = sweep(base, CANDIDATES, FRAMES)
