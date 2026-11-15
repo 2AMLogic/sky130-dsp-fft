@@ -4,10 +4,8 @@
 Run from the repo root: python3 -m unittest rtl.gen.tests.test_gen
 Icarus/Yosys steps are skipped, with a reason, when the tool is not on PATH.
 """
-import cmath
 import glob
 import os
-import random
 import shutil
 import subprocess
 import tempfile
@@ -163,86 +161,6 @@ class ToolAcceptance(unittest.TestCase):
 
     def test_variants(self):
         self.check(complex_mult="4mult", rounding="truncate", pipeline=0, stall=0)
-
-
-def dft(x):
-    n = len(x)
-    return [sum(x[j] * cmath.exp(-2j * cmath.pi * j * k / n) for j in range(n))
-            for k in range(n)]
-
-
-@unittest.skipUnless(have("iverilog"), "iverilog not on PATH")
-class Smoke(unittest.TestCase):
-    """Structural smoke only: output within a loose tolerance of a double DFT.
-    Not a bit-exact check (that needs the model, #31) and no accuracy claim."""
-
-    def run_size(self, size, order, pipeline):
-        w = WIDTHS[size]
-        nframes = 4
-        rng = random.Random(7)
-        n = size
-        data = [complex(rng.randint(-8000, 8000), rng.randint(-8000, 8000))
-                for _ in range(nframes * n)]
-        with tempfile.TemporaryDirectory() as d:
-            for name, body in gen(size=size, output_order=order, pipeline=pipeline,
-                                  stage_widths=w).items():
-                put(os.path.join(d, name), body)
-            with open(os.path.join(d, "in.txt"), "w") as f:
-                for z in data:
-                    f.write("%d %d\n" % (z.real, z.imag))
-            tb = """
-module tb;
-  reg clk = 0, rst = 1; reg en = 1;
-  reg signed [15:0] ir, ii; wire signed [15:0] orr, oi; wire v;
-  fft%d dut(.clk(clk), .rst(rst), .en(en), .in_re(ir), .in_im(ii),
-            .out_re(orr), .out_im(oi), .out_valid(v));
-  integer f, i, a, b, cnt;
-  initial begin
-    f = $fopen("in.txt", "r"); cnt = 0;
-    ir = 0; ii = 0;
-    repeat (3) @(posedge clk);
-    #1 rst = 0;
-    for (i = 0; i < %d; i = i + 1) begin
-      a = $fscanf(f, "%%d %%d", ir, ii);
-      @(posedge clk); #1;
-      if (v && cnt < %d) begin $display("%%0d %%0d", orr, oi); cnt = cnt + 1; end
-    end
-    for (i = 0; i < %d; i = i + 1) begin
-      @(posedge clk); #1;
-      if (v && cnt < %d) begin $display("%%0d %%0d", orr, oi); cnt = cnt + 1; end
-    end
-    $finish;
-  end
-  always #5 clk = ~clk;
-endmodule
-""" % (size, nframes * n, 2 * n, 4 * n, 2 * n)
-            put(os.path.join(d, "tb.v"), tb)
-            rc, out = tool_run(["iverilog", "-g2005", "-s", "tb", "-o", "t.vvp"]
-                               + sorted(glob.glob(d + "/*.v")), d)
-            self.assertEqual(rc, 0, out)
-            rc, out = tool_run(["vvp", "t.vvp"], d)
-            self.assertEqual(rc, 0, out)
-        vals = [tuple(map(int, l.split())) for l in out.splitlines()
-                if l and l[0] in "-0123456789"]
-        self.assertEqual(len(vals), 2 * n)
-        shift = 2.0 ** (int(w.split(",")[-1]) - 16)
-        for fr in range(2):
-            ref = dft(data[fr * n:(fr + 1) * n])
-            got = vals[fr * n:(fr + 1) * n]
-            if order == "bitrev":
-                nbits = n.bit_length() - 1
-                br = lambda k: int(format(k, "0%db" % nbits)[::-1], 2)
-                got = [got[j] for j in sorted(range(n), key=br)]
-            for k in range(n):
-                e = abs(complex(*got[k]) - ref[k] / shift)
-                self.assertLess(e, 4.0, (size, order, fr, k))
-
-    def test_smoke(self):
-        for size, order, pipe in ((16, "natural", 1), (16, "bitrev", 0),
-                                  (64, "natural", 1), (256, "natural", 1),
-                                  (256, "bitrev", 1), (4, "natural", 1)):
-            with self.subTest(size=size, order=order, pipeline=pipe):
-                self.run_size(size, order, pipe)
 
 
 if __name__ == "__main__":

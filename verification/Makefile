@@ -1,5 +1,5 @@
 # Verification flow for the generated FFT (see README.md). Run from verification/.
-# Targets: check-tools lint lint-negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl lint-wrapper fft-bench fft-bench-negctl all clean
+# Targets: check-tools lint lint-negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl lint-wrapper fft-bench fft-bench-negctl gen-exact gen-exact-negctl all clean
 PYTHON    ?= ../.venv/bin/python
 ROOT      ?= $(abspath ..)
 # Repo root on PYTHONPATH: the sim and verification entry points import the
@@ -20,13 +20,15 @@ FXP_NEGCTL_EXPECT ?= convergent tie rounding wrong
 SMOKE_NEGCTL_EXPECT ?= RTL output differs from bit-accurate model
 # Assertion text the perturbed-output cocotb stream bench must fail on (see test_fft256_stream.py).
 FFT_BENCH_NEGCTL_EXPECT ?= stream output differs from bit-accurate model
-# The four *_negctl targets below run their mutant through negctl.sh, which
+# Assertion text the perturbed multi-configuration exact run must fail on (see test_gen_exact.py).
+GEN_EXACT_NEGCTL_EXPECT ?= generated RTL output differs from bit-accurate model
+# The five *_negctl targets below run their mutant through negctl.sh, which
 # owns the must-fail-for-the-intended-reason contract (lint-negctl seeds its
 # defect into a copied tree first and keeps its own recipe).
 
-.PHONY: all check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl fft-bench fft-bench-negctl clean
+.PHONY: all check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl clean
 
-all: check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl fft-bench fft-bench-negctl
+all: check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl
 
 check-tools:
 	$(PYTHON) flow_tools.py check
@@ -109,6 +111,19 @@ fft-bench-negctl:
 	@mkdir -p sim_build
 	@./negctl.sh "perturbed output" "the bench" "$(FFT_BENCH_NEGCTL_EXPECT)" sim_build/fft_bench_negctl.out -- \
 	  env FFT_BENCH_PERTURB=1000 $(PYPATH) $(PYTHON) test_fft256_stream.py
+
+# Bit-exact check of the generated FFT against the model at six configurations
+# (sizes 4/16/64/256, natural/bitrev, pipeline 0/1): fresh regen in a temp dir,
+# Icarus, every captured output component equal to FixedPointFFT.run (issue #90).
+gen-exact:
+	$(PYPATH) $(PYTHON) test_gen_exact.py
+
+# One captured output component flipped per configuration (GEN_EXACT_PERTURB);
+# must fail on the mismatch text, not on a compile error or runner crash.
+gen-exact-negctl:
+	@mkdir -p sim_build
+	@./negctl.sh "perturbed DUT" "the exact check" "$(GEN_EXACT_NEGCTL_EXPECT)" sim_build/gen_exact_negctl.out -- \
+	  env GEN_EXACT_PERTURB=1000 $(PYPATH) $(PYTHON) test_gen_exact.py
 
 clean:
 	rm -rf sim_build results.xml

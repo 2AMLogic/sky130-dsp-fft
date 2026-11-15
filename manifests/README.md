@@ -31,18 +31,26 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-6.json`, generated from
-`item10-inventory-6.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-7.json`, generated from
+`item10-inventory-7.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
 **This paragraph names the current pair; cite it from here rather than copying
 the version number elsewhere.** The root `README.md` Reproduce row deliberately
 points at this section instead of naming a file, so it does not go stale at the
 next supersession.
 
-`-6` supersedes `item10-inventory-5.json` / `item10-attestation-5.json`, which
-hashed `verification/README.md` before PR #95 single-sourced the negctl
+`-7` supersedes `item10-inventory-6.json` / `item10-attestation-6.json`, which
+hashed `verification/README.md` and `.github/workflows/rtl-ci.yml` before
+issue #90 replaced the loose-tolerance generator smoke in
+`rtl/gen/tests/test_gen.py` with `verification/test_gen_exact.py`
+(bit-exact vs the fixed-point model at six configurations), wired into
+`rtl-ci.yml` as the `gen-exact` / `gen-exact-negctl` targets; those two checks
+join the inventory so the bit-exactness evidence is attested. The same hygiene
+entries and the previous checks are carried unchanged. `-6` in turn superseded
+`item10-inventory-5.json` / `item10-attestation-5.json`, which hashed
+`verification/README.md` before PR #95 single-sourced the negctl
 must-fail contract into `verification/negctl.sh` (its four rows now name the
-helper); `-6` carries the same checks and hygiene entries. `-5` in turn
+helper); `-6` carried the same checks and hygiene entries. `-5` in turn
 superseded `item10-inventory-4.json` / `item10-attestation-4.json`, which
 hashed `README.md` and `.github/workflows/signoff.yml` before issue #79 fixed
 that Reproduce row (it still named the by-then-superseded `-3`) and repointed
@@ -51,20 +59,21 @@ the workflow's re-attest step. `-4` in turn superseded
 `README.md` before the status alignment of issue #62. `-3` in turn superseded
 `item10-inventory-2.json` / `item10-attestation-2.json`, whose checks (`lint`,
 `sim`, `negctl`) and hygiene entry `measurements/synth-placeholder.json`
-covered the retired placeholder flow. `-6` checks the generated core's `lint`
-and `lint-negctl`, `lint-wrapper`, `fft-bench` and `fft-bench-negctl`, and
-cites `measurements/fft256-smoke.json`. `-5`, `-4`, `-3`, `-2`, `-1` and
+covered the retired placeholder flow. `-7` checks the generated core's `lint`
+and `lint-negctl`, `lint-wrapper`, `fft-bench` and `fft-bench-negctl`, the
+multi-configuration `gen-exact` and `gen-exact-negctl`, and cites
+`measurements/fft256-smoke.json`. `-6`, `-5`, `-4`, `-3`, `-2`, `-1` and
 `measurements/synth-placeholder.json` are recorded evidence and stay
 unchanged. Every hygiene file is hash-pinned, so any edit to one of them needs
 a new superseding pair:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-6.json \
-    -o manifests/item10-attestation-6.json
+    --inventory manifests/item10-inventory-7.json \
+    -o manifests/item10-attestation-7.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-6.json \
-    --check manifests/item10-attestation-6.json
+    --inventory manifests/item10-inventory-7.json \
+    --check manifests/item10-attestation-7.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a
