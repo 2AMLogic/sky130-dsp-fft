@@ -25,6 +25,39 @@ VECTOR_SETS = {
 }
 
 
+def sweep_specs() -> dict:
+    """One amplitude-sweep spec per `kind`, derived from VECTOR_SETS.
+
+    Groups the table by `kind`, drops the swept `fraction`, unions the `seeds`
+    of a group, and requires every other scalar key (`bin_offset`, `seed`) to
+    agree across the group: a disagreement raises, so a spec edit that splits a
+    kind's geometry cannot silently leave a downstream sweep recording
+    provenance for stimulus the table no longer defines.
+    """
+    groups: dict = {}
+    for name, spec in VECTOR_SETS.items():
+        g = groups.setdefault(spec["kind"], {})
+        for key, value in spec.items():
+            if key == "fraction":
+                continue
+            if key == "seeds":
+                g.setdefault("seeds", set()).update(value)
+            elif key in g and g[key] != value:
+                raise ValueError(
+                    f"VECTOR_SETS kind {spec['kind']!r} disagrees on {key!r} "
+                    f"({name}: {value!r} vs earlier {g[key]!r}); "
+                    "cannot derive a single sweep spec")
+            else:
+                g[key] = value
+    out = {}
+    for kind, g in groups.items():
+        spec = dict(g)
+        if "seeds" in spec:
+            spec["seeds"] = sorted(spec["seeds"])
+        out[kind] = spec
+    return out
+
+
 def full_scale(width: int) -> int:
     """Largest positive code of a signed `width`-bit component."""
     return (1 << (width - 1)) - 1

@@ -35,7 +35,7 @@ def test_committed_params_range_and_labels():
     for f in orr.fractions():
         if f > rnd["max_no_overflow_fraction"]:
             break
-        data = vectors.generate_swept_frames(orr.KINDS["random"], f, frames=FRAMES)
+        data = vectors.generate_swept_frames(vectors.sweep_specs()["random"], f, frames=FRAMES)
         fm.FixedPointFFT(p, strict=True).run(data.real.astype("int64"), data.imag.astype("int64"))
     assert tone["max_no_overflow_fraction"] >= 0.9, "tone90 must not overflow (spec ruling)"
     out = io.StringIO()
@@ -61,14 +61,14 @@ def test_width_change_moves_range_negative_control():
     or vanish. A sweep that ignored the widths would fail this.
     """
     p = fm.load_params(PARAMS)
-    base = orr.sweep_kind(p, orr.KINDS["random"], FRAMES)
+    base = orr.sweep_kind(p, vectors.sweep_specs()["random"], FRAMES)
     assert base["first_overflow_stage"] == "stage 1", base
-    wide = orr.sweep_kind(_with_width(p, 1, +1), orr.KINDS["random"], FRAMES)
+    wide = orr.sweep_kind(_with_width(p, 1, +1), vectors.sweep_specs()["random"], FRAMES)
     assert wide["max_no_overflow_fraction"] > base["max_no_overflow_fraction"], (
         f"widening stage 1 did not raise the range ({base} -> {wide}); sweep is insensitive")
     assert wide["first_overflow_stage"] != "stage 1", wide
     # Narrowing stage 1 is scale-compensated: same threshold, same stage.
-    narrow = orr.sweep_kind(_with_width(p, 1, -1), orr.KINDS["random"], FRAMES)
+    narrow = orr.sweep_kind(_with_width(p, 1, -1), vectors.sweep_specs()["random"], FRAMES)
     assert narrow["first_overflow_stage"] == "stage 1", narrow
 
 
@@ -87,6 +87,29 @@ def test_record_carries_params_and_note():
     assert data["records"] == [rec], data
     assert rec["parameter_file_sha256"] == p.sha256
     assert "SIMULATED" in rec["note"]
+
+
+def test_derived_random_seeds_are_the_vector_sets_union():
+    union = set()
+    for spec in vectors.VECTOR_SETS.values():
+        if spec["kind"] == "random":
+            union.update(spec["seeds"])
+    assert vectors.sweep_specs()["random"]["seeds"] == sorted(union)
+
+
+def test_sweep_specs_raise_when_a_kind_geometry_disagrees():
+    original = dict(vectors.VECTOR_SETS)
+    vectors.VECTOR_SETS["tone90"] = dict(original["tone90"], bin_offset=0.25)
+    try:
+        try:
+            vectors.sweep_specs()
+        except ValueError as e:
+            assert "tone" in str(e) and "bin_offset" in str(e), e
+        else:
+            assert False, "sweep_specs did not raise on disagreeing tone bin_offset"
+    finally:
+        vectors.VECTOR_SETS.clear()
+        vectors.VECTOR_SETS.update(original)
 
 
 def main() -> int:
