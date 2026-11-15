@@ -31,17 +31,24 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-8.json`, generated from
-`item10-inventory-8.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-9.json`, generated from
+`item10-inventory-9.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
 **This paragraph names the current pair; cite it from here rather than copying
 the version number elsewhere.** The root `README.md` Reproduce row deliberately
 points at this section instead of naming a file, so it does not go stale at the
 next supersession.
 
-`-8` supersedes `item10-inventory-7.json` / `item10-attestation-7.json`, which
-hashed `measurements/fft256-smoke.json` before issue #110 performed the live
-end-to-end smoke append that issue #94 left outstanding: `make smoke-fft256`
+`-9` supersedes `item10-inventory-8.json` / `item10-attestation-8.json`, which
+hashed `.github/workflows/rtl-ci.yml` and `verification/README.md` before
+PR #130 wired the generator unit tests (`rtl/gen/tests/test_gen.py`) into CI as
+the `gen-unit` / `gen-unit-negctl` targets: `rtl-ci.yml` gained the two CI
+steps and `verification/README.md` documents the targets, so those two hygiene
+entries' content hashes moved. The same hygiene entries and checks are carried
+unchanged. `-8` supersedes `item10-inventory-7.json` /
+`item10-attestation-7.json`, which hashed `measurements/fft256-smoke.json`
+before issue #110 performed the live end-to-end smoke append that issue #94
+left outstanding: `make smoke-fft256`
 ran the default-path writer end to end and appended exactly one record
 (61525 cells, area 1022030.207999 um2 at tt_025C_1v80) below the committed
 2026-10-30 record, so that hygiene entry's content hash moved. The same
@@ -66,21 +73,21 @@ the workflow's re-attest step. `-4` in turn superseded
 `README.md` before the status alignment of issue #62. `-3` in turn superseded
 `item10-inventory-2.json` / `item10-attestation-2.json`, whose checks (`lint`,
 `sim`, `negctl`) and hygiene entry `measurements/synth-placeholder.json`
-covered the retired placeholder flow. `-8` checks the generated core's `lint`
+covered the retired placeholder flow. `-9` checks the generated core's `lint`
 and `lint-negctl`, `lint-wrapper`, `fft-bench` and `fft-bench-negctl`, the
 multi-configuration `gen-exact` and `gen-exact-negctl`, and cites
-`measurements/fft256-smoke.json`. `-7`, `-6`, `-5`, `-4`, `-3`, `-2`, `-1` and
+`measurements/fft256-smoke.json`. `-8`, `-7`, `-6`, `-5`, `-4`, `-3`, `-2`, `-1` and
 `measurements/synth-placeholder.json` are recorded evidence and stay
 unchanged. Every hygiene file is hash-pinned, so any edit to one of them needs
 a new superseding pair:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-8.json \
-    -o manifests/item10-attestation-8.json
+    --inventory manifests/item10-inventory-9.json \
+    -o manifests/item10-attestation-9.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-8.json \
-    --check manifests/item10-attestation-8.json
+    --inventory manifests/item10-inventory-9.json \
+    --check manifests/item10-attestation-9.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a

@@ -27,7 +27,7 @@ GEN_EXACT_NEGCTL_EXPECT ?= generated RTL output differs from bit-accurate model
 # mismatching file's name ("fft256.v") to its message, so the trailing
 # ": fft256.v" proves the comparison fired rather than an import error or crash.
 GEN_UNIT_NEGCTL_EXPECT ?= : fft256.v
-# The five *_negctl targets below run their mutant through negctl.sh, which
+# The six *_negctl targets below run their mutant through negctl.sh, which
 # owns the must-fail-for-the-intended-reason contract (lint-negctl seeds its
 # defect into a copied tree first and keeps its own recipe).
 
