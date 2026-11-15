@@ -47,7 +47,7 @@ import sys
 
 from rtl.gen import params as generator_params
 from sim import fixedpoint_model as fm
-from sim import records, reference, vectors
+from sim import records, vectors
 
 FRAMES = vectors.FRAMES_PER_SET
 

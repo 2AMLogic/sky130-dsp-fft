@@ -20,7 +20,7 @@ from pathlib import Path
 import numpy as np
 
 import flow_tools
-from sim import fixedpoint_model, records, reference, vectors
+from sim import fixedpoint_model, records, vectors
 
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent
