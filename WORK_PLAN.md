@@ -35,19 +35,20 @@ _None._
 Issues currently being built (`loom:building`).
 
 - **#85**: klt signoff --attest 9 is drifted and no CI gate catches it
-- **#113**: No drift guard ties the generator's width bounds to the model's _WIDTH_MAX
+- **#124**: Run rtl/gen/tests/test_gen.py in CI: nothing gates committed RTL vs fresh regen
+- **#127**: Drift-guard dual test tells a maintainer to fix the probe when the generator is genuinely narrower
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#132**: test(sim): dual drift guard names both red causes and derives the all-ceiling keys
 
 ## Approved (Awaiting Merge)
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-_None._
+- **#120**: ci(signoff): gate item-9 testbench attestations; supersede item9 evidence to -4 and item10 to -9
 
 ## Proposed
 
@@ -55,13 +56,12 @@ Issues carrying `loom:curated`.
 
 - **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(curated)*
 - **#85**: klt signoff --attest 9 is drifted and no CI gate catches it *(curated)*
-- **#113**: No drift guard ties the generator's width bounds to the model's _WIDTH_MAX *(curated)*
-- **#116**: sim/: give the evidence JSON-safety helper a public home and refresh records.py's sharer list *(curated)*
+- **#127**: Drift-guard dual test tells a maintainer to fix the probe when the generator is genuinely narrower *(curated)*
+- **#128**: sim/: json_safe encodes -inf as "-inf", but measurements/README.md states null for it *(curated)*
 
 ## Proposed (Architect / Hermit)
 
 - **#71**: Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow *(hermit)*
-- **#124**: Run rtl/gen/tests/test_gen.py in CI: nothing gates committed RTL vs fresh regen *(hermit)*
 
 ## Epics
 
@@ -75,10 +75,10 @@ _None._
 | Very important | 1 |
 | Important | 3 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 2 |
-| PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 0 |
+| In Progress (`loom:building`) | 3 |
+| PRs awaiting review | 1 |
+| Approved PRs awaiting merge | 1 |
 | Curated | 4 |
-| Architect / Hermit proposals | 2 |
+| Architect / Hermit proposals | 1 |
 | Active epics | 0 |
 <!-- guide:plan-body:end -->
