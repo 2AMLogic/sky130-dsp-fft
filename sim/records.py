@@ -40,7 +40,7 @@ def json_safe(x: float, ndigits: int = 4):
     unrounded values.
     """
     if math.isinf(x):
-        return "inf" if x > 0 else "-inf"
+        return "inf" if x > 0 else None
     if math.isnan(x):
         return None
     if ndigits is None:
