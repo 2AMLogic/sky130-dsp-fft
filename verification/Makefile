@@ -54,12 +54,12 @@ lint-negctl:
 
 # Vector sets and double-precision SQNR reference (pure Python + numpy).
 sqnr-ref:
-	$(PYPATH) $(PYTHON) -m sim.test_reference
+	$(PYPATH) $(PYTHON) -m unittest sim.test_reference
 
 # Same tests with a wrong reference (I/Q swapped); must fail on the intended text.
 sqnr-ref-negctl:
 	@mkdir -p sim_build
-	@if REF_MUTANT=swap_iq $(PYPATH) $(PYTHON) -m sim.test_reference > sim_build/sqnr_negctl.out 2>&1; then \
+	@if REF_MUTANT=swap_iq $(PYPATH) $(PYTHON) -m unittest sim.test_reference > sim_build/sqnr_negctl.out 2>&1; then \
 	  echo "NEGATIVE CONTROL FAILED: wrong reference passed the tests"; exit 1; \
 	elif ! grep -qF "$(SQNR_NEGCTL_EXPECT)" sim_build/sqnr_negctl.out; then \
 	  echo "NEGATIVE CONTROL FAILED: wrong reference failed without the expected text '$(SQNR_NEGCTL_EXPECT)' (see sim_build/sqnr_negctl.out)"; exit 1; \
@@ -68,14 +68,14 @@ sqnr-ref-negctl:
 # Bit-accurate fixed-point model tests, the no-overflow amplitude sweep tests
 # and the candidate growth-schedule sweep tests (pure Python + numpy).
 fxp-model:
-	$(PYPATH) $(PYTHON) -m sim.test_fixedpoint_model
-	$(PYPATH) $(PYTHON) -m sim.test_overflow_range
-	$(PYPATH) $(PYTHON) -m sim.test_schedule_sweep
+	$(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model
+	$(PYPATH) $(PYTHON) -m unittest sim.test_overflow_range
+	$(PYPATH) $(PYTHON) -m unittest sim.test_schedule_sweep
 
 # Same tests with a flooring rounder; must fail on the convergent-tie check.
 fxp-model-negctl:
 	@mkdir -p sim_build
-	@if FXP_MUTANT=floor_ties $(PYPATH) $(PYTHON) -m sim.test_fixedpoint_model > sim_build/fxp_negctl.out 2>&1; then \
+	@if FXP_MUTANT=floor_ties $(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model > sim_build/fxp_negctl.out 2>&1; then \
 	  echo "NEGATIVE CONTROL FAILED: flooring rounder passed the tests"; exit 1; \
 	elif ! grep -qF "$(FXP_NEGCTL_EXPECT)" sim_build/fxp_negctl.out; then \
 	  echo "NEGATIVE CONTROL FAILED: flooring rounder failed without the expected text '$(FXP_NEGCTL_EXPECT)' (see sim_build/fxp_negctl.out)"; exit 1; \
