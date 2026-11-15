@@ -32,7 +32,10 @@ def sweep_specs() -> dict:
     of a group, and requires every other scalar key (`bin_offset`, `seed`) to
     agree across the group: a disagreement raises, so a spec edit that splits a
     kind's geometry cannot silently leave a downstream sweep recording
-    provenance for stimulus the table no longer defines.
+    provenance for stimulus the table no longer defines. A kind mixing the
+    `seeds` sequence with a scalar `seed` raises too: both shapes would land in
+    the spec, `generate_swept_frames()` would then read `seeds` while
+    `_provenance()` recorded only `[seed]`.
     """
     groups: dict = {}
     for name, spec in VECTOR_SETS.items():
@@ -41,6 +44,11 @@ def sweep_specs() -> dict:
             if key == "fraction":
                 continue
             if key == "seeds":
+                if "seed" in g:
+                    raise ValueError(
+                        f"VECTOR_SETS kind {spec['kind']!r} mixes 'seeds' with "
+                        f"scalar 'seed' ({name}: 'seeds' vs earlier 'seed'); "
+                        "cannot derive a single sweep spec")
                 g.setdefault("seeds", set()).update(value)
             elif key in g and g[key] != value:
                 raise ValueError(
@@ -48,6 +56,11 @@ def sweep_specs() -> dict:
                     f"({name}: {value!r} vs earlier {g[key]!r}); "
                     "cannot derive a single sweep spec")
             else:
+                if key == "seed" and "seeds" in g:
+                    raise ValueError(
+                        f"VECTOR_SETS kind {spec['kind']!r} mixes 'seeds' with "
+                        f"scalar 'seed' ({name}: 'seed' vs earlier 'seeds'); "
+                        "cannot derive a single sweep spec")
                 g[key] = value
     out = {}
     for kind, g in groups.items():
