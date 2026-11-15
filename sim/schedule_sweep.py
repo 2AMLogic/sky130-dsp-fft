@@ -192,20 +192,6 @@ def describe(r: dict) -> str:
             f"{'pass' if r['meets_spec_sqnr_target'] else 'FAIL'}")
 
 
-def _json_safe(x: float):
-    """Strict JSON has no `Infinity`/`NaN` literal, and `json.dumps` emits them anyway.
-
-    An exact match (`reference.sqnr_db` returns +inf) becomes the string
-    `"inf"`; any other non-finite value becomes `null`. Stated in
-    `measurements/README.md` so a reader of the record knows the convention.
-    """
-    if math.isinf(x):
-        return "inf" if x > 0 else "-inf"
-    if math.isnan(x):
-        return None
-    return round(float(x), 4)
-
-
 def record(path, params_file, base: fm.Params, results: list, frames: int = FRAMES) -> dict:
     """Append one dated record to `path` ({"records": [...]}); earlier records are kept."""
     rec = {
@@ -235,7 +221,7 @@ def record(path, params_file, base: fm.Params, results: list, frames: int = FRAM
             "generator_legal": r["generator_legal"],
             "generator_error": r["generator_error"],
             "meets_spec_sqnr_target": r["meets_spec_sqnr_target"],
-            "sets": {name: {"min_sqnr_db": _json_safe(s["min_sqnr_db"]),
+            "sets": {name: {"min_sqnr_db": records.json_safe(s["min_sqnr_db"]),
                             "overflow_components": s["overflow_components"]}
                      for name, s in r["sets"].items()},
         } for r in results],

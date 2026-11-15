@@ -64,7 +64,9 @@ the repo root on `PYTHONPATH`, as `verification/Makefile` does.
   `make -C verification fxp-model`.
 - `records.py`: the one append-only evidence writer (`append_record`) and the
   evidence `date_utc` format (`utc_stamp`), shared by `overflow_range.py`,
-  `schedule_sweep.py` and the generated-core smoke (`verification/test_fft256_smoke.py`).
+  `schedule_sweep.py`, `model_sizes.py` and the generated-core smoke
+  (`verification/test_fft256_smoke.py`). Also `json_safe`, the `"inf"`/`null`
+  encoding `measurements/README.md` states for non-finite SQNR values.
   Earlier records are never rewritten, and the file is written
   `json.dumps(..., indent=2) + "\n"` -- byte-for-byte the format the committed
   evidence files already use, so no evidence file re-indents on its next append.
@@ -78,7 +80,8 @@ the repo root on `PYTHONPATH`, as `verification/Makefile` does.
   fallback and stretch sizes (64 and 1024 points) the row's status cell lists
   as "not run". Takes several parameter files in one invocation and scores each
   on all four `vectors.VECTOR_SETS`, reporting per set the minimum SQNR and the
-  overflow component count (shared with `schedule_sweep.score_frames`).
+  overflow component count (both from `fixedpoint_model.score_set`, the one
+  measurement path the candidate-growth sweep scores through too).
   `--record` appends one dated record per file to
   `measurements/model-sizes.json` (append-only). The committed
   `rtl/params/fft64.params` / `rtl/params/fft1024.params` schedules are
