@@ -8,9 +8,10 @@ rather than read by hand.
 ## Files
 
 - **`sky130-dsp-fft.json`**: the block manifest. `block: sky130-dsp-fft`,
-  `kind: digital`, and an `evidence` map that is deliberately empty: no T1
-  item is cited yet. Citations are added one item at a time as artifacts
-  land, each pinning the `content_hash` of the artifact it cites.
+  `kind: digital`, and an `evidence` map carrying one entry per attested T1
+  item, each pinning the `content_hash` of the artifact it cites. Which items
+  are cited is the record's answer, not this file's — see "Current verdict"
+  below and `sky130-dsp-fft.signoff.json`.
 - **`design-evidence-tiers.md`**: the T1-T4 checklist the grader parses.
   Vendored **byte-identical** from
   [`2AMLogic/klayout-tools@44cc42323184`](https://github.com/2AMLogic/klayout-tools/blob/44cc42323184a2f3a440b89789bf174488a6b1e4/docs/design-evidence-tiers.md)
