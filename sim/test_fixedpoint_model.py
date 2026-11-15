@@ -15,11 +15,8 @@ from pathlib import Path
 
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-
-import fixedpoint_model as fm  # noqa: E402
-import reference  # noqa: E402
-import vectors  # noqa: E402
+from sim import fixedpoint_model as fm
+from sim import reference, vectors
 
 if os.environ.get("FXP_MUTANT") == "floor_ties":
     _orig_round_shift = fm.round_shift
