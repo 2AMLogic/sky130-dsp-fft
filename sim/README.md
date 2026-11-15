@@ -80,7 +80,8 @@ the repo root on `PYTHONPATH`, as `verification/Makefile` does.
   fallback and stretch sizes (64 and 1024 points) the row's status cell lists
   as "not run". Takes several parameter files in one invocation and scores each
   on all four `vectors.VECTOR_SETS`, reporting per set the minimum SQNR and the
-  overflow component count (shared with `schedule_sweep.score_frames`).
+  overflow component count (both from `fixedpoint_model.score_set`, the one
+  measurement path the candidate-growth sweep scores through too).
   `--record` appends one dated record per file to
   `measurements/model-sizes.json` (append-only). The committed
   `rtl/params/fft64.params` / `rtl/params/fft1024.params` schedules are
