@@ -60,20 +60,23 @@ def _width_probe(base: fm.Params, key: str, width: int) -> fm.Params:
     mutation: raising `input_width` must raise the schedule with it
     (`stage_widths` entries are non-decreasing from `input_width`) and raising
     `output_width` must raise the last stage to meet it
-    (`output_width <= stage_widths[-1]`). Both companions cap the schedule at
-    the model's own `stage_widths` ceiling, so a rejection can only name the
-    probed key, never a constraint the probe itself broke.
+    (`output_width <= stage_widths[-1]`). The companion raises the schedule
+    *with* the probed key rather than capping it at a fixed ceiling, so the
+    probed key's own range check is the first gate that can fire: on an
+    aligned generator every rejection names the probed key, and a rejection
+    naming another key means the probed bound has drifted wide (the raised
+    schedule then breaks its own ceiling) or the probe is malformed -- either
+    way a red, which is the conservative direction.
     """
-    top_sw = fm._WIDTH_MAX["stage_widths"]
     overrides = {key: width}
-    if key == "stage_widths":
-        # the probed value is the schedule itself: every entry at the probe width
+    if key in ("stage_widths", "input_width"):
+        # `stage_widths` probed directly, or raised with a probed `input_width`:
+        # every entry at the probe width
         overrides["stage_widths"] = (width,) * len(base.stage_widths)
-    elif key == "input_width":
-        overrides["stage_widths"] = (min(top_sw, width),) * len(base.stage_widths)
     elif key == "output_width":
+        # raise the last stage to meet the probed output width
         stages = list(base.stage_widths)
-        stages[-1] = max(stages[-1], min(top_sw, width))
+        stages[-1] = max(stages[-1], width)
         overrides["stage_widths"] = tuple(stages)
     return fm.Params(**dict(base.__dict__, **overrides))
 
@@ -249,18 +252,22 @@ class ScheduleSweep(unittest.TestCase):
         literals -- #89/#100 aligned them by hand once, and nothing else kept
         them aligned. Every probe width is derived from `fm._WIDTH_MAX` at
         runtime, so widening a generator bound OR narrowing a model bound
-        breaks this loop. A rejection naming a different key means the probe
-        broke a second constraint; fix the probe, do not relax the guard.
+        breaks this loop. A rejection naming a different key means the probed
+        bound has drifted wide (the raised companion schedule then breaks its
+        own ceiling) or the probe is malformed; either way this loop is red,
+        and it is the probe -- never the guard -- that gets fixed.
         """
         base = fm.load_params(PARAMS)
         for key, top in fm._WIDTH_MAX.items():
             legal, reason = ss.generator_verdict(_width_probe(base, key, top + 1))
             assert not legal, (
                 f"{key}: the generator accepted {top + 1}, above the model's "
-                "ceiling %d -- the generator's bound has drifted wide" % top)
-            assert key in (reason or ""), (
-                f"{key}: the rejection named another constraint: {reason!r} "
-                "(a probe must be valid except for the probed key)")
+                f"ceiling {top} -- the generator's bound has drifted wide")
+            assert (reason or "").startswith(key + ":"), (
+                f"{key}: the rejection was for another constraint: {reason!r} "
+                "(on an aligned generator the probed key's own range check "
+                "fires first; another prefix means the bound drifted wide or "
+                "the probe is malformed)")
 
     def test_generator_accepts_at_every_model_ceiling(self):
         """Drift guard, dual: at exactly every `_WIDTH_MAX` ceiling the
