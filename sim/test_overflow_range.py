@@ -91,7 +91,50 @@ class AmplitudeSweep(unittest.TestCase):
         for spec in vectors.VECTOR_SETS.values():
             if spec["kind"] == "random":
                 union.update(spec["seeds"])
-        assert vectors.sweep_specs()["random"]["seeds"] == sorted(union)
+        specs = vectors.sweep_specs()
+        assert specs["random"]["seeds"] == sorted(union)
+        assert "seed" not in specs["random"], specs["random"]
+        assert specs["tone"]["seed"] == 1
+        assert "seeds" not in specs["tone"], specs["tone"]
+
+    def test_sweep_specs_raise_when_a_kind_mixes_seed_keys(self):
+        """A kind carrying both `seeds` and scalar `seed` must raise in either
+        table order: the generator reads `seeds` while `_provenance()` would
+        record only `[seed]`, so the record describes stimulus never generated."""
+        original = dict(vectors.VECTOR_SETS)
+        mixed = {"kind": "random", "fraction": 0.8, "seed": 99}
+
+        def assert_mixed_key_raise(exc):
+            assert ("random" in str(exc) and "seeds" in str(exc)
+                    and "scalar 'seed'" in str(exc)), exc
+
+        try:
+            vectors.VECTOR_SETS["random80"] = mixed
+            try:
+                vectors.sweep_specs()
+            except ValueError as e:
+                assert_mixed_key_raise(e)
+            else:
+                assert False, "sweep_specs did not raise on mixed seed keys"
+            rebuilt = {"random80": mixed}
+            rebuilt.update(original)
+            vectors.VECTOR_SETS.clear()
+            vectors.VECTOR_SETS.update(rebuilt)
+            try:
+                vectors.sweep_specs()
+            except ValueError as e:
+                assert_mixed_key_raise(e)
+            else:
+                assert False, "sweep_specs did not raise when 'seed' precedes 'seeds'"
+        finally:
+            vectors.VECTOR_SETS.clear()
+            vectors.VECTOR_SETS.update(original)
+
+    def test_provenance_refuses_mixed_seed_keys_but_keeps_scalar_seed(self):
+        with self.assertRaises(ValueError):
+            orr._provenance({"kind": "random", "seeds": [1, 2, 3], "seed": 99})
+        assert orr._provenance({"kind": "tone", "bin_offset": 0.3, "seed": 1}) == {
+            "bin_offset": 0.3, "seeds": [1]}
 
     def test_sweep_specs_raise_when_a_kind_geometry_disagrees(self):
         original = dict(vectors.VECTOR_SETS)

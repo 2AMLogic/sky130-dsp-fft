@@ -5,6 +5,16 @@ Maintained by the Guide triage role.
 
 ### 2026-11-15
 
+- **PR #121**: fix: raise when a sweep kind mixes scalar seed with seeds
+- **PR #119**: verify(smoke): append live fft256 smoke record, supersede item10 pair to -8
+- **PR #114**: docs: pin item 1 signoff recipe to klayout-tools==0.9.0 and fix T1 verdict counts in manifests/README.md
+- **PR #104**: verify: replace loose-tolerance generator smoke with bit-exact RTL-vs-model check in CI
+- **PR #97**: feat: record simulated model SQNR for the 64/1024-point FFT sizes
+- **Issue #110** (closed): Close out #94 step 5: a live `make smoke-fft256` append, unverified because yosys/abc wedges on this worker
+- **Issue #108** (closed): sweep_specs(): a kind mixing scalar `seed` with `seeds` misrecords provenance without raising
+- **Issue #105** (closed): klt signoff --attest 1 --check is drifted on main: the pinned klt 0.8.0 cannot re-verify the committed item 1 envelope
+- **Issue #90** (closed): Retire the loose-tolerance DFT in the generator's smoke test: the bit-accurate model it waited on now exists
+- **Issue #77** (closed): Record model SQNR and overflow for the 64-point fallback and 1024-point stretch sizes
 - **PR #117**: docs: defer manifests README evidence-map bullet to the signoff record
 - **PR #107**: refactor: collapse the four copied sim/ test runners onto unittest
 - **PR #100**: fix: cap generator stage_widths at 32, the model's verified bound
