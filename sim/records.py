@@ -13,7 +13,10 @@ format the committed evidence files already use: a re-indent here would
 rewrite every record wholesale on the file's next append. The `"inf"`/`null`
 encoding `measurements/README.md` states for non-finite SQNR values is
 implemented once here too (`json_safe`), so every writer shares one
-implementation of the convention.
+implementation of the convention -- and the write itself is
+`allow_nan=False`, so a record that still carries a bare non-finite float
+raises before the file is touched instead of appending a literal strict
+readers reject.
 """
 
 import datetime
@@ -54,12 +57,15 @@ def append_record(path, rec: dict) -> dict:
     Append-only: the earlier records are read back and rewritten untouched --
     never edited, reordered or dropped. A missing file starts as
     `{"records": []}`. The file is written `indent=2` with a trailing newline,
-    the byte format the committed evidence files already use.
+    the byte format the committed evidence files already use. A record
+    carrying a bare non-finite float raises `ValueError` and leaves the file
+    untouched (existing evidence is never truncated by a failed append);
+    encode non-finite values with `json_safe` first.
     """
     path = Path(path)
     data = json.loads(path.read_text()) if path.exists() else {"records": []}
     data["records"].append(rec)
-    path.write_text(json.dumps(data, indent=2) + "\n")
+    path.write_text(json.dumps(data, indent=2, allow_nan=False) + "\n")
     return rec
 
 
