@@ -11,6 +11,7 @@ Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a h
 - **#120**: ci(signoff): gate item-9 testbench attestations; supersede item9 evidence to -4 and item10 to -9
 - **#132**: test(sim): dual drift guard names both red causes and derives the all-ceiling keys
 - **#137**: fix: route the smoke record's SQNR through json_safe and reject non-finite records at the shared writer
+- **#142**: chore(loom): resync installed Loom to v0.19.1302
 
 ## Very Important
 
@@ -45,7 +46,7 @@ Issues currently being built (`loom:building`).
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#142**: chore(loom): resync installed Loom to v0.19.1302
+_None._
 
 ## Approved (Awaiting Merge)
 
@@ -54,6 +55,7 @@ PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 - **#120**: ci(signoff): gate item-9 testbench attestations; supersede item9 evidence to -4 and item10 to -9
 - **#132**: test(sim): dual drift guard names both red causes and derives the all-ceiling keys
 - **#137**: fix: route the smoke record's SQNR through json_safe and reject non-finite records at the shared writer
+- **#142**: chore(loom): resync installed Loom to v0.19.1302
 
 ## Proposed
 
@@ -76,13 +78,13 @@ _None._
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 3 |
+| Operator merge-risk holds | 4 |
 | Very important | 1 |
 | Important | 4 |
 | Ready (`loom:issue`) | 0 |
 | In Progress (`loom:building`) | 3 |
-| PRs awaiting review | 1 |
-| Approved PRs awaiting merge | 3 |
+| PRs awaiting review | 0 |
+| Approved PRs awaiting merge | 4 |
 | Curated | 4 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 0 |
