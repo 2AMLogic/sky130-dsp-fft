@@ -141,13 +141,20 @@ gen-unit:
 
 # One byte appended to a copy of the whole rtl/ tree, on PYTHONPATH ahead of
 # the committed tree (make runs from verification/, which has no rtl/ package,
-# so the copy shadows it). The copy's committed-vs-regen check must fail on
-# the byte-compare assertion (: fft256.v), not on an import error or crash.
-# rtl/generated itself is never modified.
+# so the copy shadows it). The clean copy must pass first, so a copy-induced
+# difference (a path-dependent regen input, a file cp skips) cannot make the
+# committed-vs-regen check fail for a reason other than the appended byte; the
+# perturbed copy must then fail AND carry GEN_UNIT_NEGCTL_EXPECT, so a missing
+# file or crash does not count as "caught". rtl/generated itself is never
+# modified.
 gen-unit-negctl:
 	@rm -rf sim_build/gen_unit_negctl
 	@mkdir -p sim_build/gen_unit_negctl
 	@cp -r ../rtl sim_build/gen_unit_negctl/rtl
+	@if ! env PYTHONPATH=$(CURDIR)/sim_build/gen_unit_negctl $(PYTHON) -m unittest \
+	      rtl.gen.tests.test_gen.Determinism.test_committed_rtl_matches_fresh_regen \
+	      > sim_build/gen_unit_negctl_clean.out 2>&1; then \
+	  echo "NEGATIVE CONTROL FAILED: clean copy of the rtl tree does not pass the committed-vs-regen check (see sim_build/gen_unit_negctl_clean.out)"; exit 1; fi
 	@printf 'x' >> sim_build/gen_unit_negctl/rtl/generated/fft256.v
 	@if [ "$$(( $$(wc -c < ../rtl/generated/fft256.v) + 1 ))" -ne "$$(wc -c < sim_build/gen_unit_negctl/rtl/generated/fft256.v)" ]; then \
 	  echo "NEGATIVE CONTROL FAILED: appended byte is not in the copy only"; exit 1; fi
