@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-11-16
 
+- **PR #141**: verification: assert gen-unit-negctl's clean copy passes before perturbing it
+- **Issue #136** (closed): verification: gen-unit-negctl should assert the clean copy passes before perturbing it
 - **PR #130**: ci: gate committed generated RTL against a fresh regen
 - **Issue #124** (closed): Run rtl/gen/tests/test_gen.py in CI: nothing gates committed RTL vs fresh regen
 
