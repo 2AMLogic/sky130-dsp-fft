@@ -8,7 +8,8 @@ Maintained by the Guide triage role; the region between the markers is generated
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-_None._
+- **#120**: ci(signoff): gate item-9 testbench attestations; supersede item9 evidence to -4 and item10 to -9
+- **#132**: test(sim): dual drift guard names both red causes and derives the all-ceiling keys
 
 ## Very Important
 
@@ -23,6 +24,7 @@ _None._
 - **#18**: T1 item 3 (DRC clean): klt drc on the routed FFT GDS with coverage disclosed
 - **#19**: T1 item 4 (LVS clean): klt lvs of the routed FFT vs the gate-level netlist
 - **#20**: T1 item 11 (power delivery): klt erc supply spec and PDN evidence for the routed FFT
+- **#138**: Decide how BEHIND PRs clear main's strict required-status-checks policy
 
 ## Ready
 
@@ -35,20 +37,23 @@ _None._
 Issues currently being built (`loom:building`).
 
 - **#85**: klt signoff --attest 9 is drifted and no CI gate catches it
-- **#124**: Run rtl/gen/tests/test_gen.py in CI: nothing gates committed RTL vs fresh regen
 - **#127**: Drift-guard dual test tells a maintainer to fix the probe when the generator is genuinely narrower
+- **#135**: verification/test_fft256_smoke.py writes a bare Infinity literal for an exact-match SQNR, bypassing the json_safe convention
+- **#136**: verification: gen-unit-negctl should assert the clean copy passes before perturbing it
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-- **#132**: test(sim): dual drift guard names both red causes and derives the all-ceiling keys
+_None._
 
 ## Approved (Awaiting Merge)
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
 - **#120**: ci(signoff): gate item-9 testbench attestations; supersede item9 evidence to -4 and item10 to -9
+- **#132**: test(sim): dual drift guard names both red causes and derives the all-ceiling keys
+- **#137**: fix: route the smoke record's SQNR through json_safe and reject non-finite records at the shared writer
 
 ## Proposed
 
@@ -57,7 +62,8 @@ Issues carrying `loom:curated`.
 - **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(curated)*
 - **#85**: klt signoff --attest 9 is drifted and no CI gate catches it *(curated)*
 - **#127**: Drift-guard dual test tells a maintainer to fix the probe when the generator is genuinely narrower *(curated)*
-- **#128**: sim/: json_safe encodes -inf as "-inf", but measurements/README.md states null for it *(curated)*
+- **#135**: verification/test_fft256_smoke.py writes a bare Infinity literal for an exact-match SQNR, bypassing the json_safe convention *(curated)*
+- **#136**: verification: gen-unit-negctl should assert the clean copy passes before perturbing it *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -71,14 +77,14 @@ _None._
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 0 |
+| Operator merge-risk holds | 2 |
 | Very important | 1 |
-| Important | 3 |
+| Important | 4 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 3 |
-| PRs awaiting review | 1 |
-| Approved PRs awaiting merge | 1 |
-| Curated | 4 |
+| In Progress (`loom:building`) | 4 |
+| PRs awaiting review | 0 |
+| Approved PRs awaiting merge | 3 |
+| Curated | 5 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 0 |
 <!-- guide:plan-body:end -->
