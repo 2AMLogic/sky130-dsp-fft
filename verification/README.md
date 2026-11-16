@@ -16,7 +16,7 @@ pinned `ciel` revision (`ciel enable --pdk sky130 f6eeac7d...`, installed under
 python3 -m venv .venv
 .venv/bin/pip install -r verification/requirements.txt
 cd verification
-make all      # check-tools, lint, lint-negctl, lint-wrapper, sqnr-ref, sqnr-ref-negctl, fxp-model, fxp-model-negctl, fft-bench, fft-bench-negctl, gen-exact, gen-exact-negctl
+make all      # check-tools, lint, lint-negctl, lint-wrapper, sqnr-ref, sqnr-ref-negctl, fxp-model, fxp-model-negctl, fft-bench, fft-bench-negctl, gen-exact, gen-exact-negctl, gen-unit, gen-unit-negctl
 make fft-bench fft-bench-negctl   # the streaming FFT cocotb bench on its own (~30 s)
 make smoke-fft256 smoke-fft256-negctl   # regen check, Icarus vs model, Yosys (appends to ../measurements/fft256-smoke.json)
 ```
@@ -37,6 +37,8 @@ make smoke-fft256 smoke-fft256-negctl   # regen check, Icarus vs model, Yosys (a
 | `smoke-fft256` | regenerates `rtl/generated` (must equal the committed tree), runs Icarus on the generated top against `sim/fixedpoint_model.py` over the `sim/vectors.py` sets (any mismatch exits non-zero with count and first index), maps it in Yosys at `tt_025C_1v80` (fails on any non-`sky130_fd_sc_hd__` or SRAM cell), and **appends** a record to `../measurements/fft256-smoke.json`. Tool-version drift is recorded in the record, not fatal. SQNR in the record is simulated (model vs double precision) at the placeholder widths; no timing claim |
 | `smoke-fft256-negctl` | same run with one DUT output bit flipped (`PERTURB`), run through `negctl.sh`; succeeds only if it **fails with** `RTL output differs from bit-accurate model` (`SMOKE_NEGCTL_EXPECT`) and writes no record |
 | `gen-exact-negctl` | same exact check with one captured output component flipped per configuration (`GEN_EXACT_PERTURB`), run through `negctl.sh`; succeeds only if it **fails with** `generated RTL output differs from bit-accurate model` (`GEN_EXACT_NEGCTL_EXPECT`) |
+| `gen-unit` | `rtl/gen/tests/test_gen.py`: the generator's unit tests — regen byte-determinism, committed `rtl/generated` vs fresh regen from `rtl/params/fft256.params`, SPDX headers, parameter variations and invalid-parameter rejection. Pure Python; the Icarus/Yosys acceptance class skips, with a reason, when a tool is absent |
+| `gen-unit-negctl` | one byte appended to a copy of the whole `rtl/` tree, shadowing the committed package via `PYTHONPATH` (make runs from `verification/`, which has no `rtl/` package), run through `negctl.sh`; succeeds only if the copy's committed-vs-regen check **fails with** the byte-compare assertion text `: fft256.v` (`GEN_UNIT_NEGCTL_EXPECT`) — proving the comparison fired, not an import error or crash. `rtl/generated` is never modified |
 
 `smoke-fft256` is manual (not in CI). Records in `measurements/` are append-only
 evidence; add a new record, never overwrite one.
@@ -44,8 +46,9 @@ evidence; add a new record, never overwrite one.
 ## CI
 
 `.github/workflows/rtl-ci.yml` runs `fft-bench`, `fft-bench-negctl`, `gen-exact`,
-`gen-exact-negctl`, `lint`, `lint-negctl`, `lint-wrapper`, `sqnr-ref`,
-`sqnr-ref-negctl`, `fxp-model` and `fxp-model-negctl` on every push
+`gen-exact-negctl`, `gen-unit`, `gen-unit-negctl`, `lint`, `lint-negctl`,
+`lint-wrapper`, `sqnr-ref`, `sqnr-ref-negctl`, `fxp-model` and
+`fxp-model-negctl` on every push
 and pull request. CI installs the runner's packaged Icarus and Verilator, which
 may differ from the pinned versions, so it skips `check-tools`; the version pin
 is enforced by `make all` and `make smoke-fft256` locally.

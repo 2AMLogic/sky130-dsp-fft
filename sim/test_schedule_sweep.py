@@ -51,6 +51,36 @@ def _small_base():
     base = fm.load_params(PARAMS)
     return fm.Params(**dict(base.__dict__, size=SMALL_SIZE,
                             stage_widths=SMALL_CANDIDATES[0]["stage_widths"]))
+
+
+def _width_probe(base: fm.Params, key: str, width: int) -> fm.Params:
+    """`base` with `key` at `width`, valid for every other generator constraint.
+
+    Two keys are coupled in the generator's validator and need a companion
+    mutation: raising `input_width` must raise the schedule with it
+    (`stage_widths` entries are non-decreasing from `input_width`) and raising
+    `output_width` must raise the last stage to meet it
+    (`output_width <= stage_widths[-1]`). The companion raises the schedule
+    *with* the probed key rather than capping it at a fixed ceiling, so the
+    probed key's own range check is the first gate that can fire: on an
+    aligned generator every rejection names the probed key, and a rejection
+    naming another key means the probed bound has drifted wide (the raised
+    schedule then breaks its own ceiling) or the probe is malformed -- either
+    way a red, which is the conservative direction.
+    """
+    overrides = {key: width}
+    if key in ("stage_widths", "input_width"):
+        # `stage_widths` probed directly, or raised with a probed `input_width`:
+        # every entry at the probe width
+        overrides["stage_widths"] = (width,) * len(base.stage_widths)
+    elif key == "output_width":
+        # raise the last stage to meet the probed output width
+        stages = list(base.stage_widths)
+        stages[-1] = max(stages[-1], width)
+        overrides["stage_widths"] = tuple(stages)
+    return fm.Params(**dict(base.__dict__, **overrides))
+
+
 class ScheduleSweep(unittest.TestCase):
     def test_small_size_sweep_reports_every_candidate(self):
         res = ss.sweep(_small_base(), SMALL_CANDIDATES, 10)
@@ -170,9 +200,6 @@ class ScheduleSweep(unittest.TestCase):
 
     def test_record_json_is_strict_no_infinity(self):
         """`json.dumps(float('inf'))` emits a bare `Infinity`, which is not valid JSON."""
-        assert ss._json_safe(float("inf")) == "inf"
-        assert ss._json_safe(float("-inf")) == "-inf"
-        assert ss._json_safe(float("nan")) is None
         base = fm.load_params(PARAMS)
         res = ss.sweep(_small_base(), SMALL_CANDIDATES[:1], 5)
         # An exact match is unreachable at these sizes, so force one.
@@ -212,3 +239,56 @@ class ScheduleSweep(unittest.TestCase):
         assert len(records[0]["candidates"]) == len(ss.CANDIDATES)
         for cand in ss.CANDIDATES:
             assert cand["name"] in text, f"{cand['name']} missing from the printed table"
+
+    def test_generator_rejects_above_every_model_ceiling(self):
+        """Drift guard, reject side: above every `_WIDTH_MAX` ceiling the
+        generator must raise ParamError naming that key.
+
+        The generator cannot import the model (it stays reproducible from a
+        pinned commit alone), so the two hold the same ceilings as independent
+        literals -- #89/#100 aligned them by hand once, and nothing else kept
+        them aligned. Every probe width is derived from `fm._WIDTH_MAX` at
+        runtime, so widening a generator bound OR narrowing a model bound
+        breaks this loop. A rejection naming a different key means the probed
+        bound has drifted wide (the raised companion schedule then breaks its
+        own ceiling) or the probe is malformed; either way this loop is red,
+        and it is the probe -- never the guard -- that gets fixed.
+        """
+        base = fm.load_params(PARAMS)
+        for key, top in fm._WIDTH_MAX.items():
+            legal, reason = ss.generator_verdict(_width_probe(base, key, top + 1))
+            assert not legal, (
+                f"{key}: the generator accepted {top + 1}, above the model's "
+                f"ceiling {top} -- the generator's bound has drifted wide")
+            assert (reason or "").startswith(key + ":"), (
+                f"{key}: the rejection was for another constraint: {reason!r} "
+                "(on an aligned generator the probed key's own range check "
+                "fires first; another prefix means the bound drifted wide or "
+                "the probe is malformed)")
+
+    def test_generator_accepts_at_every_model_ceiling(self):
+        """Drift guard, dual: at exactly every `_WIDTH_MAX` ceiling the
+        generator must accept, so it is not needlessly narrower than the model.
+
+        The generator may be narrower than the model on the low side by design
+        (4../6.. vs the model's 2..); only the ceilings are guarded. Any
+        ParamError here is a malformed probe to fix -- including one naming
+        the probed key itself -- never evidence of a narrower bound: only a
+        probe valid for every other constraint can testify.
+        """
+        base = fm.load_params(PARAMS)
+        for key, top in fm._WIDTH_MAX.items():
+            legal, reason = ss.generator_verdict(_width_probe(base, key, top))
+            assert legal, (
+                f"{key}: the generator rejected the model's own ceiling {top}: "
+                f"{reason!r} -- a malformed probe is fixed, not reported")
+        # One construction at the ceiling of all four keys at once is legal too:
+        # the cheapest shape that exercises every dual together.
+        top = fm._WIDTH_MAX
+        p = fm.Params(**dict(base.__dict__,
+                             input_width=top["input_width"],
+                             output_width=top["output_width"],
+                             twiddle_width=top["twiddle_width"],
+                             stage_widths=(top["stage_widths"],) * len(base.stage_widths)))
+        legal, reason = ss.generator_verdict(p)
+        assert legal, f"the all-ceiling construction is not generator-legal: {reason!r}"

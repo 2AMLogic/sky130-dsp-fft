@@ -101,6 +101,27 @@ def test_smoke_writer_delegates_with_record_as_default_path():
     assert text == json.dumps(data, indent=2) + "\n"
 
 
+def test_json_safe_encodes_non_finite_per_the_evidence_convention():
+    """`measurements/README.md`'s convention, implemented here: an exact SQNR
+    match is the string `"inf"`, any other non-finite value is `null` --
+    strict JSON cannot carry a non-finite number, and `json.dumps` would emit
+    a bare `Infinity`/`NaN` literal that strict readers reject."""
+    assert records.json_safe(float("inf")) == "inf"
+    assert records.json_safe(float("-inf")) is None
+    assert records.json_safe(float("nan")) is None
+
+
+def test_json_safe_rounds_to_four_decimals_by_default():
+    """The rounding is explicit, not silent: `ndigits` defaults to the four
+    decimals every committed record's figures carry (`schedule-sweep.json`,
+    `model-sizes.json`), matching `fixedpoint_model.score_set`'s `ndigits`
+    parameter; a caller wanting unrounded values passes `ndigits=None`."""
+    assert records.json_safe(70.729749) == 70.7297
+    assert records.json_safe(59.66476) == 59.6648
+    assert records.json_safe(1234.5) == 1234.5
+    assert records.json_safe(70.729749, ndigits=None) == 70.729749
+
+
 def main() -> int:
     failed = 0
     for name, fn in sorted(globals().items()):

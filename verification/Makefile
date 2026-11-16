@@ -1,5 +1,5 @@
 # Verification flow for the generated FFT (see README.md). Run from verification/.
-# Targets: check-tools lint lint-negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl lint-wrapper fft-bench fft-bench-negctl gen-exact gen-exact-negctl all clean
+# Targets: check-tools lint lint-negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl lint-wrapper fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl all clean
 PYTHON    ?= ../.venv/bin/python
 ROOT      ?= $(abspath ..)
 # Repo root on PYTHONPATH: the sim and verification entry points import the
@@ -22,13 +22,18 @@ SMOKE_NEGCTL_EXPECT ?= RTL output differs from bit-accurate model
 FFT_BENCH_NEGCTL_EXPECT ?= stream output differs from bit-accurate model
 # Assertion text the perturbed multi-configuration exact run must fail on (see test_gen_exact.py).
 GEN_EXACT_NEGCTL_EXPECT ?= generated RTL output differs from bit-accurate model
-# The five *_negctl targets below run their mutant through negctl.sh, which
+# Assertion message the perturbed-regen-copy run must fail on: the byte-compare
+# assertion in Determinism.test_committed_rtl_matches_fresh_regen appends the
+# mismatching file's name ("fft256.v") to its message, so the trailing
+# ": fft256.v" proves the comparison fired rather than an import error or crash.
+GEN_UNIT_NEGCTL_EXPECT ?= : fft256.v
+# The six *_negctl targets below run their mutant through negctl.sh, which
 # owns the must-fail-for-the-intended-reason contract (lint-negctl seeds its
 # defect into a copied tree first and keeps its own recipe).
 
-.PHONY: all check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl clean
+.PHONY: all check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl clean
 
-all: check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl
+all: check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl
 
 check-tools:
 	$(PYTHON) flow_tools.py check
@@ -126,6 +131,35 @@ gen-exact-negctl:
 	@mkdir -p sim_build
 	@./negctl.sh "perturbed DUT" "the exact check" "$(GEN_EXACT_NEGCTL_EXPECT)" sim_build/gen_exact_negctl.out -- \
 	  env GEN_EXACT_PERTURB=1000 $(PYPATH) $(PYTHON) test_gen_exact.py
+
+# Generator unit tests (rtl/gen/tests/test_gen.py): regen byte-determinism,
+# committed rtl/generated == fresh regen from rtl/params/fft256.params, SPDX
+# headers, parameter variations and invalid-parameter rejection. Pure Python;
+# the Icarus/Yosys acceptance class skips, with a reason, when a tool is absent.
+gen-unit:
+	$(PYPATH) $(PYTHON) -m unittest rtl.gen.tests.test_gen
+
+# One byte appended to a copy of the whole rtl/ tree, on PYTHONPATH ahead of
+# the committed tree (make runs from verification/, which has no rtl/ package,
+# so the copy shadows it). The clean copy must pass first, so a copy-induced
+# difference (a path-dependent regen input, a file cp skips) cannot make the
+# committed-vs-regen check fail for a reason other than the appended byte; the
+# perturbed copy must then fail AND carry GEN_UNIT_NEGCTL_EXPECT, so a missing
+# file or crash does not count as "caught". rtl/generated itself is never
+# modified.
+gen-unit-negctl:
+	@rm -rf sim_build/gen_unit_negctl
+	@mkdir -p sim_build/gen_unit_negctl
+	@cp -r ../rtl sim_build/gen_unit_negctl/rtl
+	@if ! env PYTHONPATH=$(CURDIR)/sim_build/gen_unit_negctl $(PYTHON) -m unittest \
+	      rtl.gen.tests.test_gen.Determinism.test_committed_rtl_matches_fresh_regen \
+	      > sim_build/gen_unit_negctl_clean.out 2>&1; then \
+	  echo "NEGATIVE CONTROL FAILED: clean copy of the rtl tree does not pass the committed-vs-regen check (see sim_build/gen_unit_negctl_clean.out)"; exit 1; fi
+	@printf 'x' >> sim_build/gen_unit_negctl/rtl/generated/fft256.v
+	@if [ "$$(( $$(wc -c < ../rtl/generated/fft256.v) + 1 ))" -ne "$$(wc -c < sim_build/gen_unit_negctl/rtl/generated/fft256.v)" ]; then \
+	  echo "NEGATIVE CONTROL FAILED: appended byte is not in the copy only"; exit 1; fi
+	@./negctl.sh "perturbed regen copy" "the generator unit tests" "$(GEN_UNIT_NEGCTL_EXPECT)" sim_build/gen_unit_negctl.out -- \
+	  env PYTHONPATH=$(CURDIR)/sim_build/gen_unit_negctl $(PYTHON) -m unittest rtl.gen.tests.test_gen.Determinism.test_committed_rtl_matches_fresh_regen
 
 clean:
 	rm -rf sim_build results.xml

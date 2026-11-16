@@ -3,8 +3,21 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-16
+
+- **PR #141**: verification: assert gen-unit-negctl's clean copy passes before perturbing it
+- **Issue #136** (closed): verification: gen-unit-negctl should assert the clean copy passes before perturbing it
+- **PR #130**: ci: gate committed generated RTL against a fresh regen
+- **Issue #124** (closed): Run rtl/gen/tests/test_gen.py in CI: nothing gates committed RTL vs fresh regen
+
 ### 2026-11-15
 
+- **PR #134**: fix: encode -inf as null in json_safe to match the evidence convention
+- **Issue #128** (closed): sim/: json_safe encodes -inf as "-inf", but measurements/README.md states null for it
+- **PR #126**: refactor(sim): own the evidence JSON encoding in records.json_safe
+- **Issue #116** (closed): sim/: give the evidence JSON-safety helper a public home and refresh records.py's sharer list
+- **PR #122**: test: guard the generator's width ceilings against the model's _WIDTH_MAX
+- **Issue #113** (closed): No drift guard ties the generator's width bounds to the model's _WIDTH_MAX
 - **PR #121**: fix: raise when a sweep kind mixes scalar seed with seeds
 - **PR #119**: verify(smoke): append live fft256 smoke record, supersede item10 pair to -8
 - **PR #114**: docs: pin item 1 signoff recipe to klayout-tools==0.9.0 and fix T1 verdict counts in manifests/README.md

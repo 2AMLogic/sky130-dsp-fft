@@ -10,17 +10,42 @@ no test before this consolidation.
 
 The serialisation is `json.dumps(..., indent=2) + "\\n"`, byte-for-byte the
 format the committed evidence files already use: a re-indent here would
-rewrite every record wholesale on the file's next append.
+rewrite every record wholesale on the file's next append. The `"inf"`/`null`
+encoding `measurements/README.md` states for non-finite SQNR values is
+implemented once here too (`json_safe`), so every writer shares one
+implementation of the convention.
 """
 
 import datetime
 import json
+import math
 from pathlib import Path
 
 
 def utc_stamp() -> str:
     """The evidence files' `date_utc` format, defined once."""
     return datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def json_safe(x: float, ndigits: int = 4):
+    """The evidence records' non-finite-value encoding, defined once.
+
+    Strict JSON has no `Infinity`/`NaN` literal, and `json.dumps` emits them
+    anyway (`measurements/README.md` states the convention): an exact match
+    (`reference.sqnr_db` returns +inf) becomes the string `"inf"`, any other
+    non-finite value becomes `null`. A finite value is rounded to `ndigits`
+    decimals -- the rounding is this parameter's explicit job, defaulting to
+    the four decimals every committed record's figures carry, matching
+    `fixedpoint_model.score_set`'s `ndigits`; pass `ndigits=None` for
+    unrounded values.
+    """
+    if math.isinf(x):
+        return "inf" if x > 0 else None
+    if math.isnan(x):
+        return None
+    if ndigits is None:
+        return float(x)
+    return round(float(x), ndigits)
 
 
 def append_record(path, rec: dict) -> dict:
