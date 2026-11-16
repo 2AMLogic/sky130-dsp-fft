@@ -48,3 +48,7 @@ jobs:
         run: make -C verification gen-exact
       - name: Generated FFT bit-exact negative control
         run: make -C verification gen-exact-negctl
+      - name: Generator unit tests
+        run: make -C verification gen-unit
+      - name: Generator unit tests negative control
+        run: make -C verification gen-unit-negctl
