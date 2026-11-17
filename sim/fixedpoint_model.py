@@ -167,9 +167,11 @@ def score_set(model, frames, ndigits=None) -> dict:
 
     Resets `Stats` first -- it accumulates across `run()` calls, so scoring a
     second set on a shared model would otherwise report a running total.
-    `ndigits` rounds the SQNR figure for a caller whose record format does
-    (the smoke record keeps 2 decimals); `schedule-sweep.json` stays unrounded
-    here and rounds in `records.json_safe`.
+    `ndigits` rounds the SQNR figure here for a caller that wants that; no
+    record writer does -- they leave the figure unrounded and
+    `records.json_safe` owns both the `"inf"`/`null` encoding and the record's
+    decimals (the smoke record passes `ndigits=2` there, the others take the
+    default four); `sim/test_fixedpoint_model.py` exercises the parameter.
     """
     model.stats = Stats(len(model.p.stage_widths))
     sqnr = reference.set_sqnr_db(frames, model.candidate)

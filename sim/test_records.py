@@ -19,7 +19,9 @@ import sys
 import tempfile
 from pathlib import Path
 
-from sim import records
+import numpy as np
+
+from sim import records, reference
 
 VERIFICATION = Path(__file__).resolve().parent.parent / "verification"
 sys.path.append(str(VERIFICATION))
@@ -120,6 +122,74 @@ def test_json_safe_rounds_to_four_decimals_by_default():
     assert records.json_safe(59.66476) == 59.6648
     assert records.json_safe(1234.5) == 1234.5
     assert records.json_safe(70.729749, ndigits=None) == 70.729749
+
+
+class _ScoreStubModel:
+    """The bare attribute shape `fixedpoint_model.score_set` needs:
+    `p.stage_widths` for the `Stats` reset, a settable `stats`, and a
+    `candidate` (`None` where the scorer itself is stubbed, the
+    double-precision reference where the exact-match path is driven for
+    real)."""
+
+    class p:
+        stage_widths = (8, 8)
+
+    def __init__(self, candidate=None):
+        self.stats = None
+        self.candidate = candidate
+
+
+def test_smoke_sqnr_exact_match_is_the_string_inf_and_strictly_serialisable():
+    """The smoke record's SQNR field must not bypass the shared encoder: on
+    the exact-match path `score_set` returns a bare +inf (`reference.sqnr_db`
+    on equal outputs), which `json.dumps` would emit as a bare `Infinity`
+    literal -- invalid strict JSON, appended permanently to evidence. A stub
+    model whose `candidate` *is* the double-precision reference drives that
+    path; the recorded figure is the string `"inf"` and the record is
+    strictly serialisable."""
+    model = _ScoreStubModel(candidate=reference.reference_fft)
+    frames = np.array([[1 + 0j, 2 + 2j, 3 - 1j, 0 + 4j]])
+    out = test_fft256_smoke.simulated_sqnr(model, {"exact": frames})
+    assert out["exact"]["min_sqnr_db"] == "inf", out
+    assert out["exact"]["overflow_components"] == 0, out
+    json.dumps(out, allow_nan=False)  # raises on any bare non-finite float
+
+
+def test_append_record_rejects_non_finite_and_leaves_the_file_unchanged():
+    """The shared writer serialises with `allow_nan=False`: a record still
+    carrying a bare non-finite float raises `ValueError` before the file is
+    written -- a failed append must never truncate or rewrite the evidence
+    already in the file."""
+    with tempfile.TemporaryDirectory() as d:
+        path = Path(d) / "r.json"
+        records.append_record(path, {"n": 1})
+        before = path.read_text()
+        for bad in (float("inf"), float("-inf"), float("nan")):
+            try:
+                records.append_record(path, {"sqnr_db": bad})
+            except ValueError:
+                pass
+            else:
+                raise AssertionError(f"non-finite {bad!r} was written")
+        assert path.read_text() == before, "the failed append modified the file"
+
+
+def test_smoke_sqnr_finite_path_keeps_two_decimals():
+    """Format-drift guard: routing the smoke record's SQNR through
+    `json_safe` without `ndigits=2` silently widens the figure from the
+    record's 2 decimals to the encoder default of 4 inside append-only
+    evidence. The scorer is stubbed to a figure whose 2- and 4-decimal
+    roundings differ, so only the correctly parameterised call records
+    65.65."""
+    model = _ScoreStubModel()
+    frames = np.zeros((1, 4), dtype=np.complex128)
+    real_scorer = reference.set_sqnr_db
+    reference.set_sqnr_db = lambda frames, candidate: 65.654999
+    try:
+        out = test_fft256_smoke.simulated_sqnr(model, {"fmt": frames})
+    finally:
+        reference.set_sqnr_db = real_scorer
+    assert out["fmt"]["min_sqnr_db"] == 65.65, out
 
 
 def main() -> int:

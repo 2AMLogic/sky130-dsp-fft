@@ -105,10 +105,13 @@ def compare(model, sets, p, perturb):
 
 
 def simulated_sqnr(model, sets):
-    """Per-set figures through the shared scoring helper; `ndigits=2` is the record format."""
+    """Per-set figures through the shared scoring helper; `records.json_safe`
+    owns the record's `"inf"`/`null` encoding and its 2-decimal format."""
     out = {}
     for name, frames in sets.items():
-        out[name] = fixedpoint_model.score_set(model, frames, ndigits=2)
+        s = fixedpoint_model.score_set(model, frames)
+        out[name] = {"min_sqnr_db": records.json_safe(s["min_sqnr_db"], 2),
+                     "overflow_components": s["overflow_components"]}
     return out
 
 
