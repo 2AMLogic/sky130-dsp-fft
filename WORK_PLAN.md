@@ -14,15 +14,15 @@ _None._
 
 `loom:very-important` (one counts per workspace); every stage takes these first.
 
-- **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT
+- **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(held)*
 
 ## Important
 
 `loom:important`; taken before unlabelled work.
 
-- **#18**: T1 item 3 (DRC clean): klt drc on the routed FFT GDS with coverage disclosed
-- **#19**: T1 item 4 (LVS clean): klt lvs of the routed FFT vs the gate-level netlist
-- **#20**: T1 item 11 (power delivery): klt erc supply spec and PDN evidence for the routed FFT
+- **#18**: T1 item 3 (DRC clean): klt drc on the routed FFT GDS with coverage disclosed *(held)*
+- **#19**: T1 item 4 (LVS clean): klt lvs of the routed FFT vs the gate-level netlist *(held)*
+- **#20**: T1 item 11 (power delivery): klt erc supply spec and PDN evidence for the routed FFT *(held)*
 
 ## Ready
 
@@ -52,11 +52,11 @@ _None._
 
 Issues carrying `loom:curated`.
 
-- **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(curated)*
+- **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(curated)* *(held)*
 
 ## Proposed (Architect / Hermit)
 
-- **#71**: Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow *(hermit)*
+- **#71**: Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow *(hermit)* *(held)*
 
 ## Epics
 

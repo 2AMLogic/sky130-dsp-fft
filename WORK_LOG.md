@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-11-17
 
+- **PR #152**: signoff: supersede drifted item-9 -5 pair with -6 and item-10 -11 with -12
+- **Issue #151** (closed): signoff: item-9 attestation envelope is drifted on main, blocking every PR
 - **PR #149**: chore(loom): resync installed Loom to v0.19.1306
 - **PR #137**: fix: route the smoke record's SQNR through json_safe and reject non-finite records at the shared writer
 - **Issue #135** (closed): verification/test_fft256_smoke.py writes a bare Infinity literal for an exact-match SQNR, bypassing the json_safe convention
