@@ -5,6 +5,11 @@ Maintained by the Guide triage role.
 
 ### 2026-11-17
 
+- **PR #149**: chore(loom): resync installed Loom to v0.19.1306
+- **PR #137**: fix: route the smoke record's SQNR through json_safe and reject non-finite records at the shared writer
+- **Issue #135** (closed): verification/test_fft256_smoke.py writes a bare Infinity literal for an exact-match SQNR, bypassing the json_safe convention
+- **PR #132**: test(sim): dual drift guard names both red causes and derives the all-ceiling keys
+- **Issue #127** (closed): Drift-guard dual test tells a maintainer to fix the probe when the generator is genuinely narrower
 - **PR #147**: fix: attest item 9 over the cold_start chain's transitive loads (-5 pair)
 - **Issue #129** (closed): T1 item 9's inventory does not hash verification/flow_tools.py, which its cold_start argv loads
 - **PR #120**: ci(signoff): gate item-9 testbench attestations; supersede item9 evidence to -4 and item10 to -10
