@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "kind": "generic",
+  "status": "pass",
+  "t1_item": 9,
+  "summary": "T1 item 9 (Testbenches shipped): 24/24 attestation checks passed (klt signoff --attest)",
+  "source": "manifests/item9-inventory-4.json",
+  "attestation": {
+    "producer": "klt signoff --attest",
+    "inventory_schema_version": 1,
+    "hash_algorithm": "sha256-raw-bytes",
+    "check_count": 24,
+    "passed_count": 24,
+    "checks": [
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "rtl/params/fft256.params",
+        "passed": true,
+        "content_hash": "sha256:0016f2bd85c2a7910db3af813e48efba2f082d7d1880d53242d96fc65f1273d8"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/__init__.py",
+        "passed": true,
+        "content_hash": "sha256:01c19fe8167a06fbf751fce96c470187bc45411ebdfce17db3eb1959b860ebde"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/fixedpoint_model.py",
+        "passed": true,
+        "content_hash": "sha256:4535d33d304bf6c337b9910643e9d28efa276c53017d8ebc95913a39ca270aec"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/model_sizes.py",
+        "passed": true,
+        "content_hash": "sha256:871d3577856657a8cf3f3e6b67844f7d1bf92665bf10b53ce6d2ae5b3236cc43"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/overflow_range.py",
+        "passed": true,
+        "content_hash": "sha256:e7c9c81fab36a05d13b3cfdcceb85947176002c4471912d5a351630238049012"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/records.py",
+        "passed": true,
+        "content_hash": "sha256:ef9ef94d5b9e9df0732a2368e24c6cb645890ebeb75f8942407b06c2f2bfde96"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/reference.py",
+        "passed": true,
+        "content_hash": "sha256:139087f70c370ed120dc90dc9dbe199e6bbf51a51cf1d888a3d87dd3677b1d5a"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/schedule_sweep.py",
+        "passed": true,
+        "content_hash": "sha256:b4d59443cc1f964c02fcf07d5890262af2aa1dc84f9a686687c3b1539469df61"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_fixedpoint_model.py",
+        "passed": true,
+        "content_hash": "sha256:7b114dacf12551b7450489e3e15e8cecb3d5fdd3bafb184b4aa344a4ba6aab10"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_model_sizes.py",
+        "passed": true,
+        "content_hash": "sha256:f87ddb8deccd88accd160c793549b52065f001e6c8f05d092c7d0c79789277c5"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_overflow_range.py",
+        "passed": true,
+        "content_hash": "sha256:278195c203138164220a31d9deb3d89a3295803c6cfa8dbe5dbc3ee44c17d3f0"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_records.py",
+        "passed": true,
+        "content_hash": "sha256:e7f13593740731b2894d7d1ec4a29da342bbbf82aeef8170ec6e05d38f2e765a"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_reference.py",
+        "passed": true,
+        "content_hash": "sha256:5c41a01569638957c237ebcebcfc903331b3e6953e64f0ce1d29b5e2afee7108"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/test_schedule_sweep.py",
+        "passed": true,
+        "content_hash": "sha256:f0c8ab976e514fbe88a78f9e15817ae7f811d8d14957660086858be14b02f931"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "sim/vectors.py",
+        "passed": true,
+        "content_hash": "sha256:9d66cbc1b0795757fcf96148f34d65d89cb75cd5c759e8911914b7cfa69de93e"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/Makefile",
+        "passed": true,
+        "content_hash": "sha256:3f7821e1a8fba61d3b2c5722a1abd7e3017d8655065b35ee58ddd29725cd4009"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/negctl.sh",
+        "passed": true,
+        "content_hash": "sha256:f6c6ca19b0b445c871905365d466fc4106de9dda25cf3ff5fbd3a5c4bc13a891"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/requirements.txt",
+        "passed": true,
+        "content_hash": "sha256:d4c5f14ccd091bff9f1df4caf9437e55233cfa59c348ced068c5afe709ae1754"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/tb_fft256_smoke.v",
+        "passed": true,
+        "content_hash": "sha256:04179e249996ab6b1428b1fabbec57f0863f69ad9fd99031d5eba34954c5de12"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/test_fft256_smoke.py",
+        "passed": true,
+        "content_hash": "sha256:c135f8e9dae71fab8ccd3e196ac3d65bb3490cea644516ea7eb4983d124726c9"
+      },
+      {
+        "check": "present",
+        "role": "testbench",
+        "path": "verification/test_fft256_stream.py",
+        "passed": true,
+        "content_hash": "sha256:84e9966e3cf7745f802730ad21dc99366a34bece6b51469edb164ac3235e8f73"
+      },
+      {
+        "check": "command",
+        "role": "cold_start",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "fft-bench",
+          "fft-bench-negctl",
+          "fxp-model",
+          "fxp-model-negctl",
+          "sqnr-ref",
+          "sqnr-ref-negctl"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "pin",
+        "role": "pdk",
+        "passed": true,
+        "value": {
+          "name": "sky130",
+          "revision": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+        }
+      },
+      {
+        "check": "pin",
+        "role": "tools",
+        "passed": true,
+        "value": {
+          "cocotb": "2.1.0",
+          "icarus_verilog": "13.0",
+          "numpy": "2.3.4",
+          "python": "3.13"
+        }
+      }
+    ]
+  },
+  "provenance": {
+    "klt_version": "0.8.0",
+    "klayout_version": null,
+    "pdk": null,
+    "deck": null,
+    "input": {
+      "path": {
+        "path": "manifests/item9-inventory-4.json",
+        "scope": "repo"
+      },
+      "content_hash": "sha256:0ddf22cdb8c4c9e7a5f86298a38c572e1c52cbc41f64806bc05a154d709cd6fe"
+    }
+  }
+}

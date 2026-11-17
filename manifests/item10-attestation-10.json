@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "kind": "generic",
+  "status": "pass",
+  "t1_item": 10,
+  "summary": "T1 item 10 (Repo hygiene): 14/14 attestation checks passed (klt signoff --attest)",
+  "source": "manifests/item10-inventory-10.json",
+  "attestation": {
+    "producer": "klt signoff --attest",
+    "inventory_schema_version": 1,
+    "hash_algorithm": "sha256-raw-bytes",
+    "check_count": 14,
+    "passed_count": 14,
+    "checks": [
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": ".github/workflows/rtl-ci.yml",
+        "passed": true,
+        "content_hash": "sha256:f3b94ed1cfae97b64106305cbd693731b8f2724ec5f5d712eb31889fe03d019a"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": ".github/workflows/signoff.yml",
+        "passed": true,
+        "content_hash": "sha256:0a0aa136f82b6d3cbdef02c9a870ef8532b1332cf2c51f778baa226c7aaceada"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": "LICENSE",
+        "passed": true,
+        "content_hash": "sha256:cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": "README.md",
+        "passed": true,
+        "content_hash": "sha256:264b1f9d94ee1264929ee7b3735535fef059e53ad2f94369743018663861a245"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": "measurements/fft256-smoke.json",
+        "passed": true,
+        "content_hash": "sha256:6eb106e7733ecb8fdcce698b4c5bf3147a1a06dab19b166e6e422cce6f92386b"
+      },
+      {
+        "check": "present",
+        "role": "hygiene",
+        "path": "verification/README.md",
+        "passed": true,
+        "content_hash": "sha256:36c7513797a8763ac5623647fe13f39c5fa37d9b15018d82d68ecb81067075d2"
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "lint",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "lint"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "lint-negctl",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "lint-negctl"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "lint-wrapper",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "lint-wrapper"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "fft-bench",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "fft-bench"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "fft-bench-negctl",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "fft-bench-negctl"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "gen-exact",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "gen-exact"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "gen-exact-negctl",
+        "argv": [
+          "make",
+          "-C",
+          "verification",
+          "gen-exact-negctl"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true,
+        "local_only": true
+      },
+      {
+        "check": "command",
+        "role": "audit",
+        "name": "synth-record-json",
+        "argv": [
+          "python3",
+          "-c",
+          "import json; json.load(open('measurements/fft256-smoke.json'))"
+        ],
+        "cwd": ".",
+        "exit_status": 0,
+        "passed": true
+      }
+    ]
+  },
+  "provenance": {
+    "klt_version": "0.8.0",
+    "klayout_version": null,
+    "pdk": null,
+    "deck": null,
+    "input": {
+      "path": {
+        "path": "manifests/item10-inventory-10.json",
+        "scope": "repo"
+      },
+      "content_hash": "sha256:9600919311c48ca1674d7ed0b01a7694c729bef79b11ebddca2346b92d7e2b6c"
+    }
+  }
+}

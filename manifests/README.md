@@ -31,15 +31,19 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-9.json`, generated from
-`item10-inventory-9.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-10.json`, generated from
+`item10-inventory-10.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
 **This paragraph names the current pair; cite it from here rather than copying
 the version number elsewhere.** The root `README.md` Reproduce row deliberately
 points at this section instead of naming a file, so it does not go stale at the
 next supersession.
 
-`-9` supersedes `item10-inventory-8.json` / `item10-attestation-8.json`, which
+`-10` supersedes `item10-inventory-9.json` / `item10-attestation-9.json`, which
+hashed `.github/workflows/signoff.yml` before issue #85 added the item-9
+re-attest leg to that workflow and repointed the item-10 step at this pair; the
+same hygiene entries and the previous checks are carried unchanged. `-9`
+supersedes `item10-inventory-8.json` / `item10-attestation-8.json`, which
 hashed `.github/workflows/rtl-ci.yml` and `verification/README.md` before
 PR #130 wired the generator unit tests (`rtl/gen/tests/test_gen.py`) into CI as
 the `gen-unit` / `gen-unit-negctl` targets: `rtl-ci.yml` gained the two CI
@@ -134,29 +138,37 @@ uvx --from "klayout-tools==0.9.0" klt signoff --attest 1 \
     --check manifests/item1-attestation.json
 ```
 
-Item 9 is cited from `item9-attestation-3.json`, generated from
-`item9-inventory-3.json` (the cocotb streaming-FFT bench and its negative
-control, plus the model, reference and generated-core smoke benches and the
-tests of the shared append-only record writer). It supersedes
-`item9-inventory-2.json` / `item9-attestation-2.json`, whose hashes predate
+Item 9 is cited from `item9-attestation-4.json`, generated from
+`item9-inventory-4.json` (the cocotb streaming-FFT bench and its negative
+control, plus the model, reference, amplitude-sweep, schedule-sweep and
+per-size model benches, the tests of the shared append-only record writer, and
+the files the cold_start targets execute around them: `sim/__init__.py`,
+`verification/negctl.sh` and `verification/requirements.txt`). It supersedes
+`item9-inventory-3.json` / `item9-attestation-3.json`, whose testbenches
+predated the `fxp-model` target growing to `sim.test_overflow_range`,
+`sim.test_schedule_sweep` and `sim.test_model_sizes`, and predated
+`sim/__init__.py` (issue #84's sys.path-bootstrap retirement) and the
+`negctl.sh` single-sourcing of PR #95, so a cold_start pass of record was
+attested over files the inventory did not hash. `.github/workflows/signoff.yml`
+now re-verifies this pair under `--check` (issue #85). `-4` in turn supersedes
+`item9-inventory-2.json` / `item9-attestation-2.json` (superseded by `-3` over
 issue #94's record-writer consolidation: the append-only write moved from
-three copy-pasted tails to `sim/records.py` (new in the inventory),
-`verification/test_fft256_smoke.py`'s writer gained a path parameter, and
-`verification/Makefile`'s `fxp-model` target now also runs `sim.test_records`.
-`-3` in turn supersedes `item9-inventory.json` / `item9-attestation.json`,
-which cited the removed Icarus wrapper smoke bench (`tb_fft256_stream.sv`,
-`sim-wrapper*`). Those superseded files are recorded evidence and stay
-unchanged; their hashes still match the commit that produced them, but
-`--check` against the current tree no longer applies to them. Item 9's checks
-are `local_only` (they need Icarus and the cocotb venv, see
-`verification/README.md`), so `--check` in CI skips running them and only
-re-verifies the recorded hashes. Pinned `klayout-tools==0.8.0`:
+three copy-pasted tails to `sim/records.py`, `test_fft256_smoke.py`'s writer
+gained a path parameter, and `fxp-model` also began running `sim.test_records`)
+and `item9-inventory.json` / `item9-attestation.json`, which cited the removed
+Icarus wrapper smoke bench (`tb_fft256_stream.sv`, `sim-wrapper*`). Those
+superseded files are recorded evidence and stay unchanged; their hashes still
+match the commit that produced them, but `--check` against the current tree no
+longer applies to them. Item 9's checks are `local_only` (they need Icarus and
+the cocotb venv, see `verification/README.md`), so `--check` in CI skips
+running them and only re-verifies the recorded hashes. Pinned
+`klayout-tools==0.8.0`:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-3.json \
-    -o manifests/item9-attestation-3.json
+    --inventory manifests/item9-inventory-4.json \
+    -o manifests/item9-attestation-4.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-3.json \
-    --check manifests/item9-attestation-3.json
+    --inventory manifests/item9-inventory-4.json \
+    --check manifests/item9-attestation-4.json
 ```
