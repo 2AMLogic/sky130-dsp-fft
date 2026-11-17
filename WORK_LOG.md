@@ -3,8 +3,15 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-17
+
+- **PR #120**: ci(signoff): gate item-9 testbench attestations; supersede item9 evidence to -4 and item10 to -10
+- **Issue #85** (closed): klt signoff --attest 9 is drifted and no CI gate catches it
+
 ### 2026-11-16
 
+- **PR #142**: chore(loom): resync installed Loom to v0.19.1302
+- **Issue #138** (closed): Decide how BEHIND PRs clear main's strict required-status-checks policy
 - **PR #141**: verification: assert gen-unit-negctl's clean copy passes before perturbing it
 - **Issue #136** (closed): verification: gen-unit-negctl should assert the clean copy passes before perturbing it
 - **PR #130**: ci: gate committed generated RTL against a fresh regen
