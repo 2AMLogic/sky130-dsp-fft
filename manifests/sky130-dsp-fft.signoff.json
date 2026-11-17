@@ -281,23 +281,23 @@
       "reason": null,
       "graded_by_build": true,
       "citation": {
-        "file": "manifests/item9-attestation-5.json",
+        "file": "manifests/item9-attestation-6.json",
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:129e523de650825297baefc65a3bcb6b2f9dcaa5dcc4111cd131b208d2ff4877",
+        "content_hash": "sha256:e9cf8bf66a43f87078ebe74b0fbdd3205e413b788ea72a090b24d3f98ffd0212",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 9,
           "path": {
-            "path": "manifests/item9-inventory-5.json",
+            "path": "manifests/item9-inventory-6.json",
             "scope": "repo"
           },
-          "content_hash": "sha256:129e523de650825297baefc65a3bcb6b2f9dcaa5dcc4111cd131b208d2ff4877",
+          "content_hash": "sha256:e9cf8bf66a43f87078ebe74b0fbdd3205e413b788ea72a090b24d3f98ffd0212",
           "input_verified": true,
           "summary": "T1 item 9 (Testbenches shipped): 26/26 attestation checks passed (klt signoff --attest)",
-          "source": "manifests/item9-inventory-5.json",
+          "source": "manifests/item9-inventory-6.json",
           "attestation": {
             "producer": "klt signoff --attest",
             "inventory_schema_version": 1,
@@ -318,23 +318,23 @@
       "reason": null,
       "graded_by_build": true,
       "citation": {
-        "file": "manifests/item10-attestation-11.json",
+        "file": "manifests/item10-attestation-12.json",
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:e0f74851ae1662f5a93236a0b8489f3677b7eed1f42bb5c28099c4d3a532aa48",
+        "content_hash": "sha256:b7831daa7beaa61be7b25e867c6830c12c1b4700ae985fdc3ea862f98470f586",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 10,
           "path": {
-            "path": "manifests/item10-inventory-11.json",
+            "path": "manifests/item10-inventory-12.json",
             "scope": "repo"
           },
-          "content_hash": "sha256:e0f74851ae1662f5a93236a0b8489f3677b7eed1f42bb5c28099c4d3a532aa48",
+          "content_hash": "sha256:b7831daa7beaa61be7b25e867c6830c12c1b4700ae985fdc3ea862f98470f586",
           "input_verified": true,
           "summary": "T1 item 10 (Repo hygiene): 14/14 attestation checks passed (klt signoff --attest)",
-          "source": "manifests/item10-inventory-11.json",
+          "source": "manifests/item10-inventory-12.json",
           "attestation": {
             "producer": "klt signoff --attest",
             "inventory_schema_version": 1,
