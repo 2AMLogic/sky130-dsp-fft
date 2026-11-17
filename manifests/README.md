@@ -31,17 +31,22 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-11.json`, generated from
-`item10-inventory-11.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-12.json`, generated from
+`item10-inventory-12.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
 **This paragraph names the current pair; cite it from here rather than copying
 the version number elsewhere.** The root `README.md` Reproduce row deliberately
 points at this section instead of naming a file, so it does not go stale at the
 next supersession.
 
-`-11` supersedes `item10-inventory-10.json` / `item10-attestation-10.json`,
-which recorded the `.github/workflows/signoff.yml` content hash as of issue
-#85's item-9 re-attest leg, before issue #129 repointed that step at the item-9
+`-12` supersedes `item10-inventory-11.json` / `item10-attestation-11.json`,
+which hashed the `.github/workflows/signoff.yml` content as of issue #129's
+item-9 `-5` pair, before issue #151 repointed that workflow's item-9 step at
+the item-9 `-6` pair and its item-10 step at `-12`, so the workflow file's own
+hash moved; the same hygiene entries and checks are carried unchanged. `-11`
+supersedes `item10-inventory-10.json` / `item10-attestation-10.json`, which
+recorded the `.github/workflows/signoff.yml` content hash as of issue #85's
+item-9 re-attest leg, before issue #129 repointed that step at the item-9
 `-5` pair and so moved the workflow file's own hash; the same hygiene entries
 and checks are carried unchanged. `-10` supersedes
 `item10-inventory-9.json` / `item10-attestation-9.json`, which
@@ -92,11 +97,11 @@ a new superseding pair:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-11.json \
-    -o manifests/item10-attestation-11.json
+    --inventory manifests/item10-inventory-12.json \
+    -o manifests/item10-attestation-12.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-11.json \
-    --check manifests/item10-attestation-11.json
+    --inventory manifests/item10-inventory-12.json \
+    --check manifests/item10-attestation-12.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a
@@ -143,14 +148,22 @@ uvx --from "klayout-tools==0.9.0" klt signoff --attest 1 \
     --check manifests/item1-attestation.json
 ```
 
-Item 9 is cited from `item9-attestation-5.json`, generated from
-`item9-inventory-5.json` (the cocotb streaming-FFT bench and its negative
+Item 9 is cited from `item9-attestation-6.json`, generated from
+`item9-inventory-6.json` (the cocotb streaming-FFT bench and its negative
 control, plus the model, reference, amplitude-sweep, schedule-sweep and
 per-size model benches, the tests of the shared append-only record writer, and
 the files the cold_start targets execute around them: `sim/__init__.py`,
 `verification/negctl.sh`, `verification/requirements.txt`,
 `verification/flow_tools.py` and `verification/toolchain.json`). It supersedes
-`item9-inventory-4.json` / `item9-attestation-4.json`, whose testbenches
+`item9-inventory-5.json` / `item9-attestation-5.json`, whose envelope hashed
+these sources as generated in PR #147 but was not regenerated when PR #137
+(`sim/fixedpoint_model.py`, `sim/records.py`, `sim/test_records.py`,
+`verification/test_fft256_smoke.py`) and PR #132 (`sim/test_schedule_sweep.py`)
+edited attested sources off a base lacking `-5` and merged green on the
+superseded `-4` pair, leaving `--check` on main at `status: drifted` for those
+five hashes (issue #151); `-6` carries the identical inventory list, checks and
+pins. `-5` in turn supersedes `item9-inventory-4.json` /
+`item9-attestation-4.json`, whose testbenches
 hashed the smoke bench's own module but not the two repo files its import
 surface loads during the same cold_start argv: `flow_tools` is imported
 transitively (`sim.test_records` imports `test_fft256_smoke`, which imports
@@ -183,9 +196,9 @@ re-verifies the recorded hashes. Pinned `klayout-tools==0.8.0`:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-5.json \
-    -o manifests/item9-attestation-5.json
+    --inventory manifests/item9-inventory-6.json \
+    -o manifests/item9-attestation-6.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-5.json \
-    --check manifests/item9-attestation-5.json
+    --inventory manifests/item9-inventory-6.json \
+    --check manifests/item9-attestation-6.json
 ```
