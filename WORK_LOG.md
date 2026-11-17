@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-11-17
 
+- **PR #147**: fix: attest item 9 over the cold_start chain's transitive loads (-5 pair)
+- **Issue #129** (closed): T1 item 9's inventory does not hash verification/flow_tools.py, which its cold_start argv loads
 - **PR #120**: ci(signoff): gate item-9 testbench attestations; supersede item9 evidence to -4 and item10 to -10
 - **Issue #85** (closed): klt signoff --attest 9 is drifted and no CI gate catches it
 
