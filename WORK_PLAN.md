@@ -34,13 +34,13 @@ _None._
 
 Issues currently being built (`loom:building`).
 
-_None._
+- **#154**: Merge queue: add the merge_group trigger to the required-check workflow(s)
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#155**: ci: add merge_group trigger to rtl-ci and signoff workflows
 
 ## Approved (Awaiting Merge)
 
@@ -52,6 +52,7 @@ _None._
 
 Issues carrying `loom:curated`.
 
+- **#154**: Merge queue: add the merge_group trigger to the required-check workflow(s) *(curated)*
 - **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(curated)* *(held)*
 
 ## Proposed (Architect / Hermit)
@@ -70,10 +71,10 @@ _None._
 | Very important | 1 |
 | Important | 3 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 0 |
-| PRs awaiting review | 0 |
+| In Progress (`loom:building`) | 1 |
+| PRs awaiting review | 1 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 1 |
+| Curated | 2 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 0 |
 <!-- guide:plan-body:end -->
