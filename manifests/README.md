@@ -31,15 +31,20 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-12.json`, generated from
-`item10-inventory-12.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-13.json`, generated from
+`item10-inventory-13.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
 **This paragraph names the current pair; cite it from here rather than copying
 the version number elsewhere.** The root `README.md` Reproduce row deliberately
 points at this section instead of naming a file, so it does not go stale at the
 next supersession.
 
-`-12` supersedes `item10-inventory-11.json` / `item10-attestation-11.json`,
+`-13` supersedes `item10-inventory-12.json` / `item10-attestation-12.json`,
+which hashed the `.github/workflows/rtl-ci.yml` and
+`.github/workflows/signoff.yml` content as of main before PR #155 added a bare
+`merge_group:` trigger to both workflows' `on:` maps, so both hygiene entries'
+content hashes moved; the same hygiene entries and checks are carried
+unchanged. `-12` supersedes `item10-inventory-11.json` / `item10-attestation-11.json`,
 which hashed the `.github/workflows/signoff.yml` content as of issue #129's
 item-9 `-5` pair, before issue #151 repointed that workflow's item-9 step at
 the item-9 `-6` pair and its item-10 step at `-12`, so the workflow file's own
@@ -97,11 +102,11 @@ a new superseding pair:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-12.json \
-    -o manifests/item10-attestation-12.json
+    --inventory manifests/item10-inventory-13.json \
+    -o manifests/item10-attestation-13.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-12.json \
-    --check manifests/item10-attestation-12.json
+    --inventory manifests/item10-inventory-13.json \
+    --check manifests/item10-attestation-13.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a
