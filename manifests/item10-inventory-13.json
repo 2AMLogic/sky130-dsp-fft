@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "kind": "t1-attestation-inventory",
+  "t1_item": 10,
+  "description": "Repo hygiene for T1 item 10. local_only checks need the verification toolchain; the signoff.yml runner skips them under --check. Supersedes manifests/item10-inventory-12.json and its attestation manifests/item10-attestation-12.json (recorded evidence, kept unchanged), which hashed .github/workflows/rtl-ci.yml and .github/workflows/signoff.yml as of main before PR #155 added a bare merge_group: trigger to each workflow's on: map, so both hygiene entries' content hashes moved; the same hygiene entries and checks are carried unchanged. -12 in turn superseded manifests/item10-inventory-11.json and its attestation manifests/item10-attestation-11.json (recorded evidence, kept unchanged), which hashed .github/workflows/signoff.yml as of issue #129's item9 -5 pair, before issue #151 repointed the workflow's item-9 step at the item9 -6 pair and its item-10 step at the -12 pair, so the workflow file's content hash moved again; the same hygiene entries and checks are carried unchanged. -11 in turn superseded manifests/item10-inventory-10.json and its attestation manifests/item10-attestation-10.json (recorded evidence, kept unchanged), which recorded the .github/workflows/signoff.yml content hash as of issue #85's item-9 re-attest leg, before issue #129 repointed that step at the item9 -5 pair and so moved the workflow file's own hash; the same hygiene entries and checks are carried unchanged. -10 in turn superseded manifests/item10-inventory-9.json and its attestation manifests/item10-attestation-9.json (recorded evidence, kept unchanged), which hashed .github/workflows/signoff.yml before issue #85 added the item-9 re-attest leg to that workflow and repointed the item-10 step at that pair; the same hygiene entries and checks are carried unchanged. -9 in turn superseded manifests/item10-inventory-8.json and its attestation manifests/item10-attestation-8.json (recorded evidence, kept unchanged), which hashed .github/workflows/rtl-ci.yml and verification/README.md before PR #130 wired the generator unit tests (rtl/gen/tests/test_gen.py) into CI as the gen-unit / gen-unit-negctl make targets: rtl-ci.yml gained the two CI steps and verification/README.md documents the new targets, so both hygiene entries' content hashes moved. The same hygiene entries and checks are carried unchanged. -8 in turn superseded manifests/item10-inventory-7.json and manifests/item10-attestation-7.json, which hashed measurements/fft256-smoke.json before issue #110 performed the live end-to-end smoke append that issue #94 left outstanding: make smoke-fft256 ran the default-path writer end to end and appended exactly one record (61525 cells, area 1022030.207999 um2 at tt_025C_1v80) below the committed 2026-10-30 record, so that hygiene entry's content hash moved. The same hygiene entries are carried unchanged; the previous checks are carried unchanged. -7 in turn superseded manifests/item10-inventory-6.json and manifests/item10-attestation-6.json, which hashed verification/README.md and .github/workflows/rtl-ci.yml before PR #95 single-sourced the negctl must-fail contract into verification/negctl.sh and issue #90 replaced the loose-tolerance generator smoke in rtl/gen/tests/test_gen.py with verification/test_gen_exact.py (bit-exact vs the fixed-point model at six configurations), wired into rtl-ci.yml as the gen-exact / gen-exact-negctl make targets; those two checks joined the inventory so the bit-exactness evidence is attested. -6 in turn superseded manifests/item10-inventory-5.json and manifests/item10-attestation-5.json, which hashed verification/README.md before its negctl.sh single-sourcing (PR #95). -5 in turn superseded manifests/item10-inventory-4.json and manifests/item10-attestation-4.json, which hashed the README.md and the .github/workflows/signoff.yml of issue #79 before the Reproduce-table pointer fix. -4 in turn superseded manifests/item10-inventory-3.json and manifests/item10-attestation-3.json, which hashed the README.md before the status alignment of issue #62. -3 in turn superseded manifests/item10-inventory-2.json and manifests/item10-attestation-2.json, whose checks (lint, sim, negctl) and hygiene entry measurements/synth-placeholder.json cover the retired placeholder flow. measurements/synth-placeholder.json is retained as history; the live synthesis record is measurements/fft256-smoke.json.",
+  "hygiene": [
+    "README.md",
+    "LICENSE",
+    ".github/workflows/rtl-ci.yml",
+    ".github/workflows/signoff.yml",
+    "verification/README.md",
+    "measurements/fft256-smoke.json"
+  ],
+  "checks": [
+    {
+      "name": "lint",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "lint"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "lint-negctl",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "lint-negctl"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "lint-wrapper",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "lint-wrapper"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "fft-bench",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "fft-bench"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "fft-bench-negctl",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "fft-bench-negctl"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "gen-exact",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "gen-exact"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "gen-exact-negctl",
+      "argv": [
+        "make",
+        "-C",
+        "verification",
+        "gen-exact-negctl"
+      ],
+      "local_only": true
+    },
+    {
+      "name": "synth-record-json",
+      "argv": [
+        "python3",
+        "-c",
+        "import json; json.load(open('measurements/fft256-smoke.json'))"
+      ]
+    }
+  ]
+}
