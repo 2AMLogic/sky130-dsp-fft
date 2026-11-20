@@ -13,6 +13,12 @@ random.Random(7)) inherited from it. Run through `make gen-exact`. Exits
 non-zero on any mismatch, naming the configuration, frame and bin.
 Environment: GEN_EXACT_PERTURB=<i> flips the LSB of one captured output
 component per configuration (negative control, used by gen-exact-negctl).
+Environment: GEN_EXACT_PARAMS=<file> (issue #160) restricts the run to the
+single (256, natural, pipeline=1) configuration and takes every parameter --
+size, widths, output order -- from that parameter file instead of
+BASE/STAGE_WIDTHS: the decision-0006 candidate check, whose clean and
+perturbed runs are recorded in measurements/fft256-candidate.json. The six
+BASE configurations above are unchanged when it is unset.
 """
 
 import os
@@ -46,6 +52,9 @@ BASE = dict(size=256, architecture="r22sdf", direction="forward",
             stage_widths="17,18,19,20,21,22,23,24", twiddle_width=16,
             complex_mult="3mult", rounding="convergent",
             output_order="natural", pipeline=1, stall=1)
+# With GEN_EXACT_PARAMS set, only this configuration runs, from that file.
+PARAMS_FILE = os.environ.get("GEN_EXACT_PARAMS")
+CANDIDATE_CONFIG = (256, "natural", 1)
 NFRAMES_FED = 4     # frames streamed into the DUT
 NFRAMES_GRADED = 2  # frames captured and compared
 
@@ -114,7 +123,8 @@ def simulate(size, order, pipeline, data, perturb):
     ncap = NFRAMES_GRADED * n
     label = f"size={size} order={order} pipeline={pipeline}"
     with tempfile.TemporaryDirectory() as d:
-        text = params_text(size, order, pipeline)
+        text = (Path(PARAMS_FILE).read_text() if PARAMS_FILE is not None
+                else params_text(size, order, pipeline))
         pf = Path(d) / "p.params"
         pf.write_text(text)
         model = fixedpoint_model.FixedPointFFT.from_file(pf)
@@ -179,8 +189,11 @@ def run_config(size, order, pipeline, perturb):
 def main():
     perturb = (int(os.environ["GEN_EXACT_PERTURB"])
                if "GEN_EXACT_PERTURB" in os.environ else None)
+    configs = CONFIGS if PARAMS_FILE is None else (CANDIDATE_CONFIG,)
+    if PARAMS_FILE is not None:
+        print(f"candidate parameter file: {PARAMS_FILE}")
     failed = False
-    for size, order, pipeline in CONFIGS:
+    for size, order, pipeline in configs:
         failed |= run_config(size, order, pipeline,
                              None if perturb is None
                              else perturb % (NFRAMES_GRADED * size))
@@ -190,8 +203,8 @@ def main():
         sys.exit("perturbed run unexpectedly matched the model "
                  "at every configuration")
     print(f"generated RTL matches the bit-accurate model exactly at all "
-          f"{len(CONFIGS)} configurations: "
-          + ", ".join(f"size={s} order={o} pipeline={p}" for s, o, p in CONFIGS))
+          f"{len(configs)} configurations: "
+          + ", ".join(f"size={s} order={o} pipeline={p}" for s, o, p in configs))
 
 
 if __name__ == "__main__":

@@ -39,3 +39,17 @@ Recorded results, append-only evidence. Every record names its liberty corner.
   exact SQNR match is written as the string `"inf"` and any other non-finite
   value as `null`, because strict JSON cannot carry a non-finite number. Never
   edit or drop an earlier record.
+- `fft256-candidate.json`: `{"records": [...]}`; the evidence record for the
+  growth-schedule decision (`spec/decisions/0006-growth-schedule.md`, #160):
+  the recommended row (confirm the placeholder, committed for the ruling as
+  `rtl/params/fft256.candidate.params`) and the runner-up ("half bit/stage"),
+  each with model SQNR/overflow and margins over the 60 dB row, the
+  no-overflow amplitude range, the bit-exact RTL-vs-model check
+  (`verification/test_gen_exact.py` with `GEN_EXACT_PARAMS`, clean and
+  perturbed) and `klt synthesize` figures against the placeholder baseline,
+  keyed by each parameter file's sha256, with reproduction commands. SIMULATED,
+  never measured; reports, selects nothing. Reading notes: the runner-up's
+  bit-exact check FAILED by exactly 2^drops — the generator defect #162 (no
+  mid-pipeline width reduction) — and its synthesis figures are structural
+  lower bounds that exclude the rounders the fix must add. Never edit or drop
+  an earlier record.
