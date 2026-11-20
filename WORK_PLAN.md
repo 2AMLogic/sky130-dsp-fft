@@ -53,6 +53,9 @@ _None._
 Issues carrying `loom:curated`.
 
 - **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(curated)* *(held)*
+- **#158**: Pre-route multi-corner klt sta on the committed gate-level netlist at the three signoff corners (toward T1 item 5) *(curated)*
+- **#159**: Produce a klt functional-verification report for the bit-exact FFT suite, on RTL and on the committed gate-level netlist (toward T1 items 5 and 7) *(curated)*
+- **#160**: Write decision record 0006 (Proposed): select the FFT growth schedule from the committed sweep, with model evidence for the candidate *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -73,7 +76,7 @@ _None._
 | In Progress (`loom:building`) | 0 |
 | PRs awaiting review | 0 |
 | Approved PRs awaiting merge | 0 |
-| Curated | 1 |
+| Curated | 4 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 0 |
 <!-- guide:plan-body:end -->
