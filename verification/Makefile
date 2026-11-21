@@ -1,5 +1,5 @@
 # Verification flow for the generated FFT (see README.md). Run from verification/.
-# Targets: check-tools lint lint-negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl lint-wrapper fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl all clean
+# Targets: check-tools lint lint-negctl sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl lint-wrapper fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl fv-reports all clean
 PYTHON    ?= ../.venv/bin/python
 ROOT      ?= $(abspath ..)
 # Repo root on PYTHONPATH: the sim and verification entry points import the
@@ -31,7 +31,7 @@ GEN_UNIT_NEGCTL_EXPECT ?= : fft256.v
 # owns the must-fail-for-the-intended-reason contract (lint-negctl seeds its
 # defect into a copied tree first and keeps its own recipe).
 
-.PHONY: all check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl clean
+.PHONY: all check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl fv-reports fv-rtl fv-gatelevel fv-negctl clean
 
 all: check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl
 
@@ -111,6 +111,64 @@ lint-wrapper:
 # the model on the sim/vectors.py sets, handshake/back-pressure/reset tests.
 fft-bench:
 	$(PYPATH) $(PYTHON) test_fft256_stream.py
+
+# --- klt functional-verification evidence (issue #159) ----------------------
+# The same streaming bench through `klt functional-verification`, three times:
+# on the RTL sources, on the committed gate-level netlist (zero-delay: no SDF
+# block, so the report's environment.sdf is null), and a negative control with
+# one output bit flipped (FFT_BENCH_PERTURB, as fft-bench-negctl seeds it).
+# The committed reports are the T1 item 5 functional artifacts, uncited in
+# manifests/sky130-dsp-fft.json pending spec ratification (see README.md).
+# Manual, like smoke-fft256: the gate-level leg alone interprets ~130k cycles
+# of sky130 UDP cell models and takes roughly two hours on the pinned Icarus.
+# klt pin: the lowest released klayout-tools whose functional-verification
+# runs this bench is 0.9.0 -- the bench needs request.env (klayout-tools
+# #4338) both for the negative control's stimulus and so the bench's own
+# PYTHONPATH bootstrap (Runner propagates the caller's sys.path) reaches the
+# sim/ package; 0.8.0 has no request.env. uvx supplies klt with its cocotb
+# extra; the two --with pins hold cocotb and numpy at toolchain.json's
+# versions in the bench process.
+KLT_FV_VERSION ?= 0.9.0
+KLT_FV = $(PYPATH) uvx --from "klayout-tools[functional-verification]==$(KLT_FV_VERSION)" \
+  --with cocotb==2.1.0 --with numpy==2.3.4 klt functional-verification
+PDK_VERILOG_DIR = $(PDK_ROOT)/ciel/sky130/versions/$(shell $(PYTHON) -c "import json; print(json.load(open('toolchain.json'))['pdk']['revision'])")/sky130A/libs.ref/sky130_fd_sc_hd/verilog
+PDK_HD_VERILOG = sim_build/pdk-verilog/primitives.v sim_build/pdk-verilog/sky130_fd_sc_hd.v
+RTL_SOURCES = ../rtl/wrapper/fft256_stream.sv $(sort $(wildcard ../rtl/generated/*.v))
+BENCH_INPUTS = test_fft256_stream.py ../rtl/params/fft256.params ../sim/__init__.py \
+  ../sim/fixedpoint_model.py ../sim/vectors.py
+# The gate-level request sources the sky130_fd_sc_hd Verilog cell models from
+# the pinned ciel PDK revision (toolchain.json), materialised under
+# sim_build/ so the committed request carries only repo-relative paths.
+$(PDK_HD_VERILOG): sim_build/pdk-verilog/%.v: $(PDK_VERILOG_DIR)/%.v
+	@mkdir -p sim_build/pdk-verilog
+	cp $< $@
+
+reports:
+	mkdir -p reports
+
+fv-reports: fv-rtl fv-gatelevel fv-negctl
+
+fv-rtl: reports/fv-rtl.report.json
+fv-gatelevel: reports/fv-gatelevel.report.json
+fv-negctl: reports/fv-negctl.report.json
+
+reports/fv-rtl.report.json: fv_rtl.request.json $(BENCH_INPUTS) $(RTL_SOURCES) | reports
+	$(KLT_FV) -o sim_build/fv-rtl --format json $< > $@
+
+reports/fv-gatelevel.report.json: fv_gatelevel.request.json $(BENCH_INPUTS) $(PDK_HD_VERILOG) ../netlist/fft256_stream.sky130_fd_sc_hd.v | reports
+	$(KLT_FV) -o sim_build/fv-gatelevel --format json $< > $@
+
+# The perturbed run must fail, and its committed report must carry the
+# mismatch text and the stimulus (environment.env.FFT_BENCH_PERTURB), so a
+# request error or a crash cannot count as "caught" -- the same contract
+# negctl.sh holds the other negative controls to, asserted on the JSON.
+reports/fv-negctl.report.json: fv_negctl.request.json $(BENCH_INPUTS) $(RTL_SOURCES) | reports
+	@if $(KLT_FV) -o sim_build/fv-negctl --format json $< > $@; then \
+	  echo "NEGATIVE CONTROL FAILED: perturbed run passed"; rm -f $@; exit 1; fi
+	@if ! $(PYTHON) -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["status"]=="fail", "report status is not fail"; ts=r["tests"]; assert any(t["status"]=="failed" and "stream output differs from bit-accurate model" in (t.get("error_message") or "") for t in ts), "no failed test carries the mismatch text"; assert r["environment"]["env"].get("FFT_BENCH_PERTURB")=="1000", "report does not record the perturbation stimulus"' $@; then \
+	  echo "NEGATIVE CONTROL FAILED: report does not record the expected failure (see $@)"; rm -f $@; exit 1; \
+	else echo "negative control OK: perturbed run caught, report records the mismatch and stimulus"; fi
+
 
 # One captured output bit flipped (FFT_BENCH_PERTURB); must fail on the
 # mismatch text, not on a compile error or runner crash. Writes no record.

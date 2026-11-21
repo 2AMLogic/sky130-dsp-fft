@@ -33,6 +33,7 @@ make smoke-fft256 smoke-fft256-negctl   # regen check, Icarus vs model, Yosys (a
 | `lint-wrapper` | `verilator --lint-only -Wall` on `rtl/wrapper/fft256_stream.sv` against a port-only stub of the generated core (`stubs/fft256_stub.sv`) |
 | `fft-bench` | cocotb bench `test_fft256_stream.py` on `fft256_stream` (wrapper over the generated core, Icarus): every output component bit-exact against `sim/fixedpoint_model.py` loaded from `rtl/params/fft256.params`, on the `sim/vectors.py` sets (all 100 frames of each set back to back; `FFT_BENCH_FRAMES`, default 4, per set under stalls). Also: random and long-burst `in_valid`/`out_ready` stalls, reset during the fill and mid output frame, first output after exactly 523 accepted inputs, the wrapper equations `in_ready = out_ready | ~core_valid` and `out_valid = core_valid & in_valid` on every cycle, `out_first`/`out_last` positions, one input per output after the fill (no drop or duplicate), and zero model overflow on every set. A mismatch reports the count and first differing frame/bin |
 | `fft-bench-negctl` | same bench with one captured output bit flipped (`FFT_BENCH_PERTURB`, on the short `both_stalls_random` test only), run through `negctl.sh`; succeeds only if it **fails with** `stream output differs from bit-accurate model` (`FFT_BENCH_NEGCTL_EXPECT`), writes no record |
+| `fv-reports` | `klt functional-verification` evidence for the same bench (`fv_rtl.request.json`, `fv_gatelevel.request.json`, `fv_negctl.request.json` → `reports/`): the RTL leg runs all seven tests on the wrapper + generated core; the gate-level leg runs the same tests on the committed netlist `netlist/fft256_stream.sky130_fd_sc_hd.v` with the `sky130_fd_sc_hd` Verilog cell models from the pinned PDK revision (`toolchain.json`), zero-delay (`FUNCTIONAL` define, no SDF block, so `environment.sdf` is `null`); the negative-control leg is the RTL leg with `FFT_BENCH_PERTURB=1000` (via `request.env`), asserted to fail with the mismatch text. Manual, not in CI — see [`reports/README` section](#klt-functional-verification-evidence-issue-159) |
 | `gen-exact` | `test_gen_exact.py`: the generated FFT vs `sim/fixedpoint_model.py` **bit-exactly** at six configurations (sizes 4/16/64/256, natural/bitrev, pipeline 0/1 — the set the generator's removed loose-tolerance smoke covered, issue #90). Each configuration is regenerated into a temp dir, driven in Icarus, and every captured output component is compared with `FixedPointFFT.run` for the same parameter file — no tolerance, no permutation, no rescale (the model's `run()` returns RTL stream order for both `output_order` settings). A mismatch names the configuration, frame and bin and exits non-zero |
 | `smoke-fft256` | regenerates `rtl/generated` (must equal the committed tree), runs Icarus on the generated top against `sim/fixedpoint_model.py` over the `sim/vectors.py` sets (any mismatch exits non-zero with count and first index), maps it in Yosys at `tt_025C_1v80` (fails on any non-`sky130_fd_sc_hd__` or SRAM cell), and **appends** a record to `../measurements/fft256-smoke.json`. Tool-version drift is recorded in the record, not fatal. SQNR in the record is simulated (model vs double precision) at the placeholder widths; no timing claim |
 | `smoke-fft256-negctl` | same run with one DUT output bit flipped (`PERTURB`), run through `negctl.sh`; succeeds only if it **fails with** `RTL output differs from bit-accurate model` (`SMOKE_NEGCTL_EXPECT`) and writes no record |
@@ -42,6 +43,56 @@ make smoke-fft256 smoke-fft256-negctl   # regen check, Icarus vs model, Yosys (a
 
 `smoke-fft256` is manual (not in CI). Records in `measurements/` are append-only
 evidence; add a new record, never overwrite one.
+
+## klt functional-verification evidence (issue #159)
+
+`make fv-reports` regenerates the three committed reports in `reports/`:
+
+- `fv-rtl.report.json` — all seven bench tests on the RTL sources, per-test
+  pass/fail.
+- `fv-gatelevel.report.json` — the same tests on the committed gate-level
+  netlist, zero-delay: the request defines `FUNCTIONAL` (the PDK's
+  zero-delay behavioural cell models) and carries no SDF block, so the
+  report's `environment.sdf` is `null` — that null is what distinguishes
+  this run from the later T1 item 7 SDF-annotated re-run once a routed
+  netlist exists (#17). The cell models are the `sky130_fd_sc_hd` Verilog
+  files from the PDK revision pinned in `toolchain.json`, materialised under
+  `sim_build/pdk-verilog/` by the target so the committed request holds only
+  repo-relative paths.
+- `fv-negctl.report.json` — the recorded negative control: the RTL leg with
+  `FFT_BENCH_PERTURB=1000` in `request.env` (echoed as
+  `environment.env`), asserted to fail with the bit-exact mismatch text.
+
+Pinned command (klt **0.9.0**, the lowest released `klayout-tools` whose
+`functional-verification` runs this bench — it needs `request.env`
+(klayout-tools #4338) for the negative control's stimulus; 0.8.0, the older
+repo pin, has no `request.env`):
+
+```sh
+make -C verification fv-reports   # RTL + negative control ~1 min; gate-level ~2 h
+```
+
+The bench runs unmodified, including its one internal probe: the handshake
+equations are asserted against `dut.core_valid`, an internal net of the
+wrapper rather than a port. The committed netlist keeps a `core_valid` wire,
+so the probe resolves on the gate-level leg and every handshake check runs
+there; that the net survives is not guaranteed by synthesis, so a future
+netlist may drop it — if it does, the run must say so here and in the report
+rather than silently skipping the check.
+
+The requests pin no `requires_tools` entry for iverilog: the 0.9.0
+`requires_tools` probe matches against `--version` output, which iverilog
+rejects, so a version pin there can never match
+(2AMLogic/klayout-tools#7094); the engine version is instead recorded by
+the run itself as `environment.engine_version`.
+
+These are the T1 item 5 functional artifacts. They are **uncited** in
+`manifests/sky130-dsp-fft.json` pending ratification of `spec/spec.md`: the
+tiers doc makes a verdict against a draft spec provisional, so citation
+waits for the spec. No test is waived on either leg; a gate-level
+disagreement with the RTL run would be filed as its own issue and reported
+as measured, not waived.
+
 
 ## CI
 

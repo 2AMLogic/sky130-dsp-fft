@@ -1,0 +1,16 @@
+{
+  "engine": "icarus",
+  "sources": [
+    "../netlist/fft256_stream.sky130_fd_sc_hd.v",
+    "sim_build/pdk-verilog/primitives.v",
+    "sim_build/pdk-verilog/sky130_fd_sc_hd.v"
+  ],
+  "hdl_toplevel": "fft256_stream",
+  "testbench": { "module": "test_fft256_stream" },
+  "options": {
+    "build_args": ["-g2012"],
+    "timescale": ["1ns", "1ps"],
+    "random_seed": 1,
+    "defines": { "FUNCTIONAL": null }
+  }
+}
