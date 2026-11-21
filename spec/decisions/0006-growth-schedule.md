@@ -84,22 +84,26 @@ stage-width vector, not the sweep row: three of the nine rows — tw=12, 16
 and 20 — carry the placeholder's widths `17,18,19,20,21,22,23,24` and
 differ only in `twiddle_width`, and the equal-width-transition defect below
 is a property of that vector. The bit-exact RTL-vs-model check (zero
-tolerance, 512 samples, configuration (256, natural, pipeline=1)), run on
-the emitter as pinned in `measurements/fft256-candidate.json` (`rtl/gen` @
-`746e8f1`, record dated 2026-11-20 — a subsequent generator fix such as PR
-#168 changes what a re-run would show, not what was tested here), covered
-the tw=16 row and two failing controls: it **passes** for the placeholder
-widths (512/512, bit-exact) and **fails for every narrower schedule**, the
-RTL diverging from the model by a **nominal** factor of 2^(number of
-equal-width stage transitions) — the runner-up at a nominal 2⁴ (512/512
-samples differ), the 0002 reference point at a nominal 2³ (8×). Nominal,
-not sample-exact: the runner-up's first recorded sample `(-10470,3329)` is
-the model pair `(-654,208)` times 16 — `(-10464,3328)` — with a `(-6,+1)`
-residual, the un-rounded low bits the emitter keeps, and individual samples
-may carry rounding or wrap residual (`fft256-candidate.json` words its own
-finding the same way: "dut is the model scaled by 2^4"). The tw=12 and tw=20
-rows were **not** bit-exact-checked; their realizability is inferred from
-the shared width vector, not measured. Root cause, filed as **#162**:
+tolerance, 512 samples, configuration (256, natural, pipeline=1)) was run two
+ways. The candidate record (`measurements/fft256-candidate.json`, `rtl/gen`
+@ `746e8f1`, dated 2026-11-20 — a subsequent generator fix such as PR #168
+changes what a re-run would show, not what was tested here) covers the tw=16
+row and two failing controls: the recommendation **passes** (0/512
+mismatches) and the runner-up fails (512/512 mismatches). Issue **#162**
+reports a nine-row Icarus comparison at `761f763`, each row run with its own
+twiddle width: the three rows with stage widths 17..24 (tw=12, 16, 20) each
+had 0/512 mismatches and the six other rows each had 512/512 mismatches — so
+realizability is **measured** for tw=12 and tw=20 as well, and "fails for
+every narrower schedule" rests on that all-nine-row result. The failing
+rows diverge from the model by a **nominal** factor of 2^(number of
+equal-width stage transitions) — the runner-up at a nominal 2⁴, the 0002
+reference point at a nominal 2³ (8×). Nominal, not sample-exact: the candidate
+record's first recorded runner-up sample (frame 0, bin 0) is the DUT pair
+`(-10470,3329)` against the model pair `(-654,208)`; 16 times the model pair
+is `(-10464,3328)`, leaving a `(-6,+1)` residual — the un-rounded low bits the
+emitter keeps — and individual samples may carry rounding or wrap residual
+(the record's `runner_up.rtl_vs_model.root_cause` field words the factor as
+exactly 2⁴; "dut is the model scaled by 2^4"). Root cause, filed as **#162**:
 `rtl/gen` emits no mid-pipeline width reduction — the model drops
 `max(0, w[i-1]+1 − w[i])` LSBs with convergent rounding after each stage,
 but the emitted `fft_sdf_stage` wraps a sum that needs that bit instead of
@@ -150,7 +154,8 @@ the thinner margin.
 **Runner-up: "half bit/stage" (17,17,18,18,19,19,20,20, tw=16).** It is the
 best narrower row: +5.4672 dB (0.1809 dB below the recommendation), the same
 amplitude range, and the largest measured area saving of any legal row. It
-lost on two measured grounds: (1) it is **not realizable today** — the
+lost on two measured grounds: (1) it is **not realizable with the emitter tested for this record** (`rtl/gen`
+@ `746e8f1`; a generator change such as #162's fix changes that) — the
 bit-exact check fails at a nominal factor of 2⁴: the DUT is the model times
 16, with rounding or wrap residual in individual samples (#162), so adopting
 it means a generator numerics change, a full swap and re-verification
