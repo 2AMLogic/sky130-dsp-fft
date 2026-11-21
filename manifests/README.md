@@ -170,8 +170,9 @@ the files the cold_start targets execute around them: `sim/__init__.py`,
 kept unchanged): issue #159 added the `fv-reports` target to
 `verification/Makefile` — `klt functional-verification` requests and
 committed reports (`verification/reports/`) running the same hashed bench
-(`test_fft256_stream.py`) on the RTL sources, on the committed gate-level
-netlist, and as a recorded negative control, under `klayout-tools==0.9.0`
+(`test_fft256_stream.py`) on the RTL sources and as a recorded negative control
+(the gate-level report on the committed netlist is pending under #159, not yet
+committed), under `klayout-tools==0.9.0`
 (see `verification/README.md`) — so the Makefile entry's content hash moved;
 `-7` re-hashes the identical list, checks and pins, and the fv requests and
 reports are deliberately not inventoried (they are evidence artifacts around

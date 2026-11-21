@@ -46,11 +46,19 @@ evidence; add a new record, never overwrite one.
 
 ## klt functional-verification evidence (issue #159)
 
-`make fv-reports` regenerates the three committed reports in `reports/`:
+`make fv-reports` builds the three reports in `reports/`; `make fv-reports-force`
+(`make -B fv-reports`) re-runs all three simulations regardless of file
+timestamps (the plain targets skip a report newer than its inputs). Each report
+is written to a temporary file and moved into place only after the run meets
+that leg's success criterion, so a failed run leaves the previous report
+untouched. **Committed today: `fv-rtl.report.json` and
+`fv-negctl.report.json` only.** The gate-level report is **pending under #159**
+(the ~2 h run has not been committed); the gate-level description below is the
+request's design, and only the measured probe supports any gate-level claim.
 
 - `fv-rtl.report.json` — all seven bench tests on the RTL sources, per-test
   pass/fail.
-- `fv-gatelevel.report.json` — the same tests on the committed gate-level
+- `fv-gatelevel.report.json` (pending under #159, not yet committed) — the same tests on the committed gate-level
   netlist, zero-delay: the request defines `FUNCTIONAL` (the PDK's
   zero-delay behavioural cell models) and carries no SDF block, so the
   report's `environment.sdf` is `null` — that null is what distinguishes
@@ -69,7 +77,7 @@ Pinned command (klt **0.9.0**, the lowest released `klayout-tools` whose
 repo pin, has no `request.env`):
 
 ```sh
-make -C verification fv-reports   # RTL + negative control ~1 min; gate-level ~2 h
+make -C verification fv-reports-force   # regenerate all three: RTL + negative control ~1 min; gate-level ~2 h
 ```
 
 The bench runs unmodified, including its one internal probe: the handshake

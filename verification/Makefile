@@ -31,7 +31,7 @@ GEN_UNIT_NEGCTL_EXPECT ?= : fft256.v
 # owns the must-fail-for-the-intended-reason contract (lint-negctl seeds its
 # defect into a copied tree first and keeps its own recipe).
 
-.PHONY: all check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl fv-reports fv-rtl fv-gatelevel fv-negctl clean
+.PHONY: all check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl smoke-fft256 smoke-fft256-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl fv-reports fv-reports-force fv-rtl fv-gatelevel fv-negctl clean
 
 all: check-tools lint lint-negctl lint-wrapper sqnr-ref sqnr-ref-negctl fxp-model fxp-model-negctl fft-bench fft-bench-negctl gen-exact gen-exact-negctl gen-unit gen-unit-negctl
 
@@ -152,23 +152,37 @@ fv-rtl: reports/fv-rtl.report.json
 fv-gatelevel: reports/fv-gatelevel.report.json
 fv-negctl: reports/fv-negctl.report.json
 
+# Each report is generated into a temporary file and moved over the committed
+# one only after the run meets that leg's success criterion, so a failed or
+# interrupted run never leaves an empty or partial report behind. The reports
+# are committed evidence, so the file targets below skip when the file is newer
+# than its inputs; `make fv-reports-force` (or `make -B fv-reports`) always
+# re-runs all three simulations.
+fv-reports-force:
+	$(MAKE) -B fv-reports
+
 reports/fv-rtl.report.json: fv_rtl.request.json $(BENCH_INPUTS) $(RTL_SOURCES) | reports
-	$(KLT_FV) -o sim_build/fv-rtl --format json $< > $@
+	@rm -f $@.tmp
+	@if $(KLT_FV) -o sim_build/fv-rtl --format json $< > $@.tmp; then mv $@.tmp $@; \
+	else echo "fv-rtl FAILED: committed report left untouched"; rm -f $@.tmp; exit 1; fi
 
 reports/fv-gatelevel.report.json: fv_gatelevel.request.json $(BENCH_INPUTS) $(PDK_HD_VERILOG) ../netlist/fft256_stream.sky130_fd_sc_hd.v | reports
-	$(KLT_FV) -o sim_build/fv-gatelevel --format json $< > $@
+	@rm -f $@.tmp
+	@if $(KLT_FV) -o sim_build/fv-gatelevel --format json $< > $@.tmp; then mv $@.tmp $@; \
+	else echo "fv-gatelevel FAILED: committed report left untouched"; rm -f $@.tmp; exit 1; fi
 
-# The perturbed run must fail, and its committed report must carry the
-# mismatch text and the stimulus (environment.env.FFT_BENCH_PERTURB), so a
-# request error or a crash cannot count as "caught" -- the same contract
-# negctl.sh holds the other negative controls to, asserted on the JSON.
+# The perturbed run must fail, and its report must carry the mismatch text and
+# the stimulus (environment.env.FFT_BENCH_PERTURB), so a request error or a
+# crash cannot count as "caught" -- the same contract negctl.sh holds the other
+# negative controls to, asserted on the JSON. The committed report is replaced
+# only once the temporary one passes that assertion.
 reports/fv-negctl.report.json: fv_negctl.request.json $(BENCH_INPUTS) $(RTL_SOURCES) | reports
-	@if $(KLT_FV) -o sim_build/fv-negctl --format json $< > $@; then \
-	  echo "NEGATIVE CONTROL FAILED: perturbed run passed"; rm -f $@; exit 1; fi
-	@if ! $(PYTHON) -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["status"]=="fail", "report status is not fail"; ts=r["tests"]; assert any(t["status"]=="failed" and "stream output differs from bit-accurate model" in (t.get("error_message") or "") for t in ts), "no failed test carries the mismatch text"; assert r["environment"]["env"].get("FFT_BENCH_PERTURB")=="1000", "report does not record the perturbation stimulus"' $@; then \
-	  echo "NEGATIVE CONTROL FAILED: report does not record the expected failure (see $@)"; rm -f $@; exit 1; \
-	else echo "negative control OK: perturbed run caught, report records the mismatch and stimulus"; fi
-
+	@rm -f $@.tmp
+	@if $(KLT_FV) -o sim_build/fv-negctl --format json $< > $@.tmp; then \
+	  echo "NEGATIVE CONTROL FAILED: perturbed run passed (committed report left untouched)"; rm -f $@.tmp; exit 1; fi
+	@if ! $(PYTHON) -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["status"]=="fail", "report status is not fail"; ts=r["tests"]; assert any(t["status"]=="failed" and "stream output differs from bit-accurate model" in (t.get("error_message") or "") for t in ts), "no failed test carries the mismatch text"; assert r["environment"]["env"].get("FFT_BENCH_PERTURB")=="1000", "report does not record the perturbation stimulus"' $@.tmp; then \
+	  echo "NEGATIVE CONTROL FAILED: report does not record the expected failure (committed report left untouched)"; rm -f $@.tmp; exit 1; \
+	else mv $@.tmp $@; echo "negative control OK: perturbed run caught, report records the mismatch and stimulus"; fi
 
 # One captured output bit flipped (FFT_BENCH_PERTURB); must fail on the
 # mismatch text, not on a compile error or runner crash. Writes no record.
