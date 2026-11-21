@@ -78,19 +78,39 @@ range, and none widens it.
 
 ## Two findings that decide the record
 
-**1. Only the placeholder row is realizable by the current generator.** The
-bit-exact RTL-vs-model check (zero tolerance, 512 samples, configuration
-(256, natural, pipeline=1)) **passes** for the placeholder widths and **fails
-for every narrower row**, with the RTL diverging from the model by exactly
-2^(number of equal-width stage transitions): the runner-up fails at 2⁴
-(512/512 samples), the 0002 reference point at 2³. Root cause, filed as
-**#162**: `rtl/gen` emits no mid-pipeline width reduction — the model drops
+**1. Only the placeholder stage-width schedule (17..24) is realizable by
+the generator as tested for this record.** Realizability keys on the
+stage-width vector, not the sweep row: three of the nine rows — tw=12, 16
+and 20 — carry the placeholder's widths `17,18,19,20,21,22,23,24` and
+differ only in `twiddle_width`, and the equal-width-transition defect below
+is a property of that vector. The bit-exact RTL-vs-model check (zero
+tolerance, 512 samples, configuration (256, natural, pipeline=1)) was run two
+ways. The candidate record (`measurements/fft256-candidate.json`, `rtl/gen`
+@ `746e8f1`, dated 2026-11-20 — a subsequent generator fix such as PR #168
+changes what a re-run would show, not what was tested here) covers the tw=16
+row and two failing controls: the recommendation **passes** (0/512
+mismatches) and the runner-up fails (512/512 mismatches). Issue **#162**
+reports a nine-row Icarus comparison at `761f763`, each row run with its own
+twiddle width: the three rows with stage widths 17..24 (tw=12, 16, 20) each
+had 0/512 mismatches and the six other rows each had 512/512 mismatches — so
+realizability is **measured** for tw=12 and tw=20 as well, and "fails for
+every narrower schedule" rests on that all-nine-row result. The failing
+rows diverge from the model by a **nominal** factor of 2^(number of
+equal-width stage transitions) — the runner-up at a nominal 2⁴, the 0002
+reference point at a nominal 2³ (8×). Nominal, not sample-exact: the candidate
+record's first recorded runner-up sample (frame 0, bin 0) is the DUT pair
+`(-10470,3329)` against the model pair `(-654,208)`; 16 times the model pair
+is `(-10464,3328)`, leaving a `(-6,+1)` residual — the un-rounded low bits the
+emitter keeps — and individual samples may carry rounding or wrap residual
+(the record's `runner_up.rtl_vs_model.root_cause` field words the factor as
+exactly 2⁴; "dut is the model scaled by 2^4"). Root cause, filed as **#162**:
+`rtl/gen` emits no mid-pipeline width reduction — the model drops
 `max(0, w[i-1]+1 − w[i])` LSBs with convergent rounding after each stage,
 but the emitted `fft_sdf_stage` wraps a sum that needs that bit instead of
-scaling. The placeholder (17,18,…,24) is the unique sweep row whose every
-transition grows by exactly one bit, which is why every committed figure on
-main is consistent. A narrower schedule is adoptable only after #162, plus
-the full swap and re-verification that #163 sequences.
+scaling. The placeholder (17,18,…,24) is the unique sweep schedule whose
+every transition grows by exactly one bit, which is why every committed
+figure on main is consistent. A narrower schedule is adoptable only after
+#162, plus the full swap and re-verification that #163 sequences.
 
 **2. The area saving the narrower rows promise is measured at a fraction of
 the width-sum proxy.** `klt synthesize` on the runner-up's generated RTL
@@ -109,10 +129,13 @@ must add before the runner-up can exist at all.
 **Recommendation: confirm the placeholder schedule — `stage_widths=
 17,18,19,20,21,22,23,24`, `twiddle_width=16` ("1 bit/stage") — as the
 selected schedule for the spec's Internal growth and scaling row.** The
-recommended schedule keeps **+5.6481 dB** of margin over the 60 dB row — the
-most of any realizable option — zero overflow on the spec's sets, and the
-measured no-overflow amplitude range random 0.92 / tone ≥ 1.00, identical to
-every contender. Its netlist **is** the committed netlist: a fresh `klt
+recommended schedule keeps **+5.6481 dB** of margin over the 60 dB row, zero
+overflow on the spec's sets, and the measured no-overflow amplitude range
+random 0.92 / tone ≥ 1.00, identical to every contender. The margin is not
+the largest on the realizable schedule: its own tw=20 row reads +5.6626 dB
+in the sweep — 0.0145 dB more — at the cost of a wider multiplier, the same
+trade the twiddle-axis reading above rejects, so the recommendation keeps
+tw=16. Its netlist **is** the committed netlist: a fresh `klt
 synthesize` of its generated RTL reproduces the committed report's figures
 exactly (60715 cells, 1078566.9312 um², 781969.9712 um² sequential), and its
 bit-exact check passes 512/512. Confirming it costs nothing and unblocks #17
@@ -131,9 +154,12 @@ the thinner margin.
 **Runner-up: "half bit/stage" (17,17,18,18,19,19,20,20, tw=16).** It is the
 best narrower row: +5.4672 dB (0.1809 dB below the recommendation), the same
 amplitude range, and the largest measured area saving of any legal row. It
-lost on two measured grounds: (1) it is **not realizable today** — the
-bit-exact check fails by 2⁴ (#162), so adopting it means a generator
-numerics change, a full swap and re-verification before any netlist exists;
+lost on two measured grounds: (1) it is **not realizable with the emitter tested for this record** (`rtl/gen`
+@ `746e8f1`; a generator change such as #162's fix changes that) — the
+bit-exact check fails at a nominal factor of 2⁴: the DUT is the model times
+16, with rounding or wrap residual in individual samples (#162), so adopting
+it means a generator numerics change, a full swap and re-verification
+before any netlist exists;
 (2) its measured saving — 2282 cells, 24588.5824 um² total, 11290.8288 um²
 sequential, before the rounders the fix adds — does not justify that path
 for the target design. If a future ruling needs every um² (for example a
