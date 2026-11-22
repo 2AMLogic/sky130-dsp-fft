@@ -31,15 +31,21 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-13.json`, generated from
-`item10-inventory-13.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-14.json`, generated from
+`item10-inventory-14.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
 **This paragraph names the current pair; cite it from here rather than copying
 the version number elsewhere.** The root `README.md` Reproduce row deliberately
 points at this section instead of naming a file, so it does not go stale at the
 next supersession.
 
-`-13` supersedes `item10-inventory-12.json` / `item10-attestation-12.json`,
+`-14` supersedes `item10-inventory-13.json` / `item10-attestation-13.json`,
+which hashed `verification/README.md` and `.github/workflows/signoff.yml` as
+of main before issue #159 documented the `fv-reports` target in
+`verification/README.md` and repointed that workflow's item-9 step at the
+item-9 `-7` pair and its item-10 step at `-14`, so both hygiene entries'
+content hashes moved; the same hygiene entries and checks are carried
+unchanged. `-13` supersedes `item10-inventory-12.json` / `item10-attestation-12.json`,
 which hashed the `.github/workflows/rtl-ci.yml` and
 `.github/workflows/signoff.yml` content as of main before PR #155 added a bare
 `merge_group:` trigger to both workflows' `on:` maps, so both hygiene entries'
@@ -102,11 +108,11 @@ a new superseding pair:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-13.json \
-    -o manifests/item10-attestation-13.json
+    --inventory manifests/item10-inventory-14.json \
+    -o manifests/item10-attestation-14.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-13.json \
-    --check manifests/item10-attestation-13.json
+    --inventory manifests/item10-inventory-14.json \
+    --check manifests/item10-attestation-14.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a
@@ -153,15 +159,25 @@ uvx --from "klayout-tools==0.9.0" klt signoff --attest 1 \
     --check manifests/item1-attestation.json
 ```
 
-Item 9 is cited from `item9-attestation-6.json`, generated from
-`item9-inventory-6.json` (the cocotb streaming-FFT bench and its negative
+Item 9 is cited from `item9-attestation-7.json`, generated from
+`item9-inventory-7.json` (the cocotb streaming-FFT bench and its negative
 control, plus the model, reference, amplitude-sweep, schedule-sweep and
 per-size model benches, the tests of the shared append-only record writer, and
 the files the cold_start targets execute around them: `sim/__init__.py`,
 `verification/negctl.sh`, `verification/requirements.txt`,
 `verification/flow_tools.py` and `verification/toolchain.json`). It supersedes
-`item9-inventory-5.json` / `item9-attestation-5.json`, whose envelope hashed
-these sources as generated in PR #147 but was not regenerated when PR #137
+`item9-inventory-6.json` / `item9-attestation-6.json` (recorded evidence,
+kept unchanged): issue #159 added the `fv-reports` target to
+`verification/Makefile` — `klt functional-verification` requests and
+committed reports (`verification/reports/`) running the same hashed bench
+(`test_fft256_stream.py`) on the RTL sources and as a recorded negative control
+(the gate-level report on the committed netlist is pending under #159, not yet
+committed), under `klayout-tools==0.9.0`
+(see `verification/README.md`) — so the Makefile entry's content hash moved;
+`-7` re-hashes the identical list, checks and pins, and the fv requests and
+reports are deliberately not inventoried (they are evidence artifacts around
+the hashed bench, not part of the cold_start argv). `-6` in turn hashed these
+sources as generated in PR #147 but was not regenerated when PR #137
 (`sim/fixedpoint_model.py`, `sim/records.py`, `sim/test_records.py`,
 `verification/test_fft256_smoke.py`) and PR #132 (`sim/test_schedule_sweep.py`)
 edited attested sources off a base lacking `-5` and merged green on the
@@ -201,9 +217,9 @@ re-verifies the recorded hashes. Pinned `klayout-tools==0.8.0`:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-6.json \
-    -o manifests/item9-attestation-6.json
+    --inventory manifests/item9-inventory-7.json \
+    -o manifests/item9-attestation-7.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-6.json \
-    --check manifests/item9-attestation-6.json
+    --inventory manifests/item9-inventory-7.json \
+    --check manifests/item9-attestation-7.json
 ```

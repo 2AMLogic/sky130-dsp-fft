@@ -1,0 +1,23 @@
+{
+  "engine": "icarus",
+  "sources": [
+    "../rtl/wrapper/fft256_stream.sv",
+    "../rtl/generated/fft256.v",
+    "../rtl/generated/fft_cmul.v",
+    "../rtl/generated/fft_reorder.v",
+    "../rtl/generated/fft_rnd.v",
+    "../rtl/generated/fft_sdf_stage.v",
+    "../rtl/generated/fft_twrom.v"
+  ],
+  "hdl_toplevel": "fft256_stream",
+  "testbench": {
+    "module": "test_fft256_stream",
+    "testcase": ["both_stalls_random"]
+  },
+  "options": {
+    "build_args": ["-g2012"],
+    "timescale": ["1ns", "1ps"],
+    "random_seed": 1
+  },
+  "env": { "FFT_BENCH_PERTURB": "1000" }
+}

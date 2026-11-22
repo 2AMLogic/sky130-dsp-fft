@@ -1,0 +1,80 @@
+{
+  "schema_version": 2,
+  "engine": "icarus",
+  "hdl_toplevel": "fft256_stream",
+  "testbench": "test_fft256_stream",
+  "status": "pass",
+  "test_count": 7,
+  "passed_count": 7,
+  "failed_count": 0,
+  "skipped_count": 0,
+  "tests": [
+    {
+      "name": "model_no_overflow",
+      "status": "passed",
+      "sim_time_ns": 0.0,
+      "real_time_s": 0.54
+    },
+    {
+      "name": "back_to_back_full_sets",
+      "status": "passed",
+      "sim_time_ns": 1045080.0,
+      "real_time_s": 31.975
+    },
+    {
+      "name": "input_stalls",
+      "status": "passed",
+      "sim_time_ns": 103340.00000000012,
+      "real_time_s": 1.94
+    },
+    {
+      "name": "output_stalls",
+      "status": "passed",
+      "sim_time_ns": 123990.0,
+      "real_time_s": 2.195
+    },
+    {
+      "name": "both_stalls_random",
+      "status": "passed",
+      "sim_time_ns": 128560.0,
+      "real_time_s": 1.956
+    },
+    {
+      "name": "long_idle_and_blocked_tail",
+      "status": "passed",
+      "sim_time_ns": 370010.0,
+      "real_time_s": 3.137
+    },
+    {
+      "name": "reset_mid_frame",
+      "status": "passed",
+      "sim_time_ns": 38170.0,
+      "real_time_s": 0.571
+    }
+  ],
+  "coverage": null,
+  "trace": null,
+  "environment": {
+    "engine": "icarus",
+    "engine_version": "13.0",
+    "tools": [],
+    "cocotb_version": "2.1.0",
+    "results_xml": {
+      "path": "verification/sim_build/fv-rtl/results_icarus.xml",
+      "scope": "repo"
+    },
+    "test_log": {
+      "path": "verification/sim_build/fv-rtl/test_icarus.log",
+      "scope": "repo"
+    },
+    "build_log": {
+      "path": "verification/sim_build/fv-rtl/build_icarus.log",
+      "scope": "repo"
+    },
+    "random_seed": 1,
+    "source_defines": {},
+    "env": {},
+    "initial_state": null,
+    "sdf": null
+  }
+}
