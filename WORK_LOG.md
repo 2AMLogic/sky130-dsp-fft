@@ -3,6 +3,17 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-22
+
+- **PR #172**: verification: run the bit-exact FFT bench through klt functional-verification (RTL + negative control; gate-level request committed, report pending under #159)
+
+### 2026-11-21
+
+- **Issue #169** (closed): Tighten two precision claims in decision 0006 before it is ruled on
+- **PR #171**: docs: correct 0006 finding 1 to the shared 17..24 schedule and nominal 2^drops factors
+- **Issue #160** (closed): Write decision record 0006 (Proposed): select the FFT growth schedule from the committed sweep, with model evidence for the candidate
+- **PR #164**: docs: add decision 0006 selecting the FFT growth schedule, with candidate evidence records
+
 ### 2026-11-18
 
 - **PR #155**: ci: add merge_group trigger to rtl-ci and signoff workflows
