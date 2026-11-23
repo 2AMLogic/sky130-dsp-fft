@@ -3,6 +3,11 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-23
+
+- **PR #168**: feat: emit the model's mid-pipeline stage-width reduction in generated FFT RTL
+- **Issue #162** (closed): Implement bit-exact stage-width reduction in generated FFT RTL
+
 ### 2026-11-22
 
 - **PR #172**: verification: run the bit-exact FFT bench through klt functional-verification (RTL + negative control; gate-level request committed, report pending under #159)
