@@ -31,14 +31,21 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-14.json`, generated from
-`item10-inventory-14.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-15.json`, generated from
+`item10-inventory-15.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
 **This paragraph names the current pair; cite it from here rather than copying
 the version number elsewhere.** The root `README.md` Reproduce row deliberately
 points at this section instead of naming a file, so it does not go stale at the
 next supersession.
 
+`-15` supersedes `item10-inventory-14.json` / `item10-attestation-14.json`,
+which hashed `verification/README.md` and `.github/workflows/signoff.yml` as
+of main before issue #170 refreshed the README's `gen-exact` row to the
+eight-configuration, directed-drop and `fft_cmul` unit-check shape PR #168
+added and documented its `GEN_EXACT_ROWS` entry point, and repointed that
+workflow's item-10 step at the `-15` pair, so both hygiene entries' content
+hashes moved; the same hygiene entries and checks are carried unchanged.
 `-14` supersedes `item10-inventory-13.json` / `item10-attestation-13.json`,
 which hashed `verification/README.md` and `.github/workflows/signoff.yml` as
 of main before issue #159 documented the `fv-reports` target in
@@ -108,11 +115,11 @@ a new superseding pair:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-14.json \
-    -o manifests/item10-attestation-14.json
+    --inventory manifests/item10-inventory-15.json \
+    -o manifests/item10-attestation-15.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-14.json \
-    --check manifests/item10-attestation-14.json
+    --inventory manifests/item10-inventory-15.json \
+    --check manifests/item10-attestation-15.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a

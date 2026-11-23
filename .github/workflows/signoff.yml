@@ -68,8 +68,8 @@ jobs:
           # toolchain) are skipped here and carried with their committed
           # outcome; rtl-ci.yml runs lint and lint-negctl on this runner.
           klt signoff --attest 10 \
-              --inventory manifests/item10-inventory-14.json \
-              --check manifests/item10-attestation-14.json
+              --inventory manifests/item10-inventory-15.json \
+              --check manifests/item10-attestation-15.json
 
       - name: Re-attest T1 item 9 and compare against the committed envelope
         run: |
