@@ -37,13 +37,14 @@ _None._
 Issues currently being built (`loom:building`).
 
 - **#158**: Pre-route multi-corner klt sta on the committed gate-level netlist at the three signoff corners (toward T1 item 5)
+- **#159**: Produce a klt functional-verification report for the bit-exact FFT suite, on RTL and on the committed gate-level netlist (toward T1 items 5 and 7)
 - **#162**: Implement bit-exact stage-width reduction in generated FFT RTL
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#168**: feat: emit the model's mid-pipeline stage-width reduction in generated FFT RTL
 
 ## Approved (Awaiting Merge)
 
@@ -77,8 +78,8 @@ _None._
 | Very important | 1 |
 | Important | 5 |
 | Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 2 |
-| PRs awaiting review | 0 |
+| In Progress (`loom:building`) | 3 |
+| PRs awaiting review | 1 |
 | Approved PRs awaiting merge | 0 |
 | Curated | 5 |
 | Architect / Hermit proposals | 1 |
