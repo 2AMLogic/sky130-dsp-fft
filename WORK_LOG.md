@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-11-23
 
+- **PR #176**: signoff: supersede item 10 as -15, refresh gen-exact docs and T1 citations
+- **Issue #170** (closed): Refresh gen-exact and T1 item-1 evidence pointers in verification/README.md and ROADMAP.md
 - **PR #168**: feat: emit the model's mid-pipeline stage-width reduction in generated FFT RTL
 - **Issue #162** (closed): Implement bit-exact stage-width reduction in generated FFT RTL
 
