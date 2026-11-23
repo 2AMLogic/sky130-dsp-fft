@@ -24,6 +24,12 @@ Environment: GEN_EXACT_ROWS=<file> (e.g. measurements/schedule-sweep.json)
 replaces the built-in list with every schedule row recorded in the file's
 first record (256-point, natural, pipeline 1) -- the issue #162 acceptance
 sweep; nothing in CI sets it.
+Environment: GEN_EXACT_PARAMS=<file> (issue #160) restricts the run to the
+single (256, natural, pipeline=1) configuration and takes every parameter --
+size, widths, output order -- from that parameter file instead of
+BASE/STAGE_WIDTHS: the decision-0006 candidate check, whose clean and
+perturbed runs are recorded in measurements/fft256-candidate.json.
+GEN_EXACT_ROWS and GEN_EXACT_PARAMS are mutually exclusive.
 """
 
 import json
@@ -64,6 +70,9 @@ BASE = dict(size=256, architecture="r22sdf", direction="forward",
             stage_widths="17,18,19,20,21,22,23,24", twiddle_width=16,
             complex_mult="3mult", rounding="convergent",
             output_order="natural", pipeline=1, stall=1)
+# With GEN_EXACT_PARAMS set, only this configuration runs, from that file.
+PARAMS_FILE = os.environ.get("GEN_EXACT_PARAMS")
+CANDIDATE_CONFIG = (256, "natural", 1, None, None)
 NFRAMES_FED = 4     # frames streamed into the DUT
 NFRAMES_GRADED = 2  # frames captured and compared
 
@@ -160,7 +169,8 @@ def simulate(size, order, pipeline, data, perturb, widths=None, tw=None):
     if widths is not None:
         label += f" widths={widths} tw={tw}"
     with tempfile.TemporaryDirectory() as d:
-        text = params_text(size, order, pipeline, widths, tw)
+        text = (Path(PARAMS_FILE).read_text() if PARAMS_FILE is not None
+                else params_text(size, order, pipeline, widths, tw))
         pf = Path(d) / "p.params"
         pf.write_text(text)
         model = fixedpoint_model.FixedPointFFT.from_file(pf)
@@ -415,31 +425,36 @@ def main():
     perturb = (int(os.environ["GEN_EXACT_PERTURB"])
                if "GEN_EXACT_PERTURB" in os.environ else None)
     rows_path = os.environ.get("GEN_EXACT_ROWS")
-    failed = False
     if rows_path:
-        failed |= run_rows(rows_path, perturb)
-        if failed:
+        if PARAMS_FILE is not None:
+            sys.exit("Set only one of GEN_EXACT_ROWS and GEN_EXACT_PARAMS")
+        if run_rows(rows_path, perturb):
             sys.exit(1)
         if perturb is not None:
             sys.exit("perturbed run unexpectedly matched the model "
                      "at every configuration")
         return
-    for size, order, pipeline, widths, tw in CONFIGS:
+    configs = CONFIGS if PARAMS_FILE is None else (CANDIDATE_CONFIG,)
+    if PARAMS_FILE is not None:
+        print(f"candidate parameter file: {PARAMS_FILE}")
+    failed = False
+    for size, order, pipeline, widths, tw in configs:
         failed |= run_config(size, order, pipeline,
                              None if perturb is None
                              else perturb % (NFRAMES_GRADED * size),
                              widths, tw)
-    failed |= run_directed(perturb)
-    if perturb is None:
-        run_cmul_unit()
+    if PARAMS_FILE is None:
+        failed |= run_directed(perturb)
+        if perturb is None:
+            run_cmul_unit()
     if failed:
         sys.exit(1)
     if perturb is not None:
         sys.exit("perturbed run unexpectedly matched the model "
                  "at every configuration")
     print(f"generated RTL matches the bit-accurate model exactly at all "
-          f"{len(CONFIGS)} configurations: "
-          + ", ".join(f"size={s} order={o} pipeline={p}" for s, o, p, _, _ in CONFIGS))
+          f"{len(configs)} configurations: "
+          + ", ".join(f"size={s} order={o} pipeline={p}" for s, o, p, _, _ in configs))
 
 
 if __name__ == "__main__":

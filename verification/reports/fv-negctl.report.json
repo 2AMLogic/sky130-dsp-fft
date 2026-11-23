@@ -1,0 +1,48 @@
+{
+  "schema_version": 2,
+  "engine": "icarus",
+  "hdl_toplevel": "fft256_stream",
+  "testbench": "test_fft256_stream",
+  "status": "fail",
+  "test_count": 1,
+  "passed_count": 0,
+  "failed_count": 1,
+  "skipped_count": 0,
+  "tests": [
+    {
+      "name": "both_stalls_random",
+      "status": "failed",
+      "sim_time_ns": 31020.0,
+      "real_time_s": 0.651,
+      "error_type": "AssertionError",
+      "error_message": "stream output differs from bit-accurate model (random50, in random, out random): 1 of 1024 samples differ; first at index 1000 (frame 3, bin 232): dut=(380,-20) model=(364,-20)"
+    }
+  ],
+  "coverage": null,
+  "trace": null,
+  "environment": {
+    "engine": "icarus",
+    "engine_version": "13.0",
+    "tools": [],
+    "cocotb_version": "2.1.0",
+    "results_xml": {
+      "path": "verification/sim_build/fv-negctl/results_icarus.xml",
+      "scope": "repo"
+    },
+    "test_log": {
+      "path": "verification/sim_build/fv-negctl/test_icarus.log",
+      "scope": "repo"
+    },
+    "build_log": {
+      "path": "verification/sim_build/fv-negctl/build_icarus.log",
+      "scope": "repo"
+    },
+    "random_seed": 1,
+    "source_defines": {},
+    "env": {
+      "FFT_BENCH_PERTURB": "1000"
+    },
+    "initial_state": null,
+    "sdf": null
+  }
+}

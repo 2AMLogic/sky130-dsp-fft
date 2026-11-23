@@ -7,12 +7,12 @@
       "content_hash": "sha256:c6b0c2d5f780c0b5f1b0a24bd69ff16e5486f2d03798af35c2b173aff5b622f1"
     },
     "9": {
-      "file": "manifests/item9-attestation-6.json",
-      "content_hash": "sha256:e9cf8bf66a43f87078ebe74b0fbdd3205e413b788ea72a090b24d3f98ffd0212"
+      "file": "manifests/item9-attestation-7.json",
+      "content_hash": "sha256:f5ca5d4af6c5561b39dc776947863fee9477fb8b42e61c5e91d9a2e33db3c163"
     },
     "10": {
-      "file": "manifests/item10-attestation-13.json",
-      "content_hash": "sha256:32b3ce1811ca65f313914620c975fb5e786ef52bf8fba7423acc4b5a2bb27921"
+      "file": "manifests/item10-attestation-14.json",
+      "content_hash": "sha256:18ba89727dea926c1a0a72bb42e51fed516494ee10e6aada2a9b2cc51086af07"
     }
   }
 }
