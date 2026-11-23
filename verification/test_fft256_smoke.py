@@ -1,16 +1,18 @@
 """End-to-end smoke of the generated 256-point FFT (issue #30).
 
   regen -> Icarus vs the bit-accurate model on the sim/vectors.py sets ->
-  Yosys map to sky130_fd_sc_hd at tt_025C_1v80 -> append a record to
+  no-macro check on the committed synth report -> append a record to
   ../measurements/fft256-smoke.json
 
 Exits non-zero on any RTL/model mismatch (count and first differing index are
 printed), on a regenerated tree that differs from the committed one, or on a
-macro/SRAM cell in the mapped netlist. Run through `make smoke-fft256`.
+macro or non-sky130_fd_sc_hd cell in the committed
+synth report. Run through `make smoke-fft256`.
 Environment: PERTURB=<i> flips one DUT output bit (negative control, no record).
 """
 
 import hashlib
+import json
 import os
 import re
 import subprocess
@@ -27,8 +29,9 @@ ROOT = HERE.parent
 
 PARAMS = ROOT / "rtl/params/fft256.params"
 RECORD = ROOT / "measurements/fft256-smoke.json"
+SYNTH_REPORT = ROOT / "synth/fft256.synth.report.json"
 BUILD = HERE / "sim_build" / "smoke_fft256"
-TOOLS = ("icarus_verilog", "verilator", "yosys", "cocotb", "python")
+TOOLS = ("icarus_verilog", "verilator", "cocotb", "python")
 MISMATCH_TEXT = "RTL output differs from bit-accurate model"
 
 
@@ -115,10 +118,13 @@ def simulated_sqnr(model, sets):
     return out
 
 
-def check_no_macros(cells):
-    bad = sorted(c for c in cells if not c.startswith("sky130_fd_sc_hd__") or "sram" in c.lower())
-    if bad:
-        sys.exit(f"mapped netlist contains non-standard-cell or SRAM cells: {bad}")
+def check_no_macros(report_path=SYNTH_REPORT):
+    """Assert the committed synthesis report maps to standard cells only."""
+    rep = json.loads(Path(report_path).read_text())
+    bad = sorted(c for c in rep["instance_counts_by_type"] if not c.startswith("sky130_fd_sc_hd__"))
+    if bad or rep["macro_instance_count"] != 0:
+        sys.exit(f"committed synth report has macros or non-sky130_fd_sc_hd cells: "
+                 f"macro_instance_count={rep['macro_instance_count']} types={bad}")
 
 
 def append_record(record, path=RECORD):
@@ -141,15 +147,13 @@ def main():
     if perturb is not None:
         sys.exit("perturbed run unexpectedly matched the model")
     sqnr = simulated_sqnr(model, sets)
-    design = flow_tools.run_yosys("synth_fft256.ys")
-    check_no_macros(design["num_cells_by_type"])
+    check_no_macros()
     tools, drift = installed_tools()
-    pdk = flow_tools.PINS["pdk"]
     stim = hashlib.sha256("\n".join(pack(np.concatenate(list(sets.values())), p.input_width)).encode()).hexdigest()
     record = {
         "date_utc": records.utc_stamp(),
         "module": "fft256",
-        "note": "smoke run of the generated top at PLACEHOLDER widths; single corner, cell count and area only; no timing claim",
+        "note": "smoke run of the generated top at PLACEHOLDER widths; Icarus vs model and simulated SQNR only; no synthesis, area or timing claim",
         "generator": {
             "repo_head": run(["git", "-C", str(ROOT), "rev-parse", "HEAD"]),
             "generator_last_commit": run(["git", "-C", str(ROOT), "log", "-1", "--format=%H", "--", "rtl/gen"]),
@@ -169,18 +173,11 @@ def main():
         },
         "rtl_vs_model": {**cmp_, "bit_exact": True},
         "sqnr_simulated": {"label": "simulated: model vs double precision, not measured", "sets": sqnr},
-        "liberty_corner": pdk["liberty_corner"],
-        "liberty_file": pdk["liberty_file"],
-        "pdk_revision": pdk["revision"],
         "tool_versions": tools,
         "tool_version_drift_vs_pins": drift,
-        "cell_count": design["num_cells"],
-        "cells_by_type": design["num_cells_by_type"],
-        "area_um2": design.get("area"),
     }
     append_record(record)
-    print(f"appended record to {RECORD.relative_to(ROOT)}: {record['cell_count']} cells, "
-          f"area {record['area_um2']} um2 at {record['liberty_corner']}")
+    print(f"appended record to {RECORD.relative_to(ROOT)}")
 
 
 if __name__ == "__main__":

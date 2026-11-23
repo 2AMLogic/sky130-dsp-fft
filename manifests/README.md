@@ -31,15 +31,21 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-15.json`, generated from
-`item10-inventory-15.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-16.json`, generated from
+`item10-inventory-16.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
 **This paragraph names the current pair; cite it from here rather than copying
 the version number elsewhere.** The root `README.md` Reproduce row deliberately
 points at this section instead of naming a file, so it does not go stale at the
 next supersession.
 
-`-15` supersedes `item10-inventory-14.json` / `item10-attestation-14.json`,
+`-16` supersedes `item10-inventory-15.json` / `item10-attestation-15.json`,
+which hashed `README.md`, `verification/README.md` and
+`.github/workflows/signoff.yml` as of main before issue #71 removed the
+hand-rolled Yosys leg of `smoke-fft256` and reworded those READMEs' smoke rows
+and prerequisites, and repointed that workflow's item-9 and item-10 steps at the
+`-8` and `-16` pairs, so those hygiene entries' content hashes moved; the same
+hygiene entries and checks are carried unchanged. `-15` in turn supersedes `item10-inventory-14.json` / `item10-attestation-14.json`,
 which hashed `verification/README.md` and `.github/workflows/signoff.yml` as
 of main before issue #170 refreshed the README's `gen-exact` row to the
 eight-configuration, directed-drop and `fft_cmul` unit-check shape PR #168
@@ -115,11 +121,11 @@ a new superseding pair:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-15.json \
-    -o manifests/item10-attestation-15.json
+    --inventory manifests/item10-inventory-16.json \
+    -o manifests/item10-attestation-16.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-15.json \
-    --check manifests/item10-attestation-15.json
+    --inventory manifests/item10-inventory-16.json \
+    --check manifests/item10-attestation-16.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a
@@ -175,13 +181,18 @@ uvx --from "klayout-tools==0.9.0" klt signoff --attest 1 \
     --check manifests/item1-attestation-2.json
 ```
 
-Item 9 is cited from `item9-attestation-7.json`, generated from
-`item9-inventory-7.json` (the cocotb streaming-FFT bench and its negative
+Item 9 is cited from `item9-attestation-8.json`, generated from
+`item9-inventory-8.json` (the cocotb streaming-FFT bench and its negative
 control, plus the model, reference, amplitude-sweep, schedule-sweep and
 per-size model benches, the tests of the shared append-only record writer, and
 the files the cold_start targets execute around them: `sim/__init__.py`,
 `verification/negctl.sh`, `verification/requirements.txt`,
 `verification/flow_tools.py` and `verification/toolchain.json`). It supersedes
+`item9-inventory-7.json` / `item9-attestation-7.json` (recorded evidence,
+kept unchanged): issue #71 removed the hand-rolled Yosys leg of `smoke-fft256`
+(`verification/test_fft256_smoke.py`, `flow_tools.py`, `toolchain.json` and
+`Makefile` changed, so their content hashes moved); `-8` re-hashes the
+identical list, checks and pins. `-7` in turn supersedes
 `item9-inventory-6.json` / `item9-attestation-6.json` (recorded evidence,
 kept unchanged): issue #159 added the `fv-reports` target to
 `verification/Makefile` — `klt functional-verification` requests and
@@ -233,9 +244,9 @@ re-verifies the recorded hashes. Pinned `klayout-tools==0.8.0`:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-7.json \
-    -o manifests/item9-attestation-7.json
+    --inventory manifests/item9-inventory-8.json \
+    -o manifests/item9-attestation-8.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-7.json \
-    --check manifests/item9-attestation-7.json
+    --inventory manifests/item9-inventory-8.json \
+    --check manifests/item9-attestation-8.json
 ```

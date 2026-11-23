@@ -8,7 +8,6 @@ ROOT      ?= $(abspath ..)
 # simulator it spawns. A PYTHONPATH set by the caller is kept.
 PYPATH     = PYTHONPATH=$(ROOT)$(if $(PYTHONPATH),:$(PYTHONPATH))
 VERILATOR ?= verilator
-YOSYS     ?= yosys
 PDK_ROOT  ?= $(HOME)/.ciel
 # Verilator warning the seeded-defect lint run must fail on (see lint-negctl).
 LINT_NEGCTL_EXPECT ?= %Warning-WIDTHTRUNC
@@ -91,16 +90,16 @@ fxp-model-negctl:
 	  env FXP_MUTANT=floor_ties $(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model
 
 # End-to-end smoke of the generated 256-point FFT: regen, Icarus vs the model,
-# Yosys at tt_025C_1v80; appends a record to ../measurements/fft256-smoke.json.
+# no-macro check on the committed synth report; appends a record to ../measurements/fft256-smoke.json.
 # Tool-version drift is recorded, not fatal (run `make check-tools` for the pins).
 smoke-fft256:
-	PDK_ROOT=$(PDK_ROOT) YOSYS=$(YOSYS) $(PYPATH) $(PYTHON) test_fft256_smoke.py
+	$(PYPATH) $(PYTHON) test_fft256_smoke.py
 
 # One DUT output bit flipped; must fail on the mismatch text and write no record.
 smoke-fft256-negctl:
 	@mkdir -p sim_build
 	@./negctl.sh "perturbed DUT" "the smoke" "$(SMOKE_NEGCTL_EXPECT)" sim_build/smoke_negctl.out -- \
-	  env PERTURB=1000 PDK_ROOT=$(PDK_ROOT) YOSYS=$(YOSYS) $(PYPATH) $(PYTHON) test_fft256_smoke.py
+	  env PERTURB=1000 $(PYPATH) $(PYTHON) test_fft256_smoke.py
 
 # Hand-written streaming wrapper (rtl/wrapper): lint it against a port-only stub
 # of the generated core (the bit-exact bench is fft-bench).
