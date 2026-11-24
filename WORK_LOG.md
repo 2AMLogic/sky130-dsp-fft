@@ -3,6 +3,11 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-24
+
+- **PR #178**: verification: drop the Yosys leg from smoke-fft256, check no-macro on the committed synth report
+- **Issue #71** (closed): Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow
+
 ### 2026-11-23
 
 - **PR #176**: signoff: supersede item 10 as -15, refresh gen-exact docs and T1 citations
