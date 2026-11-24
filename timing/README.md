@@ -38,10 +38,9 @@ Tool versions used for the committed reports (also recorded in
 - **No input/output delays set** — the 36 wrapper I/O endpoints are
   unconstrained (`constraint_completeness` in each report); every internal
   register is clocked (`unclocked_registers.count: 0`).
-- Both requests omit the wire-load model and mode. The reports echo these
-  omissions as `wire_load_model: null` and `wire_load_mode: null`. With no
-  `set_wire_load*` override, each of the 16 `sky130_fd_sc_hd` corners uses
-  its Liberty default wire-load model, `Small`, in `top` mode.
+- Neither request sets a wire-load override. The reports record the omitted
+  settings as `wire_load_model: null` and `wire_load_mode: null`. The Liberty
+  files for all 16 corners declare `Small` in `top` mode as their default.
 - The pre-route estimate (`geometry_source: netlist_estimate`) includes no
   extracted placement or routing parasitics.
 - The netlist was synthesized with `constraints.clock_period_ns: null`
