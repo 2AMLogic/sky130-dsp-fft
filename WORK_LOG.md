@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-11-24
 
+- **PR #187**: test: assert flow_tools probes cover every toolchain.json pin
+- **Issue #185** (closed): verification: no automated regression test asserts that check-tools covers every toolchain.json pin
 - **PR #183**: fix: enforce every toolchain pin in check-tools via per-tool probes
 - **Issue #180** (closed): verification: the toolchain.json yosys pin is no longer enforced by check-tools, and two docs still say it is
 - **PR #178**: verification: drop the Yosys leg from smoke-fft256, check no-macro on the committed synth report
