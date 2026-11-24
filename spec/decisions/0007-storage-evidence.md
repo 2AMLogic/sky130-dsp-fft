@@ -49,7 +49,7 @@ The committed report is the stronger source on every axis that mattered:
 |---|---|---|
 | Top | `fft256` (bare generated core) | `fft256_stream` (wrapper over the core, the top that goes to place-and-route) |
 | Netlist | discarded (`sim_build/` stat JSON only) | committed (`netlist/fft256_stream.sky130_fd_sc_hd.v`, keyed by the report's `netlist_sha256`) |
-| Freshness | none; last (only) record 2026-10-30 | asserted on every smoke run by `check_no_macros()`; `klt synthesize --check` freshness in the T1 item 1 attestation |
+| Freshness | none; two ad-hoc records (2026-10-30, 2026-11-15), neither re-checked | asserted on every smoke run by `check_no_macros()`; `klt synthesize --check` freshness in the T1 item 1 attestation |
 
 ## The evidence, and its limits
 
@@ -105,8 +105,8 @@ Rejected alternatives:
 2. 0003's flop estimate and its storage ruling are untouched; this record
    supersedes only the *evidence citation* in the Status cell, not the
    requirement.
-3. The 2026-10-30 smoke record in `measurements/fft256-smoke.json` is
-   append-only history and keeps its Yosys-leg fields; nothing there is
+3. The smoke records in `measurements/fft256-smoke.json` are
+   append-only history and keep their Yosys-leg fields; nothing there is
    rewritten.
 
 ## Citations
