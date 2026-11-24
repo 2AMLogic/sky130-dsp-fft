@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-11-24
 
+- **PR #200**: refactor: share the complex-multiply arithmetic core between cmul templates
+- **Issue #197** (closed): Share the duplicated complex-multiply arithmetic in the RTL emitter
 - **PR #193**: fix: ignore .loom/account-ranking.* daemon state in .gitignore
 - **Issue #192** (closed): gitignore misses .loom/account-ranking.* daemon runtime state, tripping check-main-clean
 - **PR #190**: test: collect sim/test_records and sim/test_model_sizes under unittest
