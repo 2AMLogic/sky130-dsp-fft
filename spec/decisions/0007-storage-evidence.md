@@ -49,7 +49,7 @@ The committed report is the stronger source on every axis that mattered:
 |---|---|---|
 | Top | `fft256` (bare generated core) | `fft256_stream` (wrapper over the core, the top that goes to place-and-route) |
 | Netlist | discarded (`sim_build/` stat JSON only) | committed (`netlist/fft256_stream.sky130_fd_sc_hd.v`, keyed by the report's `netlist_sha256`) |
-| Freshness | none; two ad-hoc records (2026-10-30, 2026-11-15), neither re-checked | asserted on every smoke run by `check_no_macros()`; `klt synthesize --check` freshness in the T1 item 1 attestation |
+| Freshness | none; two ad-hoc records (2026-10-30, 2026-11-15), neither re-checked | `check_no_macros()` checks the recorded cell types and macro count on every smoke run; RTL and netlist hash freshness is checked separately by `klt synthesize --check` (T1 item 1 attestation, `manifests/item1-inventory-2.json`) |
 
 ## The evidence, and its limits
 
@@ -80,7 +80,7 @@ discarded one.
 
 **The Storage row's Status cell becomes: "evidenced (flop storage, zero
 SRAM macros in the [committed FFT256 synthesis
-report](../synth/fft256.synth.report.json))".** The verdict is unchanged;
+report](../../synth/fft256.synth.report.json))".** The verdict is unchanged;
 only its citation moves, from a retired producer to the committed,
 hash-keyed artifact that place-and-route (#17) actually consumes. Storage
 stays flops for v1 and compiled SRAM stays out of scope (0003); the
@@ -98,10 +98,12 @@ Rejected alternatives:
 
 ## Consequences and open questions
 
-1. The spec's Storage citation is now a committed artifact whose content
-   the smoke test asserts on every run, so the citation cannot go stale
-   silently: a regenerated report with macros fails
-   `make -C verification smoke-fft256`.
+1. The spec's Storage citation is now a committed artifact whose recorded
+   cell types and macro count the smoke test checks on every run: a
+   regenerated report with macros fails `make -C verification
+   smoke-fft256`. Smoke does not compare the report's `netlist_sha256`
+   or the RTL; that freshness comes from the separate `klt synthesize
+   --check` step (`manifests/item1-inventory-2.json`).
 2. 0003's flop estimate and its storage ruling are untouched; this record
    supersedes only the *evidence citation* in the Status cell, not the
    requirement.
