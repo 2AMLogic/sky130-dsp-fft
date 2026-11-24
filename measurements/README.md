@@ -5,10 +5,10 @@ Recorded results, append-only evidence. Every record names its liberty corner.
 - `synth-placeholder.json`: retained history (2026-11-06): flow smoke on the retired placeholder module (not a design result). Unchanged; no longer in the live item 10 inventory.
 - `fft256-smoke.json`: `{"records": [...]}`; each `make smoke-fft256` run appends one dated
   record (generator commit, parameter file and hash, model configuration, vector-set
-  identity, RTL-vs-model result, simulated SQNR, Yosys cell count/area at `tt_025C_1v80`,
+  identity, RTL-vs-model result, simulated SQNR,
   tool versions and drift against the pins). An exact SQNR match is written as the
   string `"inf"` and any other non-finite value as `null`, because strict JSON cannot
-  carry a non-finite number. Never edit or drop an earlier record.
+  carry a non-finite number. Never edit or drop an earlier record. Schema note (issue #71): records written after the Yosys leg was removed carry no `cell_count`, `cells_by_type`, `area_um2`, `liberty_*` or `pdk_revision` fields; the 2026-10-30 record keeps them and is unchanged. Synthesis figures live in `synth/fft256.synth.report.json`.
 - `overflow-range.json`: `{"records": [...]}`; each `python3 -m sim.overflow_range <params> --record measurements/overflow-range.json`
   run appends one dated record (params file and sha256, model id, seeds, step, frames, per-kind
   max no-overflow amplitude fraction and first overflowing stage). SIMULATED, on the placeholder

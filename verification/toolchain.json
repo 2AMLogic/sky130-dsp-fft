@@ -11,7 +11,6 @@
     "revision": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7",
     "library": "sky130_fd_sc_hd",
     "liberty_corner": "tt_025C_1v80",
-    "liberty_file": "sky130_fd_sc_hd__tt_025C_1v80.lib",
-    "liberty_relpath": "sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib"
+    "liberty_file": "sky130_fd_sc_hd__tt_025C_1v80.lib"
   }
 }
