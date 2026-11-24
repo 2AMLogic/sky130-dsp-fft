@@ -45,8 +45,8 @@ klt 0.8.0: **3 of 11 met**.
 | 6 | Monte Carlo evidence | unmet | no issue; the spec declares no statistical row |
 | 7 | Post-layout verification | unmet | no issue; needs the routed netlist and SDF |
 | 8 | Characterization report | unmet | no issue; needs items 5 and 7 |
-| 9 | Testbenches shipped | met | `manifests/item9-attestation-9.json` |
-| 10 | Repo hygiene | met | `manifests/item10-attestation-17.json` |
+| 9 | Testbenches shipped | met | `manifests/item9-attestation-10.json` |
+| 10 | Repo hygiene | met | `manifests/item10-attestation-18.json` |
 | 11 | Power delivery (structural) | unmet | #20, behind #17 |
 
 Evidence pointers refreshed 2026-11-23 (`main` @ `757f55d`) to the live
