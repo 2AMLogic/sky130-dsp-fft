@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-11-24
 
+- **PR #193**: fix: ignore .loom/account-ranking.* daemon state in .gitignore
+- **Issue #192** (closed): gitignore misses .loom/account-ranking.* daemon runtime state, tripping check-main-clean
 - **PR #190**: test: collect sim/test_records and sim/test_model_sizes under unittest
 - **Issue #188** (closed): Collapse the remaining two copy-pasted sim/ test runners (test_records, test_model_sizes) onto unittest
 - **PR #187**: test: assert flow_tools probes cover every toolchain.json pin
