@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "kind": "t1-attestation-inventory",
+  "t1_item": 9,
+  "description": "Testbenches shipped for T1 item 9. The cocotb stream bench (test_fft256_stream.py) drives the streaming wrapper over the generated core and checks it bit-exactly against the bit-accurate model, plus handshake (including the in_ready and out_valid equations against the core valid), back-pressure, reset mid-frame and zero model overflow, with a negative control (fft-bench-negctl). The remaining listed benches are the existing item 9 evidence: the model and reference tests, the generated-core smoke, the no-overflow amplitude sweep and the candidate growth-schedule sweep, the tests of the shared append-only evidence writer (sim/test_records.py, which also covers the smoke writer through its path parameter), and the per-size model tests (sim/test_model_sizes.py). The list also hashes the files the cold_start targets execute around those benches: sim/__init__.py (every -m sim.* invocation imports the package through it), verification/negctl.sh (shared runner for every *_negctl target), verification/requirements.txt (the venv cold_start builds from; the pins block below is copied from the inventory, not measured from the host, so an unlisted requirements bump would change the environment a recorded pass ran in without drifting anything), verification/flow_tools.py (imported transitively during cold_start: make fxp-model runs sim.test_records, which imports verification/test_fft256_smoke.py, which imports flow_tools; only flow_tools' module body executes inside this argv - its functions belong to the smoke-fft256 flow, which is not in the argv - so within a recorded pass a change to its function bodies does not alter the outcome, but a module-body or import-surface change would, and the file is part of the executed chain either way) and verification/toolchain.json (read at import time by flow_tools.py's module-level PINS assignment; it is the single source of the pins block below and also carries liberty_corner and liberty_file, the corner every timing claim must name). cold_start runs every bench and negative control from that venv (see verification/README.md); it is local_only because it needs Icarus, so the signoff.yml runner skips it under --check and re-verifies the recorded hashes. -9 supersedes manifests/item9-inventory-8.json and its attestation manifests/item9-attestation-8.json (recorded evidence, kept unchanged): issue #180 gave flow_tools.py a per-tool probe table, so installed(tools=...) invokes only the requested binaries (check() now enforces every non-`pdk` key in PINS, restoring the `yosys` probe behind the YOSYS environment override and failing closed on a pinned tool with no probe) and test_fft256_smoke.py's installed_tools() requests exactly its four tools so the smoke flow runs without Yosys or a PDK; the content hashes of verification/flow_tools.py (a module-body change: YOSYS and the probe table now execute at import time) and verification/test_fft256_smoke.py moved. -9 re-hashes the identical list from the current tree - no file joins or leaves the list, and the checks and pins are carried unchanged. -8 supersedes manifests/item9-inventory-7.json and its attestation manifests/item9-attestation-7.json (recorded evidence, kept unchanged): issue #71 removed the hand-rolled Yosys leg of smoke-fft256 (verification/synth_fft256.ys deleted; run_yosys() removed from verification/flow_tools.py; the smoke script now checks the committed synth/fft256.synth.report.json for macros instead of mapping in Yosys; the YOSYS/PDK_ROOT plumbing left the smoke targets in verification/Makefile; liberty_relpath left verification/toolchain.json), so the content hashes of verification/test_fft256_smoke.py, verification/flow_tools.py, verification/toolchain.json and verification/Makefile moved; the flow_tools.py statement above that its functions are not in the cold_start argv still holds. -8 re-hashes the identical list from the current tree - no file joins or leaves the list, and the checks and pins are carried unchanged. -7 in turn supersedes manifests/item9-inventory-6.json and its attestation manifests/item9-attestation-6.json (recorded evidence, kept unchanged): issue #159 added the fv-reports target to verification/Makefile (klt functional-verification requests and committed reports running the same hashed bench through klt 0.9.0), so that hashed entry's content hash moved; -7 re-hashes the identical list from the current tree - no file joins or leaves the list, and the checks and pins are carried unchanged. The fv request files (verification/fv_rtl.request.json, fv_gatelevel.request.json, fv_negctl.request.json) and their committed reports (verification/reports/) are evidence artifacts around test_fft256_stream.py, not benches and not part of the cold_start argv, so they are deliberately not listed; the bench they run is the hashed test_fft256_stream.py. -6 supersedes manifests/item9-inventory-5.json and its attestation manifests/item9-attestation-5.json (recorded evidence, kept unchanged): -5's envelope hashed these sources as generated in PR #147, but two later merges that edited attested sources were not branched off it and landed without regenerating the envelope \u2014 PR #137 moved sim/fixedpoint_model.py, sim/records.py, sim/test_records.py and verification/test_fft256_smoke.py, PR #132 moved sim/test_schedule_sweep.py \u2014 and their own signoff gates still attested the superseded -4 pair, so --check on main reported status drifted for those five hashes (issue #151). -6 re-hashes the identical list from the current tree: no file joins or leaves the list, and the checks and pins are carried unchanged. -5 in turn supersedes manifests/item9-inventory-4.json and its attestation manifests/item9-attestation-4.json (recorded evidence, kept unchanged): -4 hashed the smoke bench's own module but not the two repo files its import surface loads during the same cold_start argv, so an edit to verification/flow_tools.py or verification/toolchain.json passed every signoff gate while a recorded cold_start pass stood (issue #129's drift probe); both join the list here, and .github/workflows/signoff.yml now re-verifies this pair under --check. -4 in turn supersedes manifests/item9-inventory-3.json and its attestation manifests/item9-attestation-3.json (recorded evidence, kept unchanged): -3's testbenches predated the fxp-model target growing to sim.test_overflow_range, sim.test_schedule_sweep and sim.test_model_sizes, and predated sim/__init__.py (added by issue #84's sys.path-bootstrap retirement) and the negctl.sh single-sourcing of PR #95, so a cold_start pass of record was attested over files the inventory did not hash; those files joined the list in -4. The generated core (rtl/generated) and the streaming wrapper (rtl/wrapper) are deliberately not listed: the core is regenerated from the pinned generator and rtl/params/fft256.params (listed), and the benches' verdict is bit-exactness against the hashed model, not a hash of the DUT sources.",
+  "testbenches": [
+    "verification/test_fft256_stream.py",
+    "verification/test_fft256_smoke.py",
+    "verification/tb_fft256_smoke.v",
+    "verification/Makefile",
+    "verification/negctl.sh",
+    "verification/requirements.txt",
+    "verification/flow_tools.py",
+    "verification/toolchain.json",
+    "sim/__init__.py",
+    "sim/test_fixedpoint_model.py",
+    "sim/test_reference.py",
+    "sim/fixedpoint_model.py",
+    "sim/reference.py",
+    "sim/vectors.py",
+    "sim/overflow_range.py",
+    "sim/test_overflow_range.py",
+    "sim/schedule_sweep.py",
+    "sim/test_schedule_sweep.py",
+    "sim/model_sizes.py",
+    "sim/test_model_sizes.py",
+    "rtl/params/fft256.params",
+    "sim/records.py",
+    "sim/test_records.py"
+  ],
+  "cold_start": {
+    "argv": [
+      "make",
+      "-C",
+      "verification",
+      "fft-bench",
+      "fft-bench-negctl",
+      "fxp-model",
+      "fxp-model-negctl",
+      "sqnr-ref",
+      "sqnr-ref-negctl"
+    ],
+    "local_only": true
+  },
+  "pins": {
+    "pdk": {
+      "name": "sky130",
+      "revision": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7"
+    },
+    "tools": {
+      "cocotb": "2.1.0",
+      "icarus_verilog": "13.0",
+      "numpy": "2.3.4",
+      "python": "3.13"
+    }
+  }
+}
