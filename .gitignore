@@ -112,3 +112,6 @@ results.xml
 
 # klt scratch (klt synthesize run trees)
 .klt/
+
+# Loom daemon account-rotation runtime state (per runtime flavor, e.g. .codex)
+.loom/account-ranking.*
