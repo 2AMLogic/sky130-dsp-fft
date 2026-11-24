@@ -37,7 +37,7 @@ klt 0.8.0: **3 of 11 met**.
 
 | # | Item | State | Where the work is |
 |---|---|---|---|
-| 1 | Design sources | met | `manifests/item1-attestation-2.json` |
+| 1 | Design sources | met | `manifests/item1-attestation-3.json` |
 | 2 | Layout | unmet | #17, waiting on a decision (below) |
 | 3 | DRC clean | unmet | #18, behind #17 |
 | 4 | LVS clean | unmet | #19, behind #17 |

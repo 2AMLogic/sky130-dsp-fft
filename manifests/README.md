@@ -168,11 +168,21 @@ Not-T1: `tier` is `null`. The counts live in `sky130-dsp-fft.signoff.json` —
 (today: 11 items, 3 `met` — items 1, 9 and 10 — and 8 `unmet`, each with a
 stated reason in the same record).
 
-Item 1 is cited from `item1-attestation-2.json`, generated from
-`item1-inventory-2.json` (RTL generator, parameter file, generated RTL,
+Item 1 is cited from `item1-attestation-3.json`, generated from
+`item1-inventory-3.json` (RTL generator, parameter file, generated RTL,
 streaming wrapper, synthesis request, and the derived gate-level netlist with
-its freshness checks). `-2` supersedes `item1-inventory.json` /
-`item1-attestation.json`, which hashed `rtl/gen/emit.py` before issue #162
+its freshness checks). `-3` supersedes `item1-inventory-2.json` /
+`item1-attestation-2.json`, which hashed `rtl/gen/emit.py` before issue #197
+deduplicated the two complex-multiplier templates' shared arithmetic (the
+three-product and four-product schedules and both accumulators' rounder
+connections, 25 byte-identical Verilog lines) into a single `_CMUL_CORE`
+string included by both templates: every configuration's generated Verilog is
+unchanged — regenerating `rtl/params/fft256.params` and the half-bit stage
+schedule `17,17,18,18,19,19,20,20` reproduces every emitted file byte for
+byte — but the emitter's own content
+hash moved, so the evidence pair is superseded. `-2` in turn supersedes
+`item1-inventory.json` / `item1-attestation.json`, which hashed
+`rtl/gen/emit.py` before issue #162
 taught the emitter the model's mid-pipeline stage-width reduction (equal-width
 stage transitions drop their growth bit, rounded convergent, with the twiddle
 fraction and a stage B drop rounded once combined in the multiplier): the
@@ -189,11 +199,11 @@ regeneration is needed or wanted:
 
 ```console
 uvx --from "klayout-tools==0.9.0" klt signoff --attest 1 \
-    --inventory manifests/item1-inventory-2.json \
-    -o manifests/item1-attestation-2.json
+    --inventory manifests/item1-inventory-3.json \
+    -o manifests/item1-attestation-3.json
 uvx --from "klayout-tools==0.9.0" klt signoff --attest 1 \
-    --inventory manifests/item1-inventory-2.json \
-    --check manifests/item1-attestation-2.json
+    --inventory manifests/item1-inventory-3.json \
+    --check manifests/item1-attestation-3.json
 ```
 
 Item 9 is cited from `item9-attestation-10.json`, generated from

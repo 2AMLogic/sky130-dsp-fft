@@ -168,18 +168,12 @@ module fft_sdf_stage #(
 endmodule
 """
 
-_CMUL = """\
-// Twiddles are signed TW-bit fixed point with TW-2 fractional bits.
-module fft_cmul #(
-    parameter W = 18, parameter TW = 16, parameter MULT3 = 0, parameter PIPE = 0
-) (
-    input clk, input en,
-    input  signed [W-1:0]  a_re, input signed [W-1:0] a_im,
-    input  signed [TW-1:0] w_re, input signed [TW-1:0] w_im,
-    output signed [W-1:0]  p_re, output signed [W-1:0] p_im
-);
-  localparam PW = W + TW + 2;
-  localparam S = TW - 2;
+# The arithmetic core shared verbatim by both complex-multiplier templates
+# (issue #197): the three-product and four-product schedules feeding both
+# accumulators into the rounders. The templates differ only around it --
+# ports, widths, the shift S and the output registers -- so an arithmetic
+# fix lands here once for every schedule.
+_CMUL_CORE = """\
   wire signed [PW-1:0] acc_re;
   wire signed [PW-1:0] acc_im;
   generate
@@ -205,6 +199,21 @@ module fft_cmul #(
   wire signed [PW-S-1:0] r_im;
   fft_rnd #(.W(PW), .S(S), .CONV(1)) u_rr (.x(acc_re), .y(r_re));
   fft_rnd #(.W(PW), .S(S), .CONV(1)) u_ri (.x(acc_im), .y(r_im));
+"""
+
+_CMUL = """\
+// Twiddles are signed TW-bit fixed point with TW-2 fractional bits.
+module fft_cmul #(
+    parameter W = 18, parameter TW = 16, parameter MULT3 = 0, parameter PIPE = 0
+) (
+    input clk, input en,
+    input  signed [W-1:0]  a_re, input signed [W-1:0] a_im,
+    input  signed [TW-1:0] w_re, input signed [TW-1:0] w_im,
+    output signed [W-1:0]  p_re, output signed [W-1:0] p_im
+);
+  localparam PW = W + TW + 2;
+  localparam S = TW - 2;
+""" + _CMUL_CORE + """\
   reg signed [W-1:0] o_re;
   reg signed [W-1:0] o_im;
   always @(posedge clk) if (en) begin
@@ -235,31 +244,7 @@ module fft_cmul #(
 );
   localparam PW = W + TW + 2;
   localparam S = TW - 2 + W - OW;
-  wire signed [PW-1:0] acc_re;
-  wire signed [PW-1:0] acc_im;
-  generate
-    if (MULT3 != 0) begin : g_m3
-      wire signed [W:0]  sa = a_re + a_im;
-      wire signed [TW:0] dw = w_im - w_re;
-      wire signed [TW:0] sw = w_re + w_im;
-      wire signed [PW-1:0] k1 = w_re * sa;
-      wire signed [PW-1:0] k2 = a_re * dw;
-      wire signed [PW-1:0] k3 = a_im * sw;
-      assign acc_re = k1 - k3;
-      assign acc_im = k1 + k2;
-    end else begin : g_m4
-      wire signed [PW-1:0] m1 = a_re * w_re;
-      wire signed [PW-1:0] m2 = a_im * w_im;
-      wire signed [PW-1:0] m3 = a_re * w_im;
-      wire signed [PW-1:0] m4 = a_im * w_re;
-      assign acc_re = m1 - m2;
-      assign acc_im = m3 + m4;
-    end
-  endgenerate
-  wire signed [PW-S-1:0] r_re;
-  wire signed [PW-S-1:0] r_im;
-  fft_rnd #(.W(PW), .S(S), .CONV(1)) u_rr (.x(acc_re), .y(r_re));
-  fft_rnd #(.W(PW), .S(S), .CONV(1)) u_ri (.x(acc_im), .y(r_im));
+""" + _CMUL_CORE + """\
   reg signed [OW-1:0] o_re;
   reg signed [OW-1:0] o_im;
   always @(posedge clk) if (en) begin
