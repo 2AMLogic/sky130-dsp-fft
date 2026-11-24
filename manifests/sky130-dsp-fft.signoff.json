@@ -29,25 +29,25 @@
       "reason": null,
       "graded_by_build": true,
       "citation": {
-        "file": "manifests/item1-attestation-2.json",
+        "file": "manifests/item1-attestation-3.json",
         "command": null,
         "kind": "generic",
         "check_status": "pass",
-        "content_hash": "sha256:c6b0c2d5f780c0b5f1b0a24bd69ff16e5486f2d03798af35c2b173aff5b622f1",
+        "content_hash": "sha256:410542a9c0c867733a86f52fed9c25d369b441092e71bda217e39ac75b20b25a",
         "input_verified": true,
         "exit_status": 0,
         "artifact_binding": {
           "t1_item": 1,
           "path": null,
-          "content_hash": "sha256:c6b0c2d5f780c0b5f1b0a24bd69ff16e5486f2d03798af35c2b173aff5b622f1",
+          "content_hash": "sha256:410542a9c0c867733a86f52fed9c25d369b441092e71bda217e39ac75b20b25a",
           "input_verified": true,
           "members": [
             {
               "path": {
-                "path": "manifests/item1-inventory-2.json",
+                "path": "manifests/item1-inventory-3.json",
                 "scope": "repo"
               },
-              "content_hash": "sha256:8eb00ab55b45bb2546ee8313aca044aba43656c293168ced2292d0cec72dcb9f",
+              "content_hash": "sha256:f228c91ed083adc7a17f9c727283f2d2f48eb113fd6857a72e6966f1fc7f1fe1",
               "status": "verified"
             },
             {
@@ -79,7 +79,7 @@
                 "path": "rtl/gen/emit.py",
                 "scope": "repo"
               },
-              "content_hash": "sha256:d72bd8b6d711808073ac4c0f82e47fe36fdab4c8065c0ee3525940032a623066",
+              "content_hash": "sha256:d31b19f89da2377173a24242cc158ced58b9f3e387442f17be556522147c127e",
               "status": "verified"
             },
             {
@@ -172,7 +172,7 @@
             }
           ],
           "summary": "T1 item 1 (Design sources): 22/22 attestation checks passed (klt signoff --attest)",
-          "source": "manifests/item1-inventory-2.json",
+          "source": "manifests/item1-inventory-3.json",
           "attestation": {
             "producer": "klt signoff --attest",
             "inventory_schema_version": 1,
