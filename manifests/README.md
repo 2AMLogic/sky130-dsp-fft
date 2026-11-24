@@ -31,15 +31,23 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-17.json`, generated from
-`item10-inventory-17.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-18.json`, generated from
+`item10-inventory-18.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
 **This paragraph names the current pair; cite it from here rather than copying
 the version number elsewhere.** The root `README.md` Reproduce row deliberately
 points at this section instead of naming a file, so it does not go stale at the
 next supersession.
 
-`-17` supersedes `item10-inventory-16.json` / `item10-attestation-16.json`,
+`-18` supersedes `item10-inventory-17.json` / `item10-attestation-17.json`,
+which hashed `.github/workflows/signoff.yml` as of main before issue #188
+retired the last two hand-rolled `sim/` test runners
+(`sim/test_records.py` and `sim/test_model_sizes.py` wrapped onto
+`unittest.TestCase`, the `fxp-model` recipe collapsed onto one `unittest`
+invocation) and repointed that workflow's item-9 and item-10 steps at the
+`-10` and `-18` pairs over the item-9 supersession those edits forced, so
+that hygiene entry's content hash moved; the same hygiene entries and checks
+are carried unchanged. `-17` supersedes `item10-inventory-16.json` / `item10-attestation-16.json`,
 which hashed `verification/README.md` and `.github/workflows/signoff.yml` as
 of main before issue #180 reworded `verification/README.md`'s CI section to
 separate `make all`'s local pin enforcement (`check-tools`, probing Yosys
@@ -128,11 +136,11 @@ a new superseding pair:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-17.json \
-    -o manifests/item10-attestation-17.json
+    --inventory manifests/item10-inventory-18.json \
+    -o manifests/item10-attestation-18.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-17.json \
-    --check manifests/item10-attestation-17.json
+    --inventory manifests/item10-inventory-18.json \
+    --check manifests/item10-attestation-18.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a
@@ -188,13 +196,23 @@ uvx --from "klayout-tools==0.9.0" klt signoff --attest 1 \
     --check manifests/item1-attestation-2.json
 ```
 
-Item 9 is cited from `item9-attestation-9.json`, generated from
-`item9-inventory-9.json` (the cocotb streaming-FFT bench and its negative
+Item 9 is cited from `item9-attestation-10.json`, generated from
+`item9-inventory-10.json` (the cocotb streaming-FFT bench and its negative
 control, plus the model, reference, amplitude-sweep, schedule-sweep and
 per-size model benches, the tests of the shared append-only record writer, and
 the files the cold_start targets execute around them: `sim/__init__.py`,
 `verification/negctl.sh`, `verification/requirements.txt`,
 `verification/flow_tools.py` and `verification/toolchain.json`). It supersedes
+`item9-inventory-9.json` / `item9-attestation-9.json` (recorded evidence,
+kept unchanged): issue #188 wrapped `sim/test_records.py`'s 11 and
+`sim/test_model_sizes.py`'s 8 module-level `test_*` functions as `Records`
+and `ModelSizes` methods on `unittest.TestCase`, deleting the two surviving
+copies of the hand-rolled `main()` runner (byte-identical to the four #86
+retired) and collapsing `verification/Makefile`'s `fxp-model` recipe onto one
+`python -m unittest` invocation over all five modules — `Ran 53 tests` is
+printed even when an earlier module errors, instead of Make stopping before
+the later modules start — so the content hashes of those three files moved;
+`-10` re-hashes the identical list, checks and pins. `-9` in turn supersedes
 `item9-inventory-8.json` / `item9-attestation-8.json` (recorded evidence,
 kept unchanged): issue #180 restored the per-tool probe dispatch in
 `verification/flow_tools.py` (`installed(tools=...)` invokes only the
@@ -259,9 +277,9 @@ re-verifies the recorded hashes. Pinned `klayout-tools==0.8.0`:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-9.json \
-    -o manifests/item9-attestation-9.json
+    --inventory manifests/item9-inventory-10.json \
+    -o manifests/item9-attestation-10.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-9.json \
-    --check manifests/item9-attestation-9.json
+    --inventory manifests/item9-inventory-10.json \
+    --check manifests/item9-attestation-10.json
 ```

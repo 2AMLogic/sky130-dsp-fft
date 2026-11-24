@@ -72,16 +72,11 @@ sqnr-ref-negctl:
 	  env REF_MUTANT=swap_iq $(PYPATH) $(PYTHON) -m unittest sim.test_reference
 
 # Bit-accurate fixed-point model tests, the no-overflow amplitude sweep tests,
-# the candidate growth-schedule sweep tests and the per-size model record tests
-# (pure Python + numpy).
+# the candidate growth-schedule sweep tests, the append-only record-writer tests
+# and the per-size model record tests (pure Python + numpy), all five modules
+# collected by one unittest invocation.
 fxp-model:
-	$(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model
-	$(PYPATH) $(PYTHON) -m unittest sim.test_overflow_range
-	$(PYPATH) $(PYTHON) -m unittest sim.test_schedule_sweep
-	# test_records.py keeps its own runner: its tests are module-level
-	# functions, which `-m unittest` would not collect (a vacuous pass).
-	$(PYPATH) $(PYTHON) -m sim.test_records
-	$(PYPATH) $(PYTHON) -m sim.test_model_sizes
+	$(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model sim.test_overflow_range sim.test_schedule_sweep sim.test_records sim.test_model_sizes
 
 # Same tests with a flooring rounder; must fail on the convergent-tie check.
 fxp-model-negctl:
