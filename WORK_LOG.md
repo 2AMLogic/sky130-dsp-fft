@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-11-24
 
+- **PR #190**: test: collect sim/test_records and sim/test_model_sizes under unittest
+- **Issue #188** (closed): Collapse the remaining two copy-pasted sim/ test runners (test_records, test_model_sizes) onto unittest
 - **PR #187**: test: assert flow_tools probes cover every toolchain.json pin
 - **Issue #185** (closed): verification: no automated regression test asserts that check-tools covers every toolchain.json pin
 - **PR #183**: fix: enforce every toolchain pin in check-tools via per-tool probes
