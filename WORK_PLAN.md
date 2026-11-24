@@ -36,30 +36,31 @@ _None._
 
 Issues currently being built (`loom:building`).
 
-- **#71**: Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow
 - **#158**: Pre-route multi-corner klt sta on the committed gate-level netlist at the three signoff corners (toward T1 item 5)
+- **#180**: verification: the toolchain.json yosys pin is no longer enforced by check-tools, and two docs still say it is
 
 ## PRs Awaiting Review
 
 PRs waiting on Judge (`loom:review-requested`).
 
-_None._
+- **#183**: fix: enforce every toolchain pin in check-tools via per-tool probes
 
 ## Approved (Awaiting Merge)
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-- **#178**: verification: drop the Yosys leg from smoke-fft256, check no-macro on the committed synth report
+_None._
 
 ## Proposed
 
 Issues carrying `loom:curated`.
 
 - **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(curated)*
-- **#71**: Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow *(curated)*
 - **#158**: Pre-route multi-corner klt sta on the committed gate-level netlist at the three signoff corners (toward T1 item 5) *(curated)*
 - **#159**: Produce a klt functional-verification report for the bit-exact FFT suite, on RTL and on the committed gate-level netlist (toward T1 items 5 and 7) *(curated)*
 - **#163**: Post-ruling follow-up to 0006: update the spec growth-schedule row (or land the runner-up swap if ruled otherwise) *(curated)*
+- **#179**: Cite the committed FFT256 synthesis report in the Storage row *(curated)*
+- **#180**: verification: the toolchain.json yosys pin is no longer enforced by check-tools, and two docs still say it is *(curated)*
 
 ## Proposed (Architect / Hermit)
 
@@ -78,9 +79,9 @@ _None._
 | Important | 5 |
 | Ready (`loom:issue`) | 0 |
 | In Progress (`loom:building`) | 2 |
-| PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 1 |
-| Curated | 5 |
+| PRs awaiting review | 1 |
+| Approved PRs awaiting merge | 0 |
+| Curated | 6 |
 | Architect / Hermit proposals | 0 |
 | Active epics | 0 |
 <!-- guide:plan-body:end -->
