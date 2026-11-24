@@ -109,5 +109,7 @@ as measured, not waived.
 `lint-wrapper`, `sqnr-ref`, `sqnr-ref-negctl`, `fxp-model` and
 `fxp-model-negctl` on every push
 and pull request. CI installs the runner's packaged Icarus and Verilator, which
-may differ from the pinned versions, so it skips `check-tools`; the version pin
-is enforced by `make all` and `make smoke-fft256` locally.
+may differ from the pinned versions, so it skips `check-tools`; locally `make
+all` enforces the `toolchain.json` pins (its first prerequisite, `check-tools`,
+probes every pinned tool including Yosys), while `make smoke-fft256` records
+tool-version drift for the four tools it runs and does not probe Yosys.

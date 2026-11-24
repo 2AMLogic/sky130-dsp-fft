@@ -52,7 +52,7 @@ def regen_unchanged():
 
 
 def installed_tools():
-    got = flow_tools.installed()
+    got = flow_tools.installed(TOOLS)
     return {k: got[k] for k in TOOLS}, {k: [got[k], flow_tools.PINS[k]] for k in TOOLS if got[k] != flow_tools.PINS[k]}
 
 
