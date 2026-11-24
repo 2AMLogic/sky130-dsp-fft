@@ -5,6 +5,8 @@ Maintained by the Guide triage role.
 
 ### 2026-11-24
 
+- **PR #183**: fix: enforce every toolchain pin in check-tools via per-tool probes
+- **Issue #180** (closed): verification: the toolchain.json yosys pin is no longer enforced by check-tools, and two docs still say it is
 - **PR #178**: verification: drop the Yosys leg from smoke-fft256, check no-macro on the committed synth report
 - **Issue #71** (closed): Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow
 
