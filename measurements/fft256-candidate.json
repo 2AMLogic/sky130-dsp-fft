@@ -1,0 +1,148 @@
+{
+  "records": [
+    {
+      "date_utc": "2026-11-20T23:23:00Z",
+      "note": "SIMULATED (model vs double-precision reference, and Icarus/Yosys runs of generated RTL/netlists; nothing is measured on silicon). Evidence record for decision 0006 (spec/decisions/0006-growth-schedule.md, Proposed): the recommended row (CONFIRM the placeholder, 1 bit/stage) and the runner-up ('half bit/stage'), each with model SQNR/overflow, the no-overflow amplitude range, the bit-exact RTL-vs-model check and klt synthesize figures. This record reports; 0006 argues; nothing is selected until the ruling. The runner-up's bit-exact check FAILED and its root cause is a generator defect filed as #162 - the failure is this record's finding, not a measurement gap.",
+      "decision": "spec/decisions/0006-growth-schedule.md (Proposed)",
+      "sweep_source": {
+        "path": "measurements/schedule-sweep.json",
+        "record_date_utc": "2026-11-14T06:42:07Z",
+        "base_parameter_file": "rtl/params/fft256.params",
+        "base_parameter_file_sha256": "0016f2bd85c2a7910db3af813e48efba2f082d7d1880d53242d96fc65f1273d8"
+      },
+      "generator": {
+        "repo_head": "761f76396f40baa2e6869e99c1b60bccce2e94c1",
+        "generator_last_commit": "746e8f1a136fa2a30d474e31304c18313ca20556"
+      },
+      "recommended": {
+        "row": "placeholder (1 bit/stage)",
+        "parameter_file": "rtl/params/fft256.candidate.params",
+        "parameter_file_sha256": "427427419057361f7bcbca9080a317bcaab7c06c434c8c2597e2c0aecf66f397",
+        "stage_widths": [17, 18, 19, 20, 21, 22, 23, 24],
+        "twiddle_width": 16,
+        "width_sum": 164,
+        "model": {
+          "id": "fixedpoint_model r22sdf v1",
+          "sets": {
+            "random50": {"min_sqnr_db": 65.6481, "margin_over_60db": 5.6481, "overflow_components": 0},
+            "random70": {"min_sqnr_db": 68.6017, "margin_over_60db": 8.6017, "overflow_components": 0},
+            "tone50": {"min_sqnr_db": 67.6019, "margin_over_60db": 7.6019, "overflow_components": 0},
+            "tone90": {"min_sqnr_db": 72.7501, "margin_over_60db": 12.7501, "overflow_components": 0}
+          },
+          "min_margin_over_60db": 5.6481,
+          "matches_sweep_row": "each set reproduces the 'placeholder (1 bit/stage)' row of measurements/schedule-sweep.json at 4 decimals"
+        },
+        "overflow_range": {
+          "record": "measurements/overflow-range.json (record 2, this PR)",
+          "random": {"max_no_overflow_fraction": 0.92, "first_overflow_fraction": 0.93, "first_overflow_stage": "stage 1", "bound": "exact"},
+          "tone": {"max_no_overflow_fraction": 1.0, "first_overflow_fraction": null, "first_overflow_stage": null, "bound": "at_least_sweep_end"}
+        },
+        "rtl_vs_model": {
+          "check": "verification/test_gen_exact.py with GEN_EXACT_PARAMS=rtl/params/fft256.candidate.params (make -C verification gen-exact), configuration (256, natural, pipeline=1)",
+          "expected_samples": 512,
+          "captured_samples": 512,
+          "mismatches": 0,
+          "bit_exact": true,
+          "total_shift": 8,
+          "negative_control": "GEN_EXACT_PERTURB=0 flips one captured LSB: run exits non-zero reporting '1 of 512 samples differ' at index 0, dut=(-653,208) model=(-654,208) - the comparison detects a single-bit mismatch",
+          "rtl_identity": "RTL generated from this file is byte-identical to the committed rtl/generated/ except the generated-by sha256 comment line in each emitted file (diff -r verified)"
+        },
+        "synthesis": {
+          "fresh_run": {
+            "request": "klt.synthesize.request/1: top fft256_stream, sources rtl/wrapper/fft256_stream.sv (unchanged) plus the six files generated from rtl/params/fft256.candidate.params, sky130_fd_sc_hd, tt_025C_1v80, clock unconstrained",
+            "run_id": "run-1ab7cbb184fb45d1b41742f7d4b9d27a",
+            "instance_count": 60715,
+            "area_um2": 1078566.9312,
+            "sequential_area_um2": 781969.9712
+          },
+          "committed_baseline": {
+            "report": "synth/fft256.synth.report.json",
+            "run_id": "run-81252f6630244869830bc12bd8e0c26d",
+            "instance_count": 60715,
+            "area_um2": 1078566.9312,
+            "sequential_area_um2": 781969.9712
+          },
+          "comparison": "identical figures (same engine yosys 0.67+post): the recommended schedule's netlist is the committed netlist"
+        }
+      },
+      "runner_up": {
+        "row": "half bit/stage",
+        "parameter_file_definition": "rtl/params/fft256.params with the stage_widths line replaced by stage_widths=17,17,18,18,19,19,20,20 (twiddle_width unchanged at 16); not committed as a file - 0006 recommends against adopting it",
+        "parameter_file_sha256": "c36eac4b86c4390ba71b1fe5f7d44e6596218239137c89b7f73b4ef41ad55fba",
+        "stage_widths": [17, 17, 18, 18, 19, 19, 20, 20],
+        "twiddle_width": 16,
+        "width_sum": 148,
+        "model": {
+          "id": "fixedpoint_model r22sdf v1",
+          "sets": {
+            "random50": {"min_sqnr_db": 65.4672, "margin_over_60db": 5.4672, "overflow_components": 0},
+            "random70": {"min_sqnr_db": 68.4251, "margin_over_60db": 8.4251, "overflow_components": 0},
+            "tone50": {"min_sqnr_db": 67.4267, "margin_over_60db": 7.4267, "overflow_components": 0},
+            "tone90": {"min_sqnr_db": 72.5895, "margin_over_60db": 12.5895, "overflow_components": 0}
+          },
+          "min_margin_over_60db": 5.4672,
+          "matches_sweep_row": "each set reproduces the 'half bit/stage' row of measurements/schedule-sweep.json at 4 decimals"
+        },
+        "overflow_range": {
+          "method": "sim.overflow_range.sweep on the parameter file above (same sweep rule as measurements/overflow-range.json; recorded here because the file is not committed)",
+          "random": {"max_no_overflow_fraction": 0.92, "first_overflow_fraction": 0.93, "first_overflow_stage": "stage 1", "bound": "exact"},
+          "tone": {"max_no_overflow_fraction": 1.0, "first_overflow_fraction": null, "first_overflow_stage": null, "bound": "at_least_sweep_end"}
+        },
+        "rtl_vs_model": {
+          "check": "verification/test_gen_exact.py with GEN_EXACT_PARAMS=<runner-up file>, configuration (256, natural, pipeline=1)",
+          "expected_samples": 512,
+          "captured_samples": 512,
+          "mismatches": 512,
+          "bit_exact": false,
+          "first_mismatch": "index 0 (frame 0, bin 0): dut=(-10470,3329) model=(-654,208) - dut is the model scaled by 2^4",
+          "root_cause": "generator defect #162: rtl/gen emits no mid-pipeline width reduction, so each of the four equal-width transitions (17->17, 18->18, 19->19, 20->20) wraps the butterfly sum instead of dropping the growth LSB with convergent rounding as the model's _reduce specifies; divergence is exactly 2^(sum of drops) = 2^4",
+          "controls": [
+            "placeholder widths through the same check path: PASS, 512/512 bit-exact (isolates the widths, not the check)",
+            "0002 reference point (17,18,18,19,19,20,20,21; three equal-width transitions): FAIL, dut = 8x model = 2^3, as predicted"
+          ]
+        },
+        "synthesis": {
+          "request": "klt.synthesize.request/1: top fft256_stream, sources rtl/wrapper/fft256_stream.sv (unchanged) plus the six files generated from the runner-up parameter file, sky130_fd_sc_hd, tt_025C_1v80, clock unconstrained",
+          "run_id": "run-a8afd6689231483bb70f336fcfbaeef1",
+          "instance_count": 58433,
+          "area_um2": 1053978.3488,
+          "sequential_area_um2": 770679.1424,
+          "vs_placeholder": {
+            "instance_count_delta": -2282,
+            "instance_count_delta_pct": -3.76,
+            "area_delta_um2": -24588.5824,
+            "area_delta_pct": -2.28,
+            "sequential_area_delta_um2": -11290.8288,
+            "sequential_area_delta_pct": -1.44,
+            "width_sum_delta": -16
+          },
+          "caveat": "structural figures of the widths as currently emitted: they EXCLUDE the mid-pipeline convergent rounders the #162 fix must add before this schedule can be adopted, and include no timing claim (clock unconstrained)"
+        }
+      },
+      "area_proxy_note": "summed stage width is a proxy, not an area figure: the runner-up cuts width_sum by 9.8% but measured synthesis saves 3.8% of cells, 2.3% of area and 1.4% of sequential area, because the reorder buffer, control and wrapper (unchanged by stage widths) hold most of the area. 0006 argues from the measured figures.",
+      "tool_versions": {
+        "python": "3.12.3",
+        "numpy": "2.3.4",
+        "icarus_verilog": "13.0",
+        "yosys": "0.67+post",
+        "klt": "0.9.3.dev2575+g6bd18bbc8637",
+        "pdk_revision": "f6eeac7dad085ffcc829ccfd721f7b4ce39edcf7",
+        "liberty_corner": "tt_025C_1v80"
+      },
+      "tool_version_drift_vs_pins": {
+        "python": ["3.12.3", "3.13"],
+        "klt": ["0.9.3.dev2575+g6bd18bbc8637", "0.8.0 (signoff.yml pin; rtl/README.md notes synthesize flows need a newer klt than the 0.8.0 pin)"]
+      },
+      "reproduce": [
+        "python3 -m sim.fixedpoint_model rtl/params/fft256.candidate.params",
+        "make -C verification gen-exact PYTHON=<venv-python> GEN_EXACT_PARAMS=$PWD/rtl/params/fft256.candidate.params",
+        "make -C verification gen-exact PYTHON=<venv-python> GEN_EXACT_PARAMS=$PWD/rtl/params/fft256.candidate.params GEN_EXACT_PERTURB=0   # negative control: must fail with the mismatch text",
+        "sed 's/^stage_widths=.*/stage_widths=17,17,18,18,19,19,20,20/' rtl/params/fft256.params > /tmp/runnerup.params   # sha256 c36eac4b...",
+        "make -C verification gen-exact PYTHON=<venv-python> GEN_EXACT_PARAMS=/tmp/runnerup.params   # must FAIL: generator defect #162",
+        "python3 -m rtl.gen rtl/params/fft256.candidate.params <scratch> && diff -r rtl/generated <scratch>   # sha comment line only",
+        "python3 -m rtl.gen <params> <scratch-rtl> && klt synthesize <request-with-those-sources> --format json   # request shape recorded above; both reports' figures recorded above",
+        "python3 -m sim.overflow_range rtl/params/fft256.candidate.params   # record 2 of measurements/overflow-range.json was appended from this run's numbers"
+      ]
+    }
+  ]
+}

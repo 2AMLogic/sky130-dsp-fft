@@ -3,6 +3,39 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-24
+
+- **PR #200**: refactor: share the complex-multiply arithmetic core between cmul templates
+- **Issue #197** (closed): Share the duplicated complex-multiply arithmetic in the RTL emitter
+- **PR #193**: fix: ignore .loom/account-ranking.* daemon state in .gitignore
+- **Issue #192** (closed): gitignore misses .loom/account-ranking.* daemon runtime state, tripping check-main-clean
+- **PR #190**: test: collect sim/test_records and sim/test_model_sizes under unittest
+- **Issue #188** (closed): Collapse the remaining two copy-pasted sim/ test runners (test_records, test_model_sizes) onto unittest
+- **PR #187**: test: assert flow_tools probes cover every toolchain.json pin
+- **Issue #185** (closed): verification: no automated regression test asserts that check-tools covers every toolchain.json pin
+- **PR #183**: fix: enforce every toolchain pin in check-tools via per-tool probes
+- **Issue #180** (closed): verification: the toolchain.json yosys pin is no longer enforced by check-tools, and two docs still say it is
+- **PR #178**: verification: drop the Yosys leg from smoke-fft256, check no-macro on the committed synth report
+- **Issue #71** (closed): Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow
+
+### 2026-11-23
+
+- **PR #176**: signoff: supersede item 10 as -15, refresh gen-exact docs and T1 citations
+- **Issue #170** (closed): Refresh gen-exact and T1 item-1 evidence pointers in verification/README.md and ROADMAP.md
+- **PR #168**: feat: emit the model's mid-pipeline stage-width reduction in generated FFT RTL
+- **Issue #162** (closed): Implement bit-exact stage-width reduction in generated FFT RTL
+
+### 2026-11-22
+
+- **PR #172**: verification: run the bit-exact FFT bench through klt functional-verification (RTL + negative control; gate-level request committed, report pending under #159)
+
+### 2026-11-21
+
+- **Issue #169** (closed): Tighten two precision claims in decision 0006 before it is ruled on
+- **PR #171**: docs: correct 0006 finding 1 to the shared 17..24 schedule and nominal 2^drops factors
+- **Issue #160** (closed): Write decision record 0006 (Proposed): select the FFT growth schedule from the committed sweep, with model evidence for the candidate
+- **PR #164**: docs: add decision 0006 selecting the FFT growth schedule, with candidate evidence records
+
 ### 2026-11-18
 
 - **PR #155**: ci: add merge_group trigger to rtl-ci and signoff workflows

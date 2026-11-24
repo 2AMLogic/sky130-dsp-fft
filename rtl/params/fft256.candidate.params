@@ -1,0 +1,24 @@
+# 256-point radix-2^2 SDF parameters (schema: rtl/README.md).
+# Decision 0006's RECOMMENDED schedule (spec/decisions/0006-growth-schedule.md,
+# Proposed): CONFIRM the committed placeholder row ("placeholder (1 bit/stage)"
+# in measurements/schedule-sweep.json). Widths are identical to
+# rtl/params/fft256.params; this file is the ruling-ready artifact that carries
+# the 0006 evidence identity (its own sha256 keys the model, bit-exact and
+# synthesis records in measurements/fft256-candidate.json). Nothing on main is
+# generated from this file, and rtl/params/fft256.params stays the schedule of
+# record until 0006 is ruled.
+# The runner-up ("half bit/stage", 17,17,18,18,19,19,20,20) is NOT committed
+# as a file: the generator cannot realize it bit-exactly today (see 0006 and
+# measurements/fft256-candidate.json).
+size=256
+architecture=r22sdf
+direction=forward
+input_width=16
+output_width=16
+stage_widths=17,18,19,20,21,22,23,24
+twiddle_width=16
+complex_mult=3mult
+rounding=convergent
+output_order=natural
+pipeline=1
+stall=1

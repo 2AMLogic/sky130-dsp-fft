@@ -1,4 +1,4 @@
-"""Toolchain pin check and the shared Yosys runner.
+"""Toolchain pin check for the verification flows.
 
   flow_tools.py check   fail unless installed tool versions match toolchain.json
 """
@@ -20,51 +20,43 @@ def _out(cmd):
     return subprocess.run(cmd, capture_output=True, text=True, check=True).stdout
 
 
-def installed():
+def _cocotb_version():
     import cocotb
 
-    return {
-        "icarus_verilog": re.search(r"version (\d+\.\d+)", _out(["iverilog", "-V"])).group(1),
-        "verilator": re.search(r"Verilator (\d+\.\d+)", _out([VERILATOR, "--version"])).group(1),
-        "yosys": re.search(r"Yosys (\d+\.\d+)", _out([YOSYS, "-V"])).group(1),
-        "cocotb": cocotb.__version__,
-        "python": "%d.%d" % sys.version_info[:2],
-    }
+    return cocotb.__version__
+
+
+# One probe per tool pin (every toolchain.json key but "pdk"). installed()
+# invokes only the requested binaries, so the smoke-fft256 flow can probe its
+# four tools without Yosys or a PDK while check() enforces every pin.
+_PROBES = {
+    "icarus_verilog": lambda: re.search(r"version (\d+\.\d+)", _out(["iverilog", "-V"])).group(1),
+    "verilator": lambda: re.search(r"Verilator (\d+\.\d+)", _out([VERILATOR, "--version"])).group(1),
+    "yosys": lambda: re.search(r"Yosys (\d+\.\d+)", _out([YOSYS, "-V"])).group(1),
+    "cocotb": _cocotb_version,
+    "python": lambda: "%d.%d" % sys.version_info[:2],
+}
+
+
+def installed(tools=None):
+    if tools is None:
+        tools = [k for k in PINS if k != "pdk"]
+    return {k: _PROBES[k]() for k in tools}
 
 
 def check():
+    pins = {k: v for k, v in PINS.items() if k != "pdk"}
+    unprobed = sorted(k for k in pins if k not in _PROBES)
+    if unprobed:
+        print(f"toolchain mismatch: no version probe for pinned tool(s): {', '.join(unprobed)}", file=sys.stderr)
+        sys.exit(1)
     got = installed()
-    bad = {k: (got[k], PINS[k]) for k in got if got[k] != PINS[k]}
+    bad = {k: (got[k], pins[k]) for k in got if got[k] != pins[k]}
     for k, (have, want) in bad.items():
         print(f"toolchain mismatch: {k} installed {have}, pinned {want}", file=sys.stderr)
     if bad:
         sys.exit(1)
     print("toolchain matches verification/toolchain.json")
-
-
-def run_yosys(script_name):
-    """Run a Yosys script at the pinned liberty corner; return Yosys's `design` stat dict.
-
-    `${LIBERTY}` and `${STAT_JSON}` in the script are substituted. Does not check
-    tool versions: callers decide whether drift is fatal or recorded.
-    """
-    pdk = PINS["pdk"]
-    root = Path(os.environ.get("PDK_ROOT", Path.home() / ".ciel"))
-    liberty = root / "ciel" / pdk["name"] / "versions" / pdk["revision"] / pdk["liberty_relpath"]
-    if not liberty.is_file():
-        sys.exit(f"liberty not found: {liberty} (pdk revision {pdk['revision']})")
-    build = HERE / "sim_build"
-    build.mkdir(exist_ok=True)
-    stem = Path(script_name).stem
-    stat = build / f"{stem}_stat.json"
-    script = (HERE / script_name).read_text()
-    script = script.replace("${LIBERTY}", str(liberty)).replace("${STAT_JSON}", str(stat))
-    resolved = build / f"{stem}.resolved.ys"
-    resolved.write_text(script)
-    run = subprocess.run([YOSYS, "-q", "-l", str(build / f"{stem}.log"), "-s", str(resolved)], cwd=HERE)
-    if run.returncode:
-        sys.exit(f"yosys failed; see verification/sim_build/{stem}.log")
-    return json.loads(stat.read_text())["design"]
 
 
 if __name__ == "__main__":

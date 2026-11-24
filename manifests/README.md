@@ -31,15 +31,49 @@ uvx --from "klayout-tools==0.8.0" klt signoff \
     --format json > manifests/sky130-dsp-fft.signoff.json
 ```
 
-Item 10 is cited from `item10-attestation-13.json`, generated from
-`item10-inventory-13.json` (generate, then re-grade; run `--check` last, since
+Item 10 is cited from `item10-attestation-18.json`, generated from
+`item10-inventory-18.json` (generate, then re-grade; run `--check` last, since
 any edit to the inventory or an inventoried file changes the recorded hashes).
 **This paragraph names the current pair; cite it from here rather than copying
 the version number elsewhere.** The root `README.md` Reproduce row deliberately
 points at this section instead of naming a file, so it does not go stale at the
 next supersession.
 
-`-13` supersedes `item10-inventory-12.json` / `item10-attestation-12.json`,
+`-18` supersedes `item10-inventory-17.json` / `item10-attestation-17.json`,
+which hashed `.github/workflows/signoff.yml` as of main before issue #188
+retired the last two hand-rolled `sim/` test runners
+(`sim/test_records.py` and `sim/test_model_sizes.py` wrapped onto
+`unittest.TestCase`, the `fxp-model` recipe collapsed onto one `unittest`
+invocation) and repointed that workflow's item-9 and item-10 steps at the
+`-10` and `-18` pairs over the item-9 supersession those edits forced, so
+that hygiene entry's content hash moved; the same hygiene entries and checks
+are carried unchanged. `-17` supersedes `item10-inventory-16.json` / `item10-attestation-16.json`,
+which hashed `verification/README.md` and `.github/workflows/signoff.yml` as
+of main before issue #180 reworded `verification/README.md`'s CI section to
+separate `make all`'s local pin enforcement (`check-tools`, probing Yosys
+again) from `make smoke-fft256`'s drift recording, and repointed that
+workflow's item-9 and item-10 steps at the `-9` and `-17` pairs, so both
+hygiene entries' content hashes moved; the same hygiene entries and checks are
+carried unchanged. `-16` supersedes `item10-inventory-15.json` / `item10-attestation-15.json`,
+which hashed `README.md`, `verification/README.md` and
+`.github/workflows/signoff.yml` as of main before issue #71 removed the
+hand-rolled Yosys leg of `smoke-fft256` and reworded those READMEs' smoke rows
+and prerequisites, and repointed that workflow's item-9 and item-10 steps at the
+`-8` and `-16` pairs, so those hygiene entries' content hashes moved; the same
+hygiene entries and checks are carried unchanged. `-15` in turn supersedes `item10-inventory-14.json` / `item10-attestation-14.json`,
+which hashed `verification/README.md` and `.github/workflows/signoff.yml` as
+of main before issue #170 refreshed the README's `gen-exact` row to the
+eight-configuration, directed-drop and `fft_cmul` unit-check shape PR #168
+added and documented its `GEN_EXACT_ROWS` entry point, and repointed that
+workflow's item-10 step at the `-15` pair, so both hygiene entries' content
+hashes moved; the same hygiene entries and checks are carried unchanged.
+`-14` supersedes `item10-inventory-13.json` / `item10-attestation-13.json`,
+which hashed `verification/README.md` and `.github/workflows/signoff.yml` as
+of main before issue #159 documented the `fv-reports` target in
+`verification/README.md` and repointed that workflow's item-9 step at the
+item-9 `-7` pair and its item-10 step at `-14`, so both hygiene entries'
+content hashes moved; the same hygiene entries and checks are carried
+unchanged. `-13` supersedes `item10-inventory-12.json` / `item10-attestation-12.json`,
 which hashed the `.github/workflows/rtl-ci.yml` and
 `.github/workflows/signoff.yml` content as of main before PR #155 added a bare
 `merge_group:` trigger to both workflows' `on:` maps, so both hygiene entries'
@@ -102,11 +136,11 @@ a new superseding pair:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-13.json \
-    -o manifests/item10-attestation-13.json
+    --inventory manifests/item10-inventory-18.json \
+    -o manifests/item10-attestation-18.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 10 \
-    --inventory manifests/item10-inventory-13.json \
-    --check manifests/item10-attestation-13.json
+    --inventory manifests/item10-inventory-18.json \
+    --check manifests/item10-attestation-18.json
 ```
 
 `klt signoff --manifest` exits `3` when at least one T1 item is `unmet` (a
@@ -134,34 +168,86 @@ Not-T1: `tier` is `null`. The counts live in `sky130-dsp-fft.signoff.json` —
 (today: 11 items, 3 `met` — items 1, 9 and 10 — and 8 `unmet`, each with a
 stated reason in the same record).
 
-Item 1 is cited from `item1-attestation.json`, generated from
-`item1-inventory.json` (RTL generator, parameter file, generated RTL, streaming
-wrapper, synthesis request, and the derived gate-level netlist with its
-freshness checks). Item 1 attests under `klayout-tools==0.9.0` (see the
-two-pin note in "Regenerate"): its netlist freshness check needs
-`klt synthesize --netlist --skip-deck`, which the `0.8.0` CI pin does not
-provide. The committed envelope was generated by an unreleased dev build, but
-`--check` excludes `provenance.klt_version` from its comparison, so the pinned
-released `klt` re-verifies it as-is — no regeneration is needed or wanted:
+Item 1 is cited from `item1-attestation-3.json`, generated from
+`item1-inventory-3.json` (RTL generator, parameter file, generated RTL,
+streaming wrapper, synthesis request, and the derived gate-level netlist with
+its freshness checks). `-3` supersedes `item1-inventory-2.json` /
+`item1-attestation-2.json`, which hashed `rtl/gen/emit.py` before issue #197
+deduplicated the two complex-multiplier templates' shared arithmetic (the
+three-product and four-product schedules and both accumulators' rounder
+connections, 25 byte-identical Verilog lines) into a single `_CMUL_CORE`
+string included by both templates: every configuration's generated Verilog is
+unchanged — regenerating `rtl/params/fft256.params` and the half-bit stage
+schedule `17,17,18,18,19,19,20,20` reproduces every emitted file byte for
+byte — but the emitter's own content
+hash moved, so the evidence pair is superseded. `-2` in turn supersedes
+`item1-inventory.json` / `item1-attestation.json`, which hashed
+`rtl/gen/emit.py` before issue #162
+taught the emitter the model's mid-pipeline stage-width reduction (equal-width
+stage transitions drop their growth bit, rounded convergent, with the twiddle
+fraction and a stage B drop rounded once combined in the multiplier): the
+production Verilog is unchanged — regenerating `rtl/params/fft256.params`
+reproduces every committed file byte for byte — but the emitter's own content
+hash moved, so the evidence pair is superseded. The superseded files are
+recorded evidence and stay unchanged. Item 1 attests under
+`klayout-tools==0.9.0` (see the two-pin note in "Regenerate"): its netlist
+freshness check needs `klt synthesize --netlist --skip-deck`, which the
+`0.8.0` CI pin does not provide. The committed envelope was generated by an
+unreleased dev build, but `--check` excludes `provenance.klt_version` from
+its comparison, so the pinned released `klt` re-verifies it as-is — no
+regeneration is needed or wanted:
 
 ```console
 uvx --from "klayout-tools==0.9.0" klt signoff --attest 1 \
-    --inventory manifests/item1-inventory.json \
-    -o manifests/item1-attestation.json
+    --inventory manifests/item1-inventory-3.json \
+    -o manifests/item1-attestation-3.json
 uvx --from "klayout-tools==0.9.0" klt signoff --attest 1 \
-    --inventory manifests/item1-inventory.json \
-    --check manifests/item1-attestation.json
+    --inventory manifests/item1-inventory-3.json \
+    --check manifests/item1-attestation-3.json
 ```
 
-Item 9 is cited from `item9-attestation-6.json`, generated from
-`item9-inventory-6.json` (the cocotb streaming-FFT bench and its negative
+Item 9 is cited from `item9-attestation-10.json`, generated from
+`item9-inventory-10.json` (the cocotb streaming-FFT bench and its negative
 control, plus the model, reference, amplitude-sweep, schedule-sweep and
 per-size model benches, the tests of the shared append-only record writer, and
 the files the cold_start targets execute around them: `sim/__init__.py`,
 `verification/negctl.sh`, `verification/requirements.txt`,
 `verification/flow_tools.py` and `verification/toolchain.json`). It supersedes
-`item9-inventory-5.json` / `item9-attestation-5.json`, whose envelope hashed
-these sources as generated in PR #147 but was not regenerated when PR #137
+`item9-inventory-9.json` / `item9-attestation-9.json` (recorded evidence,
+kept unchanged): issue #188 wrapped `sim/test_records.py`'s 11 and
+`sim/test_model_sizes.py`'s 8 module-level `test_*` functions as `Records`
+and `ModelSizes` methods on `unittest.TestCase`, deleting the two surviving
+copies of the hand-rolled `main()` runner (byte-identical to the four #86
+retired) and collapsing `verification/Makefile`'s `fxp-model` recipe onto one
+`python -m unittest` invocation over all five modules — `Ran 53 tests` is
+printed even when an earlier module errors, instead of Make stopping before
+the later modules start — so the content hashes of those three files moved;
+`-10` re-hashes the identical list, checks and pins. `-9` in turn supersedes
+`item9-inventory-8.json` / `item9-attestation-8.json` (recorded evidence,
+kept unchanged): issue #180 restored the per-tool probe dispatch in
+`verification/flow_tools.py` (`installed(tools=...)` invokes only the
+requested tools; `check()` enforces every non-`pdk` pin, Yosys included, and
+fails closed on a pinned tool with no probe) and pointed
+`test_fft256_smoke.py`'s `installed_tools()` at its four tools, so those two
+content hashes moved; `-9` re-hashes the identical list, checks and pins.
+`-8` in turn supersedes
+`item9-inventory-7.json` / `item9-attestation-7.json` (recorded evidence,
+kept unchanged): issue #71 removed the hand-rolled Yosys leg of `smoke-fft256`
+(`verification/test_fft256_smoke.py`, `flow_tools.py`, `toolchain.json` and
+`Makefile` changed, so their content hashes moved); `-8` re-hashes the
+identical list, checks and pins. `-7` in turn supersedes
+`item9-inventory-6.json` / `item9-attestation-6.json` (recorded evidence,
+kept unchanged): issue #159 added the `fv-reports` target to
+`verification/Makefile` — `klt functional-verification` requests and
+committed reports (`verification/reports/`) running the same hashed bench
+(`test_fft256_stream.py`) on the RTL sources and as a recorded negative control
+(the gate-level report on the committed netlist is pending under #159, not yet
+committed), under `klayout-tools==0.9.0`
+(see `verification/README.md`) — so the Makefile entry's content hash moved;
+`-7` re-hashes the identical list, checks and pins, and the fv requests and
+reports are deliberately not inventoried (they are evidence artifacts around
+the hashed bench, not part of the cold_start argv). `-6` in turn hashed these
+sources as generated in PR #147 but was not regenerated when PR #137
 (`sim/fixedpoint_model.py`, `sim/records.py`, `sim/test_records.py`,
 `verification/test_fft256_smoke.py`) and PR #132 (`sim/test_schedule_sweep.py`)
 edited attested sources off a base lacking `-5` and merged green on the
@@ -201,9 +287,9 @@ re-verifies the recorded hashes. Pinned `klayout-tools==0.8.0`:
 
 ```console
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-6.json \
-    -o manifests/item9-attestation-6.json
+    --inventory manifests/item9-inventory-10.json \
+    -o manifests/item9-attestation-10.json
 uvx --from "klayout-tools==0.8.0" klt signoff --attest 9 \
-    --inventory manifests/item9-inventory-6.json \
-    --check manifests/item9-attestation-6.json
+    --inventory manifests/item9-inventory-10.json \
+    --check manifests/item9-attestation-10.json
 ```

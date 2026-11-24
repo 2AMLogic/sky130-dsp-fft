@@ -3,16 +3,16 @@
   "kind": "digital",
   "evidence": {
     "1": {
-      "file": "manifests/item1-attestation.json",
-      "content_hash": "sha256:0b60311f8171b4f094e3f6c6bfa9dd1a950319210e1c4b4b541021ae4c1af560"
+      "file": "manifests/item1-attestation-3.json",
+      "content_hash": "sha256:410542a9c0c867733a86f52fed9c25d369b441092e71bda217e39ac75b20b25a"
     },
     "9": {
-      "file": "manifests/item9-attestation-6.json",
-      "content_hash": "sha256:e9cf8bf66a43f87078ebe74b0fbdd3205e413b788ea72a090b24d3f98ffd0212"
+      "file": "manifests/item9-attestation-10.json",
+      "content_hash": "sha256:c5c009135b934e3a6cb837f5e09370c82233972648414235171178a7b2b31b02"
     },
     "10": {
-      "file": "manifests/item10-attestation-13.json",
-      "content_hash": "sha256:32b3ce1811ca65f313914620c975fb5e786ef52bf8fba7423acc4b5a2bb27921"
+      "file": "manifests/item10-attestation-18.json",
+      "content_hash": "sha256:422df9ad8397ac960534d604691efc820f7ccb4ff4f7d00ac89e44f82a4b556c"
     }
   }
 }

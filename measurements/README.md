@@ -5,10 +5,10 @@ Recorded results, append-only evidence. Every record names its liberty corner.
 - `synth-placeholder.json`: retained history (2026-11-06): flow smoke on the retired placeholder module (not a design result). Unchanged; no longer in the live item 10 inventory.
 - `fft256-smoke.json`: `{"records": [...]}`; each `make smoke-fft256` run appends one dated
   record (generator commit, parameter file and hash, model configuration, vector-set
-  identity, RTL-vs-model result, simulated SQNR, Yosys cell count/area at `tt_025C_1v80`,
+  identity, RTL-vs-model result, simulated SQNR,
   tool versions and drift against the pins). An exact SQNR match is written as the
   string `"inf"` and any other non-finite value as `null`, because strict JSON cannot
-  carry a non-finite number. Never edit or drop an earlier record.
+  carry a non-finite number. Never edit or drop an earlier record. Schema note (issue #71): records written after the Yosys leg was removed carry no `cell_count`, `cells_by_type`, `area_um2`, `liberty_*` or `pdk_revision` fields; the 2026-10-30 record keeps them and is unchanged. Synthesis figures live in `synth/fft256.synth.report.json`.
 - `overflow-range.json`: `{"records": [...]}`; each `python3 -m sim.overflow_range <params> --record measurements/overflow-range.json`
   run appends one dated record (params file and sha256, model id, seeds, step, frames, per-kind
   max no-overflow amplitude fraction and first overflowing stage). SIMULATED, on the placeholder
@@ -39,3 +39,17 @@ Recorded results, append-only evidence. Every record names its liberty corner.
   exact SQNR match is written as the string `"inf"` and any other non-finite
   value as `null`, because strict JSON cannot carry a non-finite number. Never
   edit or drop an earlier record.
+- `fft256-candidate.json`: `{"records": [...]}`; the evidence record for the
+  growth-schedule decision (`spec/decisions/0006-growth-schedule.md`, #160):
+  the recommended row (confirm the placeholder, committed for the ruling as
+  `rtl/params/fft256.candidate.params`) and the runner-up ("half bit/stage"),
+  each with model SQNR/overflow and margins over the 60 dB row, the
+  no-overflow amplitude range, the bit-exact RTL-vs-model check
+  (`verification/test_gen_exact.py` with `GEN_EXACT_PARAMS`, clean and
+  perturbed) and `klt synthesize` figures against the placeholder baseline,
+  keyed by each parameter file's sha256, with reproduction commands. SIMULATED,
+  never measured; reports, selects nothing. Reading notes: the runner-up's
+  bit-exact check FAILED by exactly 2^drops — the generator defect #162 (no
+  mid-pipeline width reduction) — and its synthesis figures are structural
+  lower bounds that exclude the rounders the fix must add. Never edit or drop
+  an earlier record.

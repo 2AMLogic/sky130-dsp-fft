@@ -8,33 +8,36 @@ Maintained by the Guide triage role; the region between the markers is generated
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
-_None._
+- **#191**: spec: cite committed FFT256 synthesis report in the Storage row
 
 ## Very Important
 
 `loom:very-important` (one counts per workspace); every stage takes these first.
 
-- **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(held)*
+- **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT
 
 ## Important
 
 `loom:important`; taken before unlabelled work.
 
-- **#18**: T1 item 3 (DRC clean): klt drc on the routed FFT GDS with coverage disclosed *(held)*
-- **#19**: T1 item 4 (LVS clean): klt lvs of the routed FFT vs the gate-level netlist *(held)*
-- **#20**: T1 item 11 (power delivery): klt erc supply spec and PDN evidence for the routed FFT *(held)*
+- **#18**: T1 item 3 (DRC clean): klt drc on the routed FFT GDS with coverage disclosed
+- **#19**: T1 item 4 (LVS clean): klt lvs of the routed FFT vs the gate-level netlist
+- **#20**: T1 item 11 (power delivery): klt erc supply spec and PDN evidence for the routed FFT
+- **#158**: Pre-route multi-corner klt sta on the committed gate-level netlist at the three signoff corners (toward T1 item 5)
+- **#159**: Produce a klt functional-verification report for the bit-exact FFT suite, on RTL and on the committed gate-level netlist (toward T1 items 5 and 7)
 
 ## Ready
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-_None._
+- **#197**: Share the duplicated complex-multiply arithmetic in the RTL emitter
 
 ## In Progress
 
 Issues currently being built (`loom:building`).
 
-_None._
+- **#158**: Pre-route multi-corner klt sta on the committed gate-level netlist at the three signoff corners (toward T1 item 5)
+- **#179**: Cite the committed FFT256 synthesis report in the Storage row
 
 ## PRs Awaiting Review
 
@@ -46,20 +49,21 @@ _None._
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-_None._
+- **#191**: spec: cite committed FFT256 synthesis report in the Storage row
 
 ## Proposed
 
 Issues carrying `loom:curated`.
 
-- **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(curated)* *(held)*
+- **#17**: T1 item 2 (layout): klt place-and-route flow and routed GDS for the FFT *(curated)*
 - **#158**: Pre-route multi-corner klt sta on the committed gate-level netlist at the three signoff corners (toward T1 item 5) *(curated)*
 - **#159**: Produce a klt functional-verification report for the bit-exact FFT suite, on RTL and on the committed gate-level netlist (toward T1 items 5 and 7) *(curated)*
-- **#160**: Write decision record 0006 (Proposed): select the FFT growth schedule from the committed sweep, with model evidence for the candidate *(curated)*
+- **#163**: Post-ruling follow-up to 0006: update the spec growth-schedule row (or land the runner-up swap if ruled otherwise) *(curated)*
+- **#179**: Cite the committed FFT256 synthesis report in the Storage row *(curated)*
 
 ## Proposed (Architect / Hermit)
 
-- **#71**: Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow *(hermit)* *(held)*
+- **#196**: Remove superseded item-1/9/10 attestation and inventory pairs (50 files) from manifests/ *(hermit)*
 
 ## Epics
 
@@ -69,14 +73,14 @@ _None._
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 0 |
+| Operator merge-risk holds | 1 |
 | Very important | 1 |
-| Important | 3 |
-| Ready (`loom:issue`) | 0 |
-| In Progress (`loom:building`) | 0 |
+| Important | 5 |
+| Ready (`loom:issue`) | 1 |
+| In Progress (`loom:building`) | 2 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 0 |
-| Curated | 4 |
+| Approved PRs awaiting merge | 1 |
+| Curated | 5 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 0 |
 <!-- guide:plan-body:end -->
