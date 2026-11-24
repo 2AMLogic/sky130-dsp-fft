@@ -38,10 +38,12 @@ Tool versions used for the committed reports (also recorded in
 - **No input/output delays set** — the 36 wrapper I/O endpoints are
   unconstrained (`constraint_completeness` in each report); every internal
   register is clocked (`unclocked_registers.count: 0`).
-- **No wire-load model** (`wire_load_model: null`, `wire_load_mode: null`);
-  OpenSTA's own ideal wire-load estimate, as `klt sta` verilog mode defines.
-- No placement or routing parasitics of any kind:
-  `geometry_source: netlist_estimate`.
+- Both requests omit the wire-load model and mode. The reports echo these
+  omissions as `wire_load_model: null` and `wire_load_mode: null`. With no
+  `set_wire_load*` override, each of the 16 `sky130_fd_sc_hd` corners uses
+  its Liberty default wire-load model, `Small`, in `top` mode.
+- The pre-route estimate (`geometry_source: netlist_estimate`) includes no
+  extracted placement or routing parasitics.
 - The netlist was synthesized with `constraints.clock_period_ns: null`
   (`synth/fft256.synth.json`) — timing-unconstrained mapping.
 
