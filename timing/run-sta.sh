@@ -22,8 +22,23 @@
 set -eu
 cd "$(dirname "$0")/.."
 
+tmpdir=$(mktemp -d timing/.run-sta.XXXXXX)
+cleanup() {
+    rm -rf "$tmpdir"
+}
+trap cleanup EXIT
+trap 'exit 129' HUP
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+signoff_tmp="$tmpdir/fft256.sta.report.json"
+all_corners_tmp="$tmpdir/fft256.sta.all-corners.report.json"
+
 uvx --from "klayout-tools==0.9.2" klt sta timing/fft256.sta.request.json \
-    --format json > timing/fft256.sta.report.json
+    --format json > "$signoff_tmp"
 
 uvx --from "klayout-tools==0.9.2" klt sta timing/fft256.sta.all-corners.request.json \
-    --format json > timing/fft256.sta.all-corners.report.json
+    --format json > "$all_corners_tmp"
+
+mv -f "$signoff_tmp" timing/fft256.sta.report.json
+mv -f "$all_corners_tmp" timing/fft256.sta.all-corners.report.json
