@@ -4,7 +4,10 @@
 Run from the repo root: python3 -m unittest rtl.gen.tests.test_gen
 Icarus/Yosys steps are skipped, with a reason, when the tool is not on PATH.
 """
+import contextlib
 import glob
+import importlib.util
+import io
 import os
 import shutil
 import subprocess
@@ -132,6 +135,40 @@ class Invalid(unittest.TestCase):
         with self.assertRaises(P.ParamError) as c:
             P.parse_params(text() + "size=64\n")
         self.assertIn("size", str(c.exception))
+
+
+def flow_tools():
+    # Loaded by path, not `import verification.flow_tools`: gen-unit-negctl
+    # runs one Determinism test with PYTHONPATH pointing at a copied rtl/
+    # tree with no repo root beside it, so a module-level package import
+    # would fail there.
+    path = os.path.join(ROOT, "verification", "flow_tools.py")
+    spec = importlib.util.spec_from_file_location("flow_tools", path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+class ToolchainPins(unittest.TestCase):
+    # A generator test module is an imperfect home for this toolchain
+    # invariant, kept here because gen-unit already runs in CI and a new
+    # verification/ test file would force an item-9 supersession (#185).
+
+    def test_every_pinned_tool_has_a_probe(self):
+        ft = flow_tools()
+        self.assertEqual({k for k in ft.PINS if k != "pdk"},
+                         set(ft._PROBES))
+
+    def test_check_names_and_rejects_an_unprobed_pin(self):
+        ft = flow_tools()
+        ft.PINS = dict(ft.PINS, dummy_tool="1.0")
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            with self.assertRaises(SystemExit) as caught:
+                ft.check()
+        self.assertEqual(caught.exception.code, 1)
+        self.assertIn("no version probe for pinned tool(s): dummy_tool",
+                      err.getvalue())
 
 
 def tool_run(cmd, cwd):
