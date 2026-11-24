@@ -30,14 +30,14 @@ _None._
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#71**: Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow
+_None._
 
 ## In Progress
 
 Issues currently being built (`loom:building`).
 
+- **#71**: Remove the hand-rolled Yosys leg of smoke-fft256: it duplicates the klt synthesize flow
 - **#158**: Pre-route multi-corner klt sta on the committed gate-level netlist at the three signoff corners (toward T1 item 5)
-- **#159**: Produce a klt functional-verification report for the bit-exact FFT suite, on RTL and on the committed gate-level netlist (toward T1 items 5 and 7)
 
 ## PRs Awaiting Review
 
@@ -49,7 +49,7 @@ _None._
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
-_None._
+- **#178**: verification: drop the Yosys leg from smoke-fft256, check no-macro on the committed synth report
 
 ## Proposed
 
@@ -76,10 +76,10 @@ _None._
 | Operator merge-risk holds | 0 |
 | Very important | 1 |
 | Important | 5 |
-| Ready (`loom:issue`) | 1 |
+| Ready (`loom:issue`) | 0 |
 | In Progress (`loom:building`) | 2 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 0 |
+| Approved PRs awaiting merge | 1 |
 | Curated | 5 |
 | Architect / Hermit proposals | 0 |
 | Active epics | 0 |
