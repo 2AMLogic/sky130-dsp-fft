@@ -21,11 +21,9 @@ SMOKE_NEGCTL_EXPECT ?= RTL output differs from bit-accurate model
 FFT_BENCH_NEGCTL_EXPECT ?= stream output differs from bit-accurate model
 # Assertion text the perturbed multi-configuration exact run must fail on (see test_gen_exact.py).
 GEN_EXACT_NEGCTL_EXPECT ?= generated RTL output differs from bit-accurate model
-# Assertion message the perturbed-regen-copy run must fail on: the byte-compare
-# assertion in Determinism.test_committed_rtl_matches_fresh_regen appends the
-# mismatching file's name ("fft256.v") to its message, so the trailing
-# ": fft256.v" proves the comparison fired rather than an import error or crash.
-GEN_UNIT_NEGCTL_EXPECT ?= : fft256.v
+# Both read-only regen checks must identify the edited file in the copied tree.
+GEN_UNIT_NEGCTL_EXPECT ?= rtl/generated/fft256.v differs from a fresh regen
+override GEN_UNIT_COPY := sim_build/gen_unit_negctl
 # The six *_negctl targets below run their mutant through negctl.sh, which
 # owns the must-fail-for-the-intended-reason contract (lint-negctl seeds its
 # defect into a copied tree first and keeps its own recipe).
@@ -84,8 +82,10 @@ fxp-model-negctl:
 	@./negctl.sh "flooring rounder" "the tests" "$(FXP_NEGCTL_EXPECT)" sim_build/fxp_negctl.out -- \
 	  env FXP_MUTANT=floor_ties $(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model
 
-# End-to-end smoke of the generated 256-point FFT: regen, Icarus vs the model,
-# no-macro check on the committed synth report; appends a record to ../measurements/fft256-smoke.json.
+# End-to-end smoke of the generated 256-point FFT: read-only regen comparison
+# (rtl/generated must equal a fresh regen and be clean relative to Git), Icarus
+# vs the model, no-macro check on the committed synth report; appends a record
+# to ../measurements/fft256-smoke.json.
 # Tool-version drift is recorded, not fatal (run `make check-tools` for the pins).
 smoke-fft256:
 	$(PYPATH) $(PYTHON) test_fft256_smoke.py
@@ -205,27 +205,25 @@ gen-exact-negctl:
 gen-unit:
 	$(PYPATH) $(PYTHON) -m unittest rtl.gen.tests.test_gen
 
-# One byte appended to a copy of the whole rtl/ tree, on PYTHONPATH ahead of
-# the committed tree (make runs from verification/, which has no rtl/ package,
-# so the copy shadows it). The clean copy must pass first, so a copy-induced
-# difference (a path-dependent regen input, a file cp skips) cannot make the
-# committed-vs-regen check fail for a reason other than the appended byte; the
-# perturbed copy must then fail AND carry GEN_UNIT_NEGCTL_EXPECT, so a missing
-# file or crash does not count as "caught". rtl/generated itself is never
-# modified.
+# Check the clean copy first, then feed the same non-UTF-8 edit to the smoke
+# entry point and the generator test. The copied smoke script resolves ROOT,
+# its simulation directory and its record relative to the disposable tree.
 gen-unit-negctl:
-	@rm -rf sim_build/gen_unit_negctl
-	@mkdir -p sim_build/gen_unit_negctl
-	@cp -r ../rtl sim_build/gen_unit_negctl/rtl
-	@if ! env PYTHONPATH=$(CURDIR)/sim_build/gen_unit_negctl $(PYTHON) -m unittest \
+	@rm -rf $(GEN_UNIT_COPY)
+	@mkdir -p $(GEN_UNIT_COPY)/verification
+	@cp -r ../rtl $(GEN_UNIT_COPY)/rtl
+	@cp test_fft256_smoke.py $(GEN_UNIT_COPY)/verification/
+	@if ! env PYTHONPATH=$(CURDIR)/$(GEN_UNIT_COPY) $(PYTHON) -m unittest \
 	      rtl.gen.tests.test_gen.Determinism.test_committed_rtl_matches_fresh_regen \
 	      > sim_build/gen_unit_negctl_clean.out 2>&1; then \
 	  echo "NEGATIVE CONTROL FAILED: clean copy of the rtl tree does not pass the committed-vs-regen check (see sim_build/gen_unit_negctl_clean.out)"; exit 1; fi
-	@printf 'x' >> sim_build/gen_unit_negctl/rtl/generated/fft256.v
-	@if [ "$$(( $$(wc -c < ../rtl/generated/fft256.v) + 1 ))" -ne "$$(wc -c < sim_build/gen_unit_negctl/rtl/generated/fft256.v)" ]; then \
-	  echo "NEGATIVE CONTROL FAILED: appended byte is not in the copy only"; exit 1; fi
+	@printf '\377' >> $(GEN_UNIT_COPY)/rtl/generated/fft256.v
+	@./negctl.sh "non-UTF-8 regen copy" "the smoke" "$(GEN_UNIT_NEGCTL_EXPECT)" sim_build/smoke_regen_negctl.out -- \
+	  env PYTHONPATH=$(CURDIR)/$(GEN_UNIT_COPY):$(CURDIR):$(ROOT) $(PYTHON) $(GEN_UNIT_COPY)/verification/test_fft256_smoke.py
+	@{ cat ../rtl/generated/fft256.v; printf '\377'; } | cmp - $(GEN_UNIT_COPY)/rtl/generated/fft256.v
+	@test ! -e $(GEN_UNIT_COPY)/verification/sim_build && test ! -e $(GEN_UNIT_COPY)/measurements/fft256-smoke.json
 	@./negctl.sh "perturbed regen copy" "the generator unit tests" "$(GEN_UNIT_NEGCTL_EXPECT)" sim_build/gen_unit_negctl.out -- \
-	  env PYTHONPATH=$(CURDIR)/sim_build/gen_unit_negctl $(PYTHON) -m unittest rtl.gen.tests.test_gen.Determinism.test_committed_rtl_matches_fresh_regen
+	  env PYTHONPATH=$(CURDIR)/$(GEN_UNIT_COPY) $(PYTHON) -m unittest rtl.gen.tests.test_gen.Determinism.test_committed_rtl_matches_fresh_regen
 
 clean:
 	rm -rf sim_build results.xml

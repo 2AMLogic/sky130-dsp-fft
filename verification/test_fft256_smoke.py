@@ -1,12 +1,13 @@
 """End-to-end smoke of the generated 256-point FFT (issue #30).
 
-  regen -> Icarus vs the bit-accurate model on the sim/vectors.py sets ->
-  no-macro check on the committed synth report -> append a record to
-  ../measurements/fft256-smoke.json
+  read-only regen comparison -> Icarus vs the bit-accurate model on the
+  sim/vectors.py sets -> no-macro check on the committed synth report ->
+  append a record to ../measurements/fft256-smoke.json
 
 Exits non-zero on any RTL/model mismatch (count and first differing index are
-printed), on a regenerated tree that differs from the committed one, or on a
-macro or non-sky130_fd_sc_hd cell in the committed
+printed), on a generated tree that differs from a fresh regen or from the
+committed one (the mismatching file is named and left untouched -- issue #203),
+or on a macro or non-sky130_fd_sc_hd cell in the committed
 synth report. Run through `make smoke-fft256`.
 Environment: PERTURB=<i> flips one DUT output bit (negative control, no record).
 """
@@ -44,11 +45,34 @@ def sha256(path):
 
 
 def regen_unchanged():
-    """Regenerate rtl/generated and require it to equal the committed tree."""
-    run(["bash", str(ROOT / "rtl/regen.sh")])
+    """Require rtl/generated to equal a fresh regen, without writing anything.
+
+    The filename and content comparison is the generator unit test's
+    (rtl/gen/tests/test_gen.py): generate from rtl/params/fft256.params in
+    memory and compare against the committed tree, so a local edit or extra
+    file is named and survives the check instead of being regenerated over
+    (issue #203: the old in-place regen erased the discrepancy it was
+    checking for). rtl/regen.sh stays the deliberate way to refresh the tree.
+    The Git status check is kept because a locally regenerated tree can agree
+    with local parameters while differing from the commit a smoke record
+    cites.
+    """
+    # Imported here, not at module top: sim.test_records imports this module
+    # inside the fxp-model cold_start argv, and the generator belongs to the
+    # smoke flow only -- a module-level import would add rtl/gen to that
+    # argv's import surface without joining the item-9 inventory.
+    from rtl.gen.check import regen_difference
+    from rtl.gen.params import load_params
+
+    difference = regen_difference(load_params(str(PARAMS)), ROOT / "rtl/generated")
+    if difference:
+        sys.exit(f"{difference} (parameters {PARAMS.relative_to(ROOT)}). "
+                 "Local edits are preserved. Regenerate deliberately with rtl/regen.sh.")
     diff = run(["git", "-C", str(ROOT), "status", "--porcelain", "--", "rtl/generated"])
     if diff:
-        sys.exit(f"regenerated rtl/generated differs from the committed tree:\n{diff}")
+        sys.exit(f"rtl/generated differs from the committed tree (a locally "
+                 f"regenerated tree can match its own parameters while differing "
+                 f"from the commit a smoke record cites):\n{diff}")
 
 
 def installed_tools():
