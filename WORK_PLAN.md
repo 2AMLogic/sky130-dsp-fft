@@ -8,6 +8,7 @@ Maintained by the Guide triage role; the region between the markers is generated
 
 Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a human merge decision is missing.
 
+- **#166**: timing: add pre-route klt sta evidence at the signoff and all 16 sky130 corners
 - **#191**: spec: cite committed FFT256 synthesis report in the Storage row
 
 ## Very Important
@@ -30,7 +31,7 @@ Judge-approved PRs under a hold (`loom:blocked` or `loom:operator`) — only a h
 
 Human-approved issues ready for implementation (`loom:issue`).
 
-- **#197**: Share the duplicated complex-multiply arithmetic in the RTL emitter
+_None._
 
 ## In Progress
 
@@ -49,6 +50,7 @@ _None._
 
 PRs that passed review and are queued for Champion auto-merge (`loom:pr`).
 
+- **#166**: timing: add pre-route klt sta evidence at the signoff and all 16 sky130 corners
 - **#191**: spec: cite committed FFT256 synthesis report in the Storage row
 
 ## Proposed
@@ -73,13 +75,13 @@ _None._
 
 | Bucket | Count |
 |------|-------|
-| Operator merge-risk holds | 1 |
+| Operator merge-risk holds | 2 |
 | Very important | 1 |
 | Important | 5 |
-| Ready (`loom:issue`) | 1 |
+| Ready (`loom:issue`) | 0 |
 | In Progress (`loom:building`) | 2 |
 | PRs awaiting review | 0 |
-| Approved PRs awaiting merge | 1 |
+| Approved PRs awaiting merge | 2 |
 | Curated | 5 |
 | Architect / Hermit proposals | 1 |
 | Active epics | 0 |
