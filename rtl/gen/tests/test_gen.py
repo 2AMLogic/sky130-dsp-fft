@@ -15,6 +15,7 @@ import tempfile
 import unittest
 
 from rtl.gen import params as P
+from rtl.gen.check import regen_difference
 from rtl.gen.emit import generate, write_rtl
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -69,11 +70,7 @@ class Determinism(unittest.TestCase):
     def test_committed_rtl_matches_fresh_regen(self):
         p = P.load_params(os.path.join(ROOT, "rtl/params/fft256.params"))
         gdir = os.path.join(ROOT, "rtl/generated")
-        fresh = generate(p)
-        self.assertEqual(sorted(os.listdir(gdir)), sorted(fresh))
-        for name, body in fresh.items():
-            with open(os.path.join(gdir, name), newline="") as f:
-                self.assertEqual(f.read(), body, name)
+        self.assertIsNone(regen_difference(p, gdir))
 
 
 class Header(unittest.TestCase):

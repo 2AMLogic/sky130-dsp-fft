@@ -61,23 +61,13 @@ def regen_unchanged():
     # inside the fxp-model cold_start argv, and the generator belongs to the
     # smoke flow only -- a module-level import would add rtl/gen to that
     # argv's import surface without joining the item-9 inventory.
-    from rtl.gen.emit import generate
+    from rtl.gen.check import regen_difference
     from rtl.gen.params import load_params
 
-    fresh = generate(load_params(str(PARAMS)))
-    gdir = ROOT / "rtl/generated"
-    have = sorted(os.listdir(gdir))
-    if have != sorted(fresh):
-        sys.exit(f"rtl/generated does not match a fresh regen from "
-                 f"{PARAMS.relative_to(ROOT)}: unexpected files "
-                 f"{[n for n in have if n not in fresh]}, missing files "
-                 f"{[n for n in fresh if n not in have]}")
-    for name, body in fresh.items():
-        with open(gdir / name, newline="") as f:
-            if f.read() != body:
-                sys.exit(f"rtl/generated/{name} differs from a fresh regen from "
-                         f"{PARAMS.relative_to(ROOT)}; local edits are preserved -- "
-                         "regenerate deliberately with rtl/regen.sh")
+    difference = regen_difference(load_params(str(PARAMS)), ROOT / "rtl/generated")
+    if difference:
+        sys.exit(f"{difference} (parameters {PARAMS.relative_to(ROOT)}). "
+                 "Local edits are preserved. Regenerate deliberately with rtl/regen.sh.")
     diff = run(["git", "-C", str(ROOT), "status", "--porcelain", "--", "rtl/generated"])
     if diff:
         sys.exit(f"rtl/generated differs from the committed tree (a locally "
