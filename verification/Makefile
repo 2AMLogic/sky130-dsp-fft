@@ -84,8 +84,10 @@ fxp-model-negctl:
 	@./negctl.sh "flooring rounder" "the tests" "$(FXP_NEGCTL_EXPECT)" sim_build/fxp_negctl.out -- \
 	  env FXP_MUTANT=floor_ties $(PYPATH) $(PYTHON) -m unittest sim.test_fixedpoint_model
 
-# End-to-end smoke of the generated 256-point FFT: regen, Icarus vs the model,
-# no-macro check on the committed synth report; appends a record to ../measurements/fft256-smoke.json.
+# End-to-end smoke of the generated 256-point FFT: read-only regen comparison
+# (rtl/generated must equal a fresh regen and be clean relative to Git), Icarus
+# vs the model, no-macro check on the committed synth report; appends a record
+# to ../measurements/fft256-smoke.json.
 # Tool-version drift is recorded, not fatal (run `make check-tools` for the pins).
 smoke-fft256:
 	$(PYPATH) $(PYTHON) test_fft256_smoke.py
