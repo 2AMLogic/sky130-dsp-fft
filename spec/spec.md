@@ -37,7 +37,7 @@ always a *simulated* figure.
 | Control interface | register bus for configuration and coefficients | — | — | cocotb register test | **target, no evidence** |
 | Clock | 50 MHz at the three signoff corners `ss_100C_1v60`, `tt_025C_1v80`, `ff_n40C_1v95`; all 16 shipped corners reported, not binding | 25 MHz, same corners | 100 MHz, same corners | Yosys + OpenROAD STA at each corner; binding corner named in the result | **target, no timing evidence**: no STA yet; reachability unverified |
 | Area budget | set after first synthesis (estimate ~30k flops, 0003) | — | — | OpenROAD area report | **target, no budget set**: synthesis exists (see open items) but sets no budget |
-| Storage | flops | flops | flops | no SRAM macros in the netlist | evidenced (flops only, no macros in the smoke netlist) |
+| Storage | flops | flops | flops | no SRAM macros in the netlist | evidenced (flop storage, zero SRAM macros in the [committed FFT256 synthesis report](../synth/fft256.synth.report.json)) |
 | Signoff | DRC + LVS clean | — | — | klayout-tools `klt` | **target, no evidence**: no layout exists |
 
 ## SQNR vector set

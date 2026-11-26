@@ -8,6 +8,7 @@
   - [0004 FFT architecture survey](decisions/0004-fft-architecture-survey.md)
   - [0005 FIR source](decisions/0005-fir-source.md)
   - [0006 FFT growth schedule](decisions/0006-growth-schedule.md)
+  - [0007 storage evidence](decisions/0007-storage-evidence.md)
 
 Records are not edited after ratification; a change is a new record that
 supersedes the old one.
