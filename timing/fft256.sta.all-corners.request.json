@@ -1,0 +1,31 @@
+{
+  "schema": "klt.sta.request/1",
+  "verilog": "../netlist/fft256_stream.sky130_fd_sc_hd.v",
+  "hdl_toplevel": "fft256_stream",
+  "pdk": {
+    "cell_library": "sky130_fd_sc_hd",
+    "corners": [
+      "tt_025C_1v80",
+      "tt_100C_1v80",
+      "ss_100C_1v40",
+      "ss_100C_1v60",
+      "ss_n40C_1v28",
+      "ss_n40C_1v35",
+      "ss_n40C_1v40",
+      "ss_n40C_1v44",
+      "ss_n40C_1v60",
+      "ss_n40C_1v76",
+      "ff_100C_1v65",
+      "ff_100C_1v95",
+      "ff_n40C_1v56",
+      "ff_n40C_1v65",
+      "ff_n40C_1v76",
+      "ff_n40C_1v95"
+    ]
+  },
+  "constraints": {
+    "clock_port": "clk",
+    "clock_period_ns": 20.0
+  },
+  "geometry_source": "netlist_estimate"
+}
