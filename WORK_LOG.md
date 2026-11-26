@@ -3,6 +3,11 @@
 Chronological record of merged PRs and closed issues, newest first.
 Maintained by the Guide triage role.
 
+### 2026-11-26
+
+- **PR #204**: verification: make the FFT256 smoke regen check read-only
+- **Issue #203** (closed): Reuse the read-only RTL comparison in the FFT256 smoke check
+
 ### 2026-11-24
 
 - **PR #200**: refactor: share the complex-multiply arithmetic core between cmul templates
